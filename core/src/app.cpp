@@ -86,13 +86,13 @@ namespace core {
 		BeginDrawing();
 		ClearBackground(DARKGRAY);
 
-		DrawText(util::str(m_human->m_location).c_str(), 10, 10, 20, WHITE);
-		DrawText(util::str(m_human->m_fsm_state).c_str(), 10, 40, 20, WHITE);
-		DrawText(m_human->m_money.str().c_str(), 10, 70, 20, WHITE);
-		DrawText(m_human->m_hunger.str().c_str(), 10, 100, 20, WHITE);
-		DrawText(m_human->m_thirst.str().c_str(), 10, 130, 20, WHITE);
-		DrawText(m_human->m_fatigue.str().c_str(), 10, 160, 20, WHITE);
-		DrawText(m_human->m_loneliness.str().c_str(), 10, 190, 20, WHITE);
+		DrawText(("State: " + util::str(m_human->m_fsm_state)).c_str(), 10, 10, 20, WHITE);
+		DrawText(("Location: " + util::str(m_human->m_location)).c_str(), 10, 40, 20, WHITE);
+		DrawText(("Money: " + m_human->m_money.str()).c_str(), 10, 70, 20, WHITE);
+		DrawText(("Hunger: " + m_human->m_hunger.str()).c_str(), 10, 100, 20, WHITE);
+		DrawText(("Thirst: " + m_human->m_thirst.str()).c_str(), 10, 130, 20, WHITE);
+		DrawText(("Fatigue: " + m_human->m_fatigue.str()).c_str(), 10, 160, 20, WHITE);
+		DrawText(("Loneliness: " + m_human->m_loneliness.str()).c_str(), 10, 190, 20, WHITE);
 
 		m_button->draw();
 
