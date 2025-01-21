@@ -20,7 +20,7 @@ baseName = path.getbasename(os.getcwd());
 project (baseName)
     kind "StaticLib"
     location "./"
-    targetdir "../bin/%{cfg.buildcfg}"
+    staticruntime("off")
 
     vpaths 
     {

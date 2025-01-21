@@ -2,7 +2,9 @@ raylib-master
 _build
 _bin
 .vs
+.vscode
 /bin
+/bin-int
 /build
 Makefile
 obj

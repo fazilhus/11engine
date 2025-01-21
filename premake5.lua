@@ -109,22 +109,21 @@ function use_library(libraryName, githubFolder, repoHead)
 	os.chdir(libFolder)
 
 	project(libraryName)
-	kind("StaticLib")
-	location("./")
-	targetdir("../bin/%{cfg.buildcfg}")
+		kind("StaticLib")
+		location("./")		
 
-	filter("action:vs*")
-	buildoptions({ "/experimental:c11atomics" })
+		filter("action:vs*")
+			buildoptions({ "/experimental:c11atomics" })
 
-	vpaths({
-		["Header Files/*"] = { "include/**.h", "include/**.hpp", "**.h", "**.hpp" },
-		["Source Files/*"] = { "src/**.cpp", "src/**.c", "**.cpp", "**.c" },
-	})
-	files({ "include/**.hpp", "include/**.h", "src/**.hpp", "src/**.h", "src/**.cpp", "src/**.c" })
+			vpaths({
+				["Header Files/*"] = { "include/**.h", "include/**.hpp", "**.h", "**.hpp" },
+				["Source Files/*"] = { "src/**.cpp", "src/**.c", "**.cpp", "**.c" },
+			})
+			files({ "include/**.hpp", "include/**.h", "src/**.hpp", "src/**.h", "src/**.cpp", "src/**.c" })
 
-	includedirs({ "./" })
-	includedirs({ "./src" })
-	includedirs({ "./include" })
+			includedirs({ "./" })
+			includedirs({ "./src" })
+			includedirs({ "./include" })
 
 	os.chdir(baseName)
 end
@@ -141,50 +140,54 @@ if string.lower(workspaceName) == "raylib" then
 	os.exit()
 end
 
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
 workspace(workspaceName)
-configurations({ "Debug", "Release" })
-platforms({ "x64", "x86", "ARM64" })
+	configurations({ "Debug", "Release" })
+	platforms({ "x64", "x86", "ARM64" })
+	targetdir ("%{wks.location}/bin/" .. outputdir .. "/")
+	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/")
 
-defaultplatform("x64")
+	defaultplatform("x64")
 
-filter("configurations:Debug")
-defines({ "DEBUG" })
-symbols("On")
+	filter("configurations:Debug")
+		defines({ "DEBUG" })
+		symbols("On")
 
-filter("configurations:Release")
-defines({ "NDEBUG" })
-optimize("On")
+	filter("configurations:Release")
+		defines({ "NDEBUG" })
+		optimize("On")
 
-filter({ "platforms:x64" })
-architecture("x86_64")
+	filter({ "platforms:x64" })
+		architecture("x86_64")
 
-filter({ "platforms:Arm64" })
-architecture("ARM64")
+	filter({ "platforms:Arm64" })
+		architecture("ARM64")
 
-filter({})
+	filter({})
 
-targetdir("bin/%{cfg.buildcfg}/")
+	targetdir("bin/%{cfg.buildcfg}/")
 
-if os.isdir("game") then
-	startproject(workspaceName)
-end
+	if os.isdir("game") then
+		startproject(workspaceName)
+	end
 
-cdialect("C17")
-cppdialect("C++23")
-check_raylib()
+	cdialect("C17")
+	cppdialect("C++23")
+	check_raylib()
 
-include("raylib_premake5.lua")
+	include("raylib_premake5.lua")
 
-if os.isdir("game") then
-	include("game")
-end
+	if os.isdir("game") then
+		include("game")
+	end
 
-folders = os.matchdirs("*")
-for _, folderName in ipairs(folders) do
-	if string.starts(folderName, "raylib") == false and string.starts(folderName, ".") == false then
-		if os.isfile(folderName .. "/premake5.lua") then
-			print(folderName)
-			include(folderName)
+	folders = os.matchdirs("*")
+	for _, folderName in ipairs(folders) do
+		if string.starts(folderName, "raylib") == false and string.starts(folderName, ".") == false then
+			if os.isfile(folderName .. "/premake5.lua") then
+				print(folderName)
+				include(folderName)
+			end
 		end
 	end
-end
