@@ -38,6 +38,22 @@ namespace core {
             }
             return *this;
         }
+
+        bool operator>(int value) const {
+            return m_value > value;
+        }
+
+        bool operator<(int value) const {
+            return m_value < value;
+        }
+
+        bool operator>=(int value) const {
+            return m_value >= value;
+        }
+
+        bool operator<=(int value) const {
+            return m_value <= value;
+        }
     };
 
 } // namespace core

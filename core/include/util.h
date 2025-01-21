@@ -9,6 +9,7 @@ namespace core {
         working,
         eating,
         drinking,
+        partying,
         num_states
     };
 
@@ -17,6 +18,7 @@ namespace core {
         work,
         restaurant,
         bar,
+        party,
         num_locs
     };
 

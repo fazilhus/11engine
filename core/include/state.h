@@ -15,6 +15,15 @@ namespace core {
         virtual void exit(human* e) = 0;
     };
 
+    class resting : public state {
+    public:
+        void enter(human* e) override;
+
+        void execute(human* e) override;
+
+        void exit(human* e) override;
+    };
+
     class working : public state {
     public:
         void enter(human* e) override;
@@ -24,7 +33,25 @@ namespace core {
         void exit(human* e) override;
     };
 
-    class resting : public state {
+    class eating : public state {
+    public:
+        void enter(human* e) override;
+
+        void execute(human* e) override;
+
+        void exit(human* e) override;
+    };
+
+    class drinking : public state {
+    public:
+        void enter(human* e) override;
+
+        void execute(human* e) override;
+
+        void exit(human* e) override;
+    };
+
+    class partying : public state {
     public:
         void enter(human* e) override;
 

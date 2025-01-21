@@ -20,6 +20,7 @@ namespace core {
             m_fsm_state = fsm_state::resting;
             m_location = loc::home;
             m_current_state = fsm::instance()->get_state(m_fsm_state);
+            m_money = stat(0, 0, 1000);
             m_cycles = 0;
     }
 
@@ -34,7 +35,9 @@ namespace core {
     }
 
     void human::change_state(fsm_state new_state) {
-        //assert(m_current_state && new_state);
+        if (m_fsm_state == new_state) {
+            return;
+        }
 
         m_current_state->exit(this);
         m_current_state = fsm::instance()->get_state(new_state);

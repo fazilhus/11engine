@@ -17,7 +17,7 @@ namespace core {
 		s_instance = this;
 		is_running = true;
 		timer = 0;
-		timer_max = 5;
+		timer_max = 3;
 	}
 
 	app::~app() {

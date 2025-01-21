@@ -17,6 +17,15 @@ namespace core {
             case fsm_state::working:
                 m_states[i] = std::make_shared<working>();
                 break;
+            case fsm_state::eating:
+                m_states[i] = std::make_shared<eating>();
+                break;
+            case fsm_state::drinking:
+                m_states[i] = std::make_shared<drinking>();
+                break;
+            case fsm_state::partying:
+                m_states[i] = std::make_shared<partying>();
+                break;
             }
         }
     }
