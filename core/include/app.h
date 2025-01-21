@@ -1,8 +1,17 @@
 #pragma once
 
+#include "entity.h"
+
 namespace core {
 
 	class app {
+	private:
+		static app* s_instance;
+
+		human* m_human;
+
+		float timer;
+
 	public:
 		app();
 		virtual ~app();
@@ -10,7 +19,10 @@ namespace core {
 		void run();
 
 	private:
-		static app* s_instance;
+		void init();
+		void deinit();
+		void update();
+		void render();
 	};
 
 } // namespace core
