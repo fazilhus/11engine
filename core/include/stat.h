@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace core {
 
     class stat {
@@ -15,10 +17,11 @@ namespace core {
         stat(int value, int min, int max)
             : m_value(value), m_min(min), m_max(max) {
         }
-        
+
         ~stat() = default;
 
         int value() const { return m_value; }
+        std::string str() const { return std::to_string(m_value); }
 
         stat& operator+=(int value) {
             m_value += value;

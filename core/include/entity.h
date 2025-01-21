@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "stat.h"
+#include "util.h"
 
 namespace core {
 
@@ -29,9 +32,12 @@ namespace core {
         stat m_thirst;
         stat m_fatigue;
         stat m_loneliness;
+        fsm_state m_fsm_state;
+        loc m_location;
+        int m_cycles;
 
     private:
-        state* m_current_state;
+        std::shared_ptr<state> m_current_state;
 
     public:
         human(int id);
@@ -39,7 +45,11 @@ namespace core {
 
         void update() override;
 
-        void change_state(state* new_state);
+        void change_state(fsm_state new_state);
+
+        bool is_dead() const {
+            return m_hunger.value() == 100 || m_thirst.value() == 100 || m_fatigue.value() == 100 || m_loneliness.value() == 100;
+        }
     };
 
 } // namespace core

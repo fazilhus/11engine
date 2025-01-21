@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "state.h"
+#include "fsm.h"
 
 namespace core {
 
@@ -16,26 +17,27 @@ namespace core {
 
     human::human(int id)
         : entity(id) {
-            m_current_state = new resting();
+            m_fsm_state = fsm_state::resting;
+            m_location = loc::home;
+            m_current_state = fsm::instance()->get_state(m_fsm_state);
+            m_cycles = 0;
     }
 
     human::~human() {
-        if (m_current_state) {
-            delete m_current_state;
-        }
     }
 
     void human::update() {
+        m_cycles++;
         if (m_current_state) {
             m_current_state->execute(this);
         }
     }
 
-    void human::change_state(state* new_state) {
-        assert(m_current_state && new_state);
+    void human::change_state(fsm_state new_state) {
+        //assert(m_current_state && new_state);
 
         m_current_state->exit(this);
-        m_current_state = new_state;
+        m_current_state = fsm::instance()->get_state(new_state);
         m_current_state->enter(this);
     }
 
