@@ -39,6 +39,9 @@ namespace core {
 		void render();
 
 		bool should_quit();
+
+		void draw_humans() const;
+		void draw_human(const human* h, int x, int y) const;
 	};
 
 } // namespace core

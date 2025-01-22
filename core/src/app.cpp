@@ -53,9 +53,9 @@ namespace core {
 		m_message_sender = new message_sender();
 
 		m_entity_manager->add_entity(std::make_unique<human>(0, "Bob"));
-		m_entity_manager->add_entity(std::make_unique<human>(0, "Alice"));
-		m_entity_manager->add_entity(std::make_unique<human>(0, "Clark"));
-		m_entity_manager->add_entity(std::make_unique<human>(0, "Diana"));
+		m_entity_manager->add_entity(std::make_unique<human>(1, "Alice"));
+		m_entity_manager->add_entity(std::make_unique<human>(2, "Clark"));
+		m_entity_manager->add_entity(std::make_unique<human>(3, "Diana"));
 
 		m_button = new ui::button("Pause", Vector2{ 1000, 10 }, 20);
 		m_slider = new ui::slider(1.0f / 60.0f, 2.0f, Vector2{ 540, 600 }, Vector2{ 200, 20 }, 10);
@@ -83,18 +83,9 @@ namespace core {
 		
 		if (timer >= m_slider->value()) {
 			timer = 0;
-			m_entity_manager->update();
 
-			// if (m_human->is_dead()) {
-			// 	std::cout << "Human is dead :(" << std::endl;
-			// 	std::cout << "Human lived for " << m_human->m_cycles << " cycles" << std::endl;
-			// 	std::cout << "Wealth: " << m_human->m_money.str() << std::endl;
-			// 	std::cout << "Hunger: " << m_human->m_hunger.str() << std::endl;
-			// 	std::cout << "Thirst: " << m_human->m_thirst.str() << std::endl;
-			// 	std::cout << "Fatigue: " << m_human->m_fatigue.str() << std::endl;
-			// 	std::cout << "Loneliness: " << m_human->m_loneliness.str() << std::endl;
-			// 	is_running = false;
-			// }
+			m_timer_manager->update();
+			m_entity_manager->update();
 		}
 	}
 
@@ -103,13 +94,8 @@ namespace core {
 		ClearBackground(DARKGRAY);
 
 		DrawText(("Tickrate: " + std::to_string(1.0f / m_slider->value())).c_str(), 10, 10, 20, WHITE);
-		// DrawText(("State: " + util::str(m_human->m_fsm_state)).c_str(), 10, 40, 20, WHITE);
-		// DrawText(("Location: " + util::str(m_human->m_location)).c_str(), 10, 70, 20, WHITE);
-		// DrawText(("Money: " + m_human->m_money.str()).c_str(), 10, 100, 20, WHITE);
-		// DrawText(("Hunger: " + m_human->m_hunger.str()).c_str(), 10, 130, 20, WHITE);
-		// DrawText(("Thirst: " + m_human->m_thirst.str()).c_str(), 10, 160, 20, WHITE);
-		// DrawText(("Fatigue: " + m_human->m_fatigue.str()).c_str(), 10, 190, 20, WHITE);
-		// DrawText(("Loneliness: " + m_human->m_loneliness.str()).c_str(), 10, 220, 20, WHITE);
+		
+		draw_humans();
 
 		m_button->draw();
 		m_slider->draw();
@@ -124,6 +110,37 @@ namespace core {
 
 	bool app::should_quit() {
 		return entity_manager::instance()->entities().empty();
+	}
+
+	void app::draw_humans() const {
+		int i = 0;
+		for (const auto& e : entity_manager::instance()->entities()) {
+			int x = 10;
+			int y = 40;
+
+			if (i == 1) y += 250;
+			if (i == 2) x += 400;
+			if (i == 3) {
+				x += 400; y += 250;
+			}
+
+			auto h = dynamic_cast<human*>(e.get());
+			if (!h) continue;
+
+			draw_human(h, x, y);
+
+			i++;
+		}
+	}
+
+	void app::draw_human(const human* h, int x, int y) const {
+		DrawText(("State: " + util::str(h->m_fsm_state)).c_str(), x, y, 20, WHITE);
+		DrawText(("Location: " + util::str(h->m_location)).c_str(), x, y + 30, 20, WHITE);
+		DrawText(("Money: " + h->m_money.str()).c_str(), x, y + 70, 20, WHITE);
+		DrawText(("Hunger: " + h->m_hunger.str()).c_str(), x, y + 100, 20, WHITE);
+		DrawText(("Thirst: " + h->m_thirst.str()).c_str(), x, y + 130, 20, WHITE);
+		DrawText(("Fatigue: " + h->m_fatigue.str()).c_str(), x, y + 160, 20, WHITE);
+		DrawText(("Loneliness: " + h->m_loneliness.str()).c_str(), x, y + 190, 20, WHITE);
 	}
 
 } // namespace core

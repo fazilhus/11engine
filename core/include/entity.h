@@ -82,7 +82,7 @@ namespace core {
         void change_state(fsm_state new_state);
 
         bool is_dead() const {
-            return m_cycles > 100 || m_hunger.is_max() || m_thirst.is_max() || m_fatigue.is_max() || m_loneliness.is_max();
+            return m_cycles >= 1000 || m_hunger.is_max() || m_thirst.is_max() || m_fatigue.is_max() || m_loneliness.is_max();
         }
 
         bool is_wealthy() const { return m_money.is_higher(); }

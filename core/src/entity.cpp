@@ -17,11 +17,12 @@ namespace core {
     }
 
     void entity::accept_invite(message_type type) {
-        std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
+        // std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
         m_inbox.messages().erase(type);
     }
 
     void entity::send_invite(message_type type, int sender_id) {
+        // std::cout << m_name << " sent invite to " << util::str(type) << std::endl;
         message_sender::instance()->send_to_everyone(type, sender_id);
     }
 
