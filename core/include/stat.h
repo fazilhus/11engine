@@ -8,14 +8,16 @@ namespace core {
     private:
         int m_value;
         int m_min;
+        int m_low;
+        int m_high;
         int m_max;
     
     public:
-        stat() : stat(0, 0, 100) {
+        stat() : stat(0, 0, 25, 75, 100) {
         }
 
-        stat(int value, int min, int max)
-            : m_value(value), m_min(min), m_max(max) {
+        stat(int value, int min, int low, int high, int max)
+            : m_value(value), m_min(min), m_low(low), m_high(high), m_max(max) {
         }
 
         ~stat() = default;
@@ -37,6 +39,26 @@ namespace core {
                 m_value = m_min;
             }
             return *this;
+        }
+
+        bool is_min() const {
+            return m_value == m_min;
+        }
+
+        bool is_lower() const {
+            return m_value < m_low;
+        }
+
+        bool is_normal() const {
+            return m_value >= m_low && m_value <= m_high;
+        }
+
+        bool is_higher() const {
+            return m_value > m_high;
+        }
+
+        bool is_max() const {
+            return m_value == m_max;
         }
 
         bool operator>(int value) const {

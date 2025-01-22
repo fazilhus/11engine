@@ -20,7 +20,11 @@ namespace core {
             m_fsm_state = fsm_state::resting;
             m_location = loc::home;
             m_current_state = fsm::instance()->get_state(m_fsm_state);
-            m_money = stat(0, 0, 1000);
+            m_money = stat(0, 0, 100, 200, 1000);
+            m_hunger = stat(0, 0, 35, 65, 100);
+            m_thirst = stat(0, 0, 35, 65, 100);
+            m_fatigue = stat(0, 0, 40, 60, 100);
+            m_loneliness = stat(0, 0, 25, 75, 100);
             m_cycles = 0;
     }
 
