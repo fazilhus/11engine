@@ -14,8 +14,11 @@ namespace core {
             case fsm_state::resting:
                 m_states[i] = std::make_shared<resting>();
                 break;
-            case fsm_state::working:
-                m_states[i] = std::make_shared<working>();
+            case fsm_state::working_at_construction:
+                m_states[i] = std::make_shared<working_at_construction>();
+                break;
+            case fsm_state::working_at_office:
+                m_states[i] = std::make_shared<working_at_office>();
                 break;
             case fsm_state::eating:
                 m_states[i] = std::make_shared<eating>();

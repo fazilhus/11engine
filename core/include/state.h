@@ -24,7 +24,16 @@ namespace core {
         void exit(human* e) override;
     };
 
-    class working : public state {
+    class working_at_construction : public state {
+    public:
+        void enter(human* e) override;
+
+        void execute(human* e) override;
+
+        void exit(human* e) override;
+    };
+
+    class working_at_office : public state {
     public:
         void enter(human* e) override;
 

@@ -21,7 +21,7 @@ namespace core {
 		is_paused = false;
 
 		timer = 0;
-		timer_max = 3;
+		timer_max = 0.01;
 	}
 
 	app::~app() {
@@ -47,7 +47,6 @@ namespace core {
 	void app::init() {
 		m_fsm = new fsm();
 		m_human = new human(0);
-		m_human->change_state(fsm_state::working);
 
 		m_button = new ui::button("Pause", Vector2{ 1000, 10 }, 20);
 	}
@@ -77,6 +76,11 @@ namespace core {
 			if (m_human->is_dead()) {
 				std::cout << "Human is dead :(" << std::endl;
 				std::cout << "Human lived for " << m_human->m_cycles << " cycles" << std::endl;
+				std::cout << "Wealth: " << m_human->m_money.str() << std::endl;
+				std::cout << "Hunger: " << m_human->m_hunger.str() << std::endl;
+				std::cout << "Thirst: " << m_human->m_thirst.str() << std::endl;
+				std::cout << "Fatigue: " << m_human->m_fatigue.str() << std::endl;
+				std::cout << "Loneliness: " << m_human->m_loneliness.str() << std::endl;
 				is_running = false;
 			}
 		}

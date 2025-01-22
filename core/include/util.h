@@ -6,7 +6,8 @@ namespace core {
 
     enum class fsm_state {
         resting,
-        working,
+        working_at_construction,
+        working_at_office,
         eating,
         drinking,
         partying,
@@ -15,7 +16,8 @@ namespace core {
 
     enum class loc {
         home,
-        work,
+        construction,
+        office,
         restaurant,
         bar,
         party,

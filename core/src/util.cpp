@@ -6,8 +6,10 @@ namespace core::util {
         switch (state) {
         case fsm_state::resting:
             return "Resting";
-        case fsm_state::working:
-            return "Working";
+        case fsm_state::working_at_construction:
+            return "Working at Construction";
+        case fsm_state::working_at_office:
+            return "Working at Office";
         case fsm_state::eating:
             return "Eating";
         case fsm_state::drinking:
@@ -23,8 +25,10 @@ namespace core::util {
         switch (location) {
         case loc::home:
             return "Home";
-        case loc::work:
-            return "Work";
+        case loc::construction:
+            return "Construction";
+        case loc::office:
+            return "Office";
         case loc::restaurant:
             return "Restaurant";
         case loc::bar:
