@@ -2,6 +2,7 @@
 
 #include "entity.h"
 #include "fsm.h"
+#include "timer.h"
 #include "message.h"
 
 #include "button.h"
@@ -16,6 +17,7 @@ namespace core {
 		bool is_paused;
 
 		fsm* m_fsm;
+		timer_manager* m_timer_manager;
 		entity_manager* m_entity_manager;
 		message_sender* m_message_sender;
 
