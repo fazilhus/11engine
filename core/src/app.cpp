@@ -4,6 +4,7 @@
 #include <string>
 
 #include "fsm.h"
+#include "timer.h"
 #include "state.h"
 #include "util.h"
 
@@ -18,7 +19,7 @@ namespace core {
 		s_instance = this;
 
 		is_running = true;
-		is_paused = false;
+		is_paused = true;
 
 		timer = 0;
 		timer_max = 0.01;
@@ -49,6 +50,7 @@ namespace core {
 		m_human = new human(0);
 
 		m_button = new ui::button("Pause", Vector2{ 1000, 10 }, 20);
+		m_slider = new ui::slider(1.0f / 60.0f, 2.0f, Vector2{ 540, 600 }, Vector2{ 200, 20 }, 10);
 	}
 
 	void app::deinit() {
@@ -60,6 +62,7 @@ namespace core {
 
 	void app::update_ui() {
 		m_button->update();
+		m_slider->update();
 
 		if (m_button->is_pressed()) {
 			is_paused = !is_paused;
@@ -69,7 +72,7 @@ namespace core {
 	void app::update() {
 		timer += GetFrameTime();
 		
-		if (timer >= timer_max) {
+		if (timer >= m_slider->value()) {
 			timer = 0;
 			m_human->update();
 
@@ -90,15 +93,17 @@ namespace core {
 		BeginDrawing();
 		ClearBackground(DARKGRAY);
 
-		DrawText(("State: " + util::str(m_human->m_fsm_state)).c_str(), 10, 10, 20, WHITE);
-		DrawText(("Location: " + util::str(m_human->m_location)).c_str(), 10, 40, 20, WHITE);
-		DrawText(("Money: " + m_human->m_money.str()).c_str(), 10, 70, 20, WHITE);
-		DrawText(("Hunger: " + m_human->m_hunger.str()).c_str(), 10, 100, 20, WHITE);
-		DrawText(("Thirst: " + m_human->m_thirst.str()).c_str(), 10, 130, 20, WHITE);
-		DrawText(("Fatigue: " + m_human->m_fatigue.str()).c_str(), 10, 160, 20, WHITE);
-		DrawText(("Loneliness: " + m_human->m_loneliness.str()).c_str(), 10, 190, 20, WHITE);
+		DrawText(("Tickrate: " + std::to_string(1.0f / m_slider->value())).c_str(), 10, 10, 20, WHITE);
+		DrawText(("State: " + util::str(m_human->m_fsm_state)).c_str(), 10, 40, 20, WHITE);
+		DrawText(("Location: " + util::str(m_human->m_location)).c_str(), 10, 70, 20, WHITE);
+		DrawText(("Money: " + m_human->m_money.str()).c_str(), 10, 100, 20, WHITE);
+		DrawText(("Hunger: " + m_human->m_hunger.str()).c_str(), 10, 130, 20, WHITE);
+		DrawText(("Thirst: " + m_human->m_thirst.str()).c_str(), 10, 160, 20, WHITE);
+		DrawText(("Fatigue: " + m_human->m_fatigue.str()).c_str(), 10, 190, 20, WHITE);
+		DrawText(("Loneliness: " + m_human->m_loneliness.str()).c_str(), 10, 220, 20, WHITE);
 
 		m_button->draw();
+		m_slider->draw();
 
 		if (is_paused) {
 			Vector2 label_size = MeasureTextEx(GetFontDefault(), "PAUSED", 30, 1);

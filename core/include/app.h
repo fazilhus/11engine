@@ -2,6 +2,7 @@
 
 #include "entity.h"
 #include "button.h"
+#include "slider.h"
 
 namespace core {
 
@@ -18,6 +19,7 @@ namespace core {
 		human* m_human;
 
 		ui::button* m_button;
+		ui::slider* m_slider;
 
 		float timer;
 		float timer_max;
