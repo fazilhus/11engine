@@ -49,6 +49,7 @@ namespace core {
 		util::init_random();
 
 		m_fsm = new fsm();
+		m_timer_manager = new timer_manager();
 		m_entity_manager = new entity_manager();
 		m_message_sender = new message_sender();
 
@@ -63,6 +64,7 @@ namespace core {
 
 	void app::deinit() {
 		delete m_fsm;
+		delete m_timer_manager;
 		delete m_entity_manager;
 		delete m_message_sender;
 
