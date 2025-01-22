@@ -30,6 +30,9 @@ namespace core {
         std::string str(fsm_state state);
         std::string str(loc location);
 
+        void init_random();
+        int random_int(int min, int max);
+
     }
 
 } // namespace core

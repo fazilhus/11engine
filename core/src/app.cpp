@@ -22,7 +22,7 @@ namespace core {
 		is_paused = true;
 
 		timer = 0;
-		timer_max = 0.01;
+		timer_max = 0.01f;
 	}
 
 	app::~app() {
@@ -32,7 +32,7 @@ namespace core {
 	void app::run() {
 		init();
 
-		while (!WindowShouldClose() && is_running) {
+		while (!WindowShouldClose() && !should_quit()) {
 			update_ui();
 
 			if (!is_paused) {
@@ -46,8 +46,15 @@ namespace core {
 	}
 
 	void app::init() {
+		util::init_random();
+
 		m_fsm = new fsm();
-		m_human = new human(0);
+		m_entity_manager = new entity_manager();
+
+		m_entity_manager->add_entity(std::make_unique<human>(0, "Bob"));
+		m_entity_manager->add_entity(std::make_unique<human>(0, "Alice"));
+		m_entity_manager->add_entity(std::make_unique<human>(0, "Clark"));
+		m_entity_manager->add_entity(std::make_unique<human>(0, "Diana"));
 
 		m_button = new ui::button("Pause", Vector2{ 1000, 10 }, 20);
 		m_slider = new ui::slider(1.0f / 60.0f, 2.0f, Vector2{ 540, 600 }, Vector2{ 200, 20 }, 10);
@@ -55,7 +62,7 @@ namespace core {
 
 	void app::deinit() {
 		delete m_fsm;
-		delete m_human;
+		delete m_entity_manager;
 
 		delete m_button;
 	}
@@ -74,18 +81,18 @@ namespace core {
 		
 		if (timer >= m_slider->value()) {
 			timer = 0;
-			m_human->update();
+			m_entity_manager->update();
 
-			if (m_human->is_dead()) {
-				std::cout << "Human is dead :(" << std::endl;
-				std::cout << "Human lived for " << m_human->m_cycles << " cycles" << std::endl;
-				std::cout << "Wealth: " << m_human->m_money.str() << std::endl;
-				std::cout << "Hunger: " << m_human->m_hunger.str() << std::endl;
-				std::cout << "Thirst: " << m_human->m_thirst.str() << std::endl;
-				std::cout << "Fatigue: " << m_human->m_fatigue.str() << std::endl;
-				std::cout << "Loneliness: " << m_human->m_loneliness.str() << std::endl;
-				is_running = false;
-			}
+			// if (m_human->is_dead()) {
+			// 	std::cout << "Human is dead :(" << std::endl;
+			// 	std::cout << "Human lived for " << m_human->m_cycles << " cycles" << std::endl;
+			// 	std::cout << "Wealth: " << m_human->m_money.str() << std::endl;
+			// 	std::cout << "Hunger: " << m_human->m_hunger.str() << std::endl;
+			// 	std::cout << "Thirst: " << m_human->m_thirst.str() << std::endl;
+			// 	std::cout << "Fatigue: " << m_human->m_fatigue.str() << std::endl;
+			// 	std::cout << "Loneliness: " << m_human->m_loneliness.str() << std::endl;
+			// 	is_running = false;
+			// }
 		}
 	}
 
@@ -94,13 +101,13 @@ namespace core {
 		ClearBackground(DARKGRAY);
 
 		DrawText(("Tickrate: " + std::to_string(1.0f / m_slider->value())).c_str(), 10, 10, 20, WHITE);
-		DrawText(("State: " + util::str(m_human->m_fsm_state)).c_str(), 10, 40, 20, WHITE);
-		DrawText(("Location: " + util::str(m_human->m_location)).c_str(), 10, 70, 20, WHITE);
-		DrawText(("Money: " + m_human->m_money.str()).c_str(), 10, 100, 20, WHITE);
-		DrawText(("Hunger: " + m_human->m_hunger.str()).c_str(), 10, 130, 20, WHITE);
-		DrawText(("Thirst: " + m_human->m_thirst.str()).c_str(), 10, 160, 20, WHITE);
-		DrawText(("Fatigue: " + m_human->m_fatigue.str()).c_str(), 10, 190, 20, WHITE);
-		DrawText(("Loneliness: " + m_human->m_loneliness.str()).c_str(), 10, 220, 20, WHITE);
+		// DrawText(("State: " + util::str(m_human->m_fsm_state)).c_str(), 10, 40, 20, WHITE);
+		// DrawText(("Location: " + util::str(m_human->m_location)).c_str(), 10, 70, 20, WHITE);
+		// DrawText(("Money: " + m_human->m_money.str()).c_str(), 10, 100, 20, WHITE);
+		// DrawText(("Hunger: " + m_human->m_hunger.str()).c_str(), 10, 130, 20, WHITE);
+		// DrawText(("Thirst: " + m_human->m_thirst.str()).c_str(), 10, 160, 20, WHITE);
+		// DrawText(("Fatigue: " + m_human->m_fatigue.str()).c_str(), 10, 190, 20, WHITE);
+		// DrawText(("Loneliness: " + m_human->m_loneliness.str()).c_str(), 10, 220, 20, WHITE);
 
 		m_button->draw();
 		m_slider->draw();
@@ -111,6 +118,10 @@ namespace core {
 		}
 
 		EndDrawing();
+	}
+
+	bool app::should_quit() {
+		return entity_manager::instance()->entities().empty();
 	}
 
 } // namespace core

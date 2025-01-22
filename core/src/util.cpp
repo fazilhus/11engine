@@ -1,5 +1,7 @@
 #include "util.h"
 
+#include <ctime>
+
 namespace core::util {
 
     std::string str(fsm_state state) {
@@ -40,4 +42,12 @@ namespace core::util {
         }
     }
 
-} // namespace core
+    void init_random() {
+        srand(static_cast<unsigned int>(time(nullptr)));
+    }
+
+    int random_int(int min, int max) {
+        return min + rand() % (max - min + 1);
+    }
+
+} // namespace core::util

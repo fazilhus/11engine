@@ -1,12 +1,12 @@
 #pragma once
 
 #include "entity.h"
+#include "fsm.h"
+
 #include "button.h"
 #include "slider.h"
 
 namespace core {
-
-	class fsm;
 
 	class app {
 	private:
@@ -15,8 +15,7 @@ namespace core {
 		bool is_paused;
 
 		fsm* m_fsm;
-
-		human* m_human;
+		entity_manager* m_entity_manager;
 
 		ui::button* m_button;
 		ui::slider* m_slider;
@@ -36,6 +35,8 @@ namespace core {
 		void update_ui();
 		void update();
 		void render();
+
+		bool should_quit();
 	};
 
 } // namespace core
