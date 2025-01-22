@@ -15,7 +15,7 @@ namespace core::ui {
         //m_knob_pos = Vector2{ m_bar_pos.x + m_bar_size.x * m_knob_val, bar_pos.y };
         m_knob_pos.x = m_bar_pos.x + m_bar_size.x * m_knob_val;
         m_knob_pos.y = m_bar_pos.y + m_bar_size.y / 2;
-        DrawCircleV(m_knob_pos, m_knob_radius, DARKGRAY);
+        DrawCircleV(m_knob_pos, m_knob_radius, GRAY);
     }
 
     void slider::update() {

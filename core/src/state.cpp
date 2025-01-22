@@ -58,7 +58,7 @@ namespace core {
 
     void working_at_construction::execute(human* e) {
         std::cout << "Working..." << std::endl;
-        e->m_money += 20;
+        e->m_money += 17;
         e->m_hunger += 10;
         e->m_thirst += 5;
         e->m_fatigue += 20;
@@ -90,7 +90,7 @@ namespace core {
 
     void working_at_office::execute(human* e) {
         std::cout << "Working..." << std::endl;
-        e->m_money += 15;
+        e->m_money += 12;
         e->m_hunger += 5;
         e->m_thirst += 5;
         e->m_fatigue += 10;
