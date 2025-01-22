@@ -29,6 +29,9 @@ namespace core {
 
         const std::string& name() const { return m_name; }
         inbox& inbox() { return m_inbox; }
+
+        void accept_invite(message_type type);
+        void send_invite(message_type type, int sender_id);
     };
 
     class entity_manager {
@@ -79,7 +82,7 @@ namespace core {
         void change_state(fsm_state new_state);
 
         bool is_dead() const {
-            return m_cycles > 1000 || m_hunger.is_max() || m_thirst.is_max() || m_fatigue.is_max() || m_loneliness.is_max();
+            return m_cycles > 100 || m_hunger.is_max() || m_thirst.is_max() || m_fatigue.is_max() || m_loneliness.is_max();
         }
 
         bool is_wealthy() const { return m_money.is_higher(); }

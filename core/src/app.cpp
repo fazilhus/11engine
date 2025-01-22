@@ -50,6 +50,7 @@ namespace core {
 
 		m_fsm = new fsm();
 		m_entity_manager = new entity_manager();
+		m_message_sender = new message_sender();
 
 		m_entity_manager->add_entity(std::make_unique<human>(0, "Bob"));
 		m_entity_manager->add_entity(std::make_unique<human>(0, "Alice"));
@@ -63,6 +64,7 @@ namespace core {
 	void app::deinit() {
 		delete m_fsm;
 		delete m_entity_manager;
+		delete m_message_sender;
 
 		delete m_button;
 	}

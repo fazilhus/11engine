@@ -24,11 +24,19 @@ namespace core {
         num_locs
     };
 
+    enum class message_type {
+        go_eating,
+        go_drinking,
+        go_partying,
+        num_types
+    };
+
 
     namespace util {
 
         std::string str(fsm_state state);
         std::string str(loc location);
+        std::string str(message_type type);
 
         void init_random();
         int random_int(int min, int max);

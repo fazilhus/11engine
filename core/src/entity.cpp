@@ -4,15 +4,25 @@
 
 #include "state.h"
 #include "fsm.h"
+#include "message.h"
+#include "util.h"
 
 namespace core {
 
-    entity::entity(int id)
-        : m_id(id) {
-        set_id(id);
+    entity::entity(int id, const std::string& name)
+        : m_id(id), m_name(name) {
     }
 
     entity::~entity() {
+    }
+
+    void entity::accept_invite(message_type type) {
+        std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
+        m_inbox.messages().erase(type);
+    }
+
+    void entity::send_invite(message_type type, int sender_id) {
+        message_sender::instance()->send_to_everyone(type, sender_id);
     }
 
     entity_manager* entity_manager::s_instance = nullptr;
@@ -88,6 +98,7 @@ namespace core {
         if (m_current_state) {
             m_current_state->execute(this);
         }
+        m_inbox.clear_messages();
     }
 
     void human::change_state(fsm_state new_state) {

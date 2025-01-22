@@ -42,6 +42,19 @@ namespace core::util {
         }
     }
 
+    std::string str(message_type type) {
+        switch (type) {
+        case message_type::go_eating:
+            return "Go Eating";
+        case message_type::go_drinking:
+            return "Go Drinking";
+        case message_type::go_partying:
+            return "Go Partying";
+        default:
+            return "Unknown";
+        }
+    }
+
     void init_random() {
         srand(static_cast<unsigned int>(time(nullptr)));
     }

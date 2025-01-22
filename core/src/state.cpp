@@ -1,6 +1,7 @@
 #include "state.h"
 
 #include "entity.h"
+#include "message.h"
 
 namespace core {
 
@@ -32,12 +33,30 @@ namespace core {
         if (!e->is_not_tired()) return;
 
         if (e->is_hungry() && e->m_money >= 20) {
+            e->send_invite(message_type::go_eating, e->id());
             e->change_state(fsm_state::eating);
         }
         else if (e->is_thirsty() && e->m_money >= 15) {
+            e->send_invite(message_type::go_drinking, e->id());
             e->change_state(fsm_state::drinking);
         }
         else if (e->is_lonely() && e->m_money >= 30) {
+            e->send_invite(message_type::go_partying, e->id());
+            e->change_state(fsm_state::partying);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_eating)
+            && !e->is_not_hungry() && e->m_money >= 20) {
+            e->accept_invite(message_type::go_eating);
+            e->change_state(fsm_state::eating);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
+            && !e->is_not_thirsty() && e->m_money >= 15) {
+            e->accept_invite(message_type::go_drinking);
+            e->change_state(fsm_state::drinking);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_partying)
+            && !e->is_not_lonely() && e->m_money >= 30) {
+            e->accept_invite(message_type::go_partying);
             e->change_state(fsm_state::partying);
         }
         else {
@@ -65,15 +84,33 @@ namespace core {
         e->m_loneliness += 5;
 
         if (e->is_hungry() && e->m_money >= 20) {
+            e->send_invite(message_type::go_eating, e->id());
             e->change_state(fsm_state::eating);
         }
         else if (e->is_thirsty() && e->m_money >= 15) {
+            e->send_invite(message_type::go_drinking, e->id());
             e->change_state(fsm_state::drinking);
         }
         else if (e->is_tired()) {
             e->change_state(fsm_state::resting);
         }
         else if (e->is_lonely() && e->m_money >= 30) {
+            e->send_invite(message_type::go_partying, e->id());
+            e->change_state(fsm_state::partying);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_eating)
+            && !e->is_not_hungry() && e->m_money >= 20) {
+            e->accept_invite(message_type::go_eating);
+            e->change_state(fsm_state::eating);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
+            && !e->is_not_thirsty() && e->m_money >= 15) {
+            e->accept_invite(message_type::go_drinking);
+            e->change_state(fsm_state::drinking);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_partying)
+            && !e->is_not_lonely() && e->m_money >= 30) {
+            e->accept_invite(message_type::go_partying);
             e->change_state(fsm_state::partying);
         }
     }
@@ -97,15 +134,33 @@ namespace core {
         e->m_loneliness -= 5;
 
         if (e->is_hungry() && e->m_money >= 20) {
+            e->send_invite(message_type::go_eating, e->id());
             e->change_state(fsm_state::eating);
         }
         else if (e->is_thirsty() && e->m_money >= 15) {
+            e->send_invite(message_type::go_drinking, e->id());
             e->change_state(fsm_state::drinking);
         }
         else if (e->is_tired()) {
             e->change_state(fsm_state::resting);
         }
         else if (e->is_lonely() && e->m_money >= 30) {
+            e->send_invite(message_type::go_partying, e->id());
+            e->change_state(fsm_state::partying);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_eating)
+            && !e->is_not_hungry() && e->m_money >= 20) {
+            e->accept_invite(message_type::go_eating);
+            e->change_state(fsm_state::eating);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
+            && !e->is_not_thirsty() && e->m_money >= 15) {
+            e->accept_invite(message_type::go_drinking);
+            e->change_state(fsm_state::drinking);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_partying)
+            && !e->is_not_lonely() && e->m_money >= 30) {
+            e->accept_invite(message_type::go_partying);
             e->change_state(fsm_state::partying);
         }
     }
@@ -131,12 +186,24 @@ namespace core {
         if (!e->is_not_hungry() && e->m_money >= 20) return;
 
         if (e->is_thirsty() && e->m_money >= 15) {
+            e->send_invite(message_type::go_drinking, e->id());
             e->change_state(fsm_state::drinking);
         }
         else if (e->is_tired()) {
             e->change_state(fsm_state::resting);
         }
         else if (e->is_lonely() && e->m_money >= 30) {
+            e->send_invite(message_type::go_partying, e->id());
+            e->change_state(fsm_state::partying);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
+            && !e->is_not_thirsty() && e->m_money >= 15) {
+            e->accept_invite(message_type::go_drinking);
+            e->change_state(fsm_state::drinking);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_partying)
+            && !e->is_not_lonely() && e->m_money >= 30) {
+            e->accept_invite(message_type::go_partying);
             e->change_state(fsm_state::partying);
         }
         else {
@@ -166,12 +233,24 @@ namespace core {
         if (!e->is_not_thirsty() && e->m_money >= 15) return;
 
         if (e->is_hungry() && e->m_money >= 20) {
+            e->send_invite(message_type::go_eating, e->id());
             e->change_state(fsm_state::eating);
         }
         else if (e->is_tired()) {
             e->change_state(fsm_state::resting);
         }
         else if (e->is_lonely() && e->m_money >= 30) {
+            e->send_invite(message_type::go_partying, e->id());
+            e->change_state(fsm_state::partying);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_eating)
+            && !e->is_not_hungry() && e->m_money >= 20) {
+            e->accept_invite(message_type::go_eating);
+            e->change_state(fsm_state::eating);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_partying)
+            && !e->is_not_lonely() && e->m_money >= 30) {
+            e->accept_invite(message_type::go_partying);
             e->change_state(fsm_state::partying);
         }
         else {
@@ -201,13 +280,25 @@ namespace core {
         if (!e->is_not_lonely() && e->m_money >= 30) return;
 
         if (e->is_hungry() && e->m_money >= 20) {
+            e->send_invite(message_type::go_eating, e->id());
             e->change_state(fsm_state::eating);
         }
         else if (e->is_thirsty() && e->m_money >= 15) {
+            e->send_invite(message_type::go_drinking, e->id());
             e->change_state(fsm_state::drinking);
         }
         else if (e->is_tired()) {
             e->change_state(fsm_state::resting);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_eating)
+            && !e->is_not_hungry() && e->m_money >= 20) {
+            e->accept_invite(message_type::go_eating);
+            e->change_state(fsm_state::eating);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
+            && !e->is_not_thirsty() && e->m_money >= 15) {
+            e->accept_invite(message_type::go_drinking);
+            e->change_state(fsm_state::drinking);
         }
         else {
             auto new_state = decide_where_to_work(e);

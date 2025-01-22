@@ -2,6 +2,7 @@
 
 #include "entity.h"
 #include "fsm.h"
+#include "message.h"
 
 #include "button.h"
 #include "slider.h"
@@ -16,6 +17,7 @@ namespace core {
 
 		fsm* m_fsm;
 		entity_manager* m_entity_manager;
+		message_sender* m_message_sender;
 
 		ui::button* m_button;
 		ui::slider* m_slider;
