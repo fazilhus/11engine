@@ -86,15 +86,15 @@ namespace core {
 
     human::human(int id, const std::string& name)
         : entity(id, name) {
-            m_fsm_state = fsm_state::resting;
-            m_location = loc::home;
+            m_fsm_state = state_type::resting;
+            m_location = loc_type::home;
             m_current_state = fsm::instance()->get_state(m_fsm_state);
-            m_next_state = fsm_state::none;
-            m_money = stat(util::random_int(25, 60), 0, 100, 200, 1000);
-            m_hunger = stat(util::random_int(10, 35), 0, 35, 65, 100);
-            m_thirst = stat(util::random_int(10, 35), 0, 35, 65, 100);
-            m_fatigue = stat(util::random_int(10, 35), 0, 20, 60, 100);
-            m_loneliness = stat(util::random_int(10, 35), 0, 25, 75, 100);
+            m_next_state = state_type::none;
+            m_money = need(util::random_int(25, 60), 0, 100, 200, 1000);
+            m_hunger = need(util::random_int(10, 35), 0, 35, 65, 100);
+            m_thirst = need(util::random_int(10, 35), 0, 35, 65, 100);
+            m_fatigue = need(util::random_int(10, 35), 0, 20, 60, 100);
+            m_loneliness = need(util::random_int(10, 35), 0, 25, 75, 100);
             m_chance = util::random_float(0.33f, 0.66f);
             m_cycles = 0;
     }
@@ -119,7 +119,7 @@ namespace core {
     }
 
     void human::change_state() {
-        if (m_fsm_state == m_next_state && m_next_state != fsm_state::none) {
+        if (m_fsm_state == m_next_state && m_next_state != state_type::none) {
             return;
         }
 
@@ -127,15 +127,15 @@ namespace core {
         m_current_state = fsm::instance()->get_state(m_next_state);
         m_current_state->enter(this);
 
-        m_next_state = fsm_state::none;
+        m_next_state = state_type::none;
     }
 
-    fsm_state human::decide_where_to_work() const {
+    state_type human::decide_where_to_work() const {
         if (is_not_tired()) {
-            return fsm_state::working_at_construction;
+            return state_type::working_at_construction;
         }
         else {
-            return fsm_state::working_at_office;
+            return state_type::working_at_office;
         }
     }
 

@@ -10,31 +10,34 @@ namespace core {
     fsm::fsm() {
         s_instance = this;
 
-        for (int i = 0; i < static_cast<int>(fsm_state::num_states); ++i) {
-            switch (static_cast<fsm_state>(i)) {
-            case fsm_state::resting:
+        for (int i = 0; i < static_cast<int>(state_type::num_states); ++i) {
+            switch (static_cast<state_type>(i)) {
+            case state_type::resting:
                 m_states[i] = std::make_shared<resting>();
                 break;
-            case fsm_state::working_at_construction:
+            case state_type::working_at_construction:
                 m_states[i] = std::make_shared<working_at_construction>();
                 break;
-            case fsm_state::working_at_office:
+            case state_type::working_at_office:
                 m_states[i] = std::make_shared<working_at_office>();
                 break;
-            case fsm_state::eating:
+            case state_type::eating:
                 m_states[i] = std::make_shared<eating>();
                 break;
-            case fsm_state::drinking:
+            case state_type::drinking:
                 m_states[i] = std::make_shared<drinking>();
                 break;
-            case fsm_state::partying:
+            case state_type::partying:
                 m_states[i] = std::make_shared<partying>();
+                break;
+            case state_type::shopping:
+                m_states[i] = std::make_shared<shopping>();
                 break;
             }
         }
     }
 
-    const std::shared_ptr<state<human>>& fsm::get_state(fsm_state state) {
+    const std::shared_ptr<state<human>>& fsm::get_state(state_type state) {
         return m_states[static_cast<int>(state)];
     }
 

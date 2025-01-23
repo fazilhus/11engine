@@ -12,19 +12,26 @@ namespace core {
 
     class human;
 
+    /// @brief Class representing a finite state machine (FSM).
     class fsm {
     private:
-        static fsm* s_instance;
+        static fsm* s_instance; ///< Singleton instance
 
-        std::array<std::shared_ptr<state<human>>, static_cast<int>(fsm_state::num_states)> m_states;
+        std::array<std::shared_ptr<state<human>>, static_cast<int>(state_type::num_states)> m_states; ///< Instances of all posible states
 
     public:
+        /// @brief Constructor for the FSM class.
         fsm();
         ~fsm() = default;
 
+        /// @brief Get the singleton instance of the FSM.
+        /// @return Pointer to the singleton instance of the FSM.
         static fsm* instance() { return s_instance; }
 
-        const std::shared_ptr<state<human>>& get_state(fsm_state state);
+        /// @brief 'getter' for state instances
+        /// @param state controls instance of which state is going to be accessed
+        /// @return shared_ptr to the state instance
+        const std::shared_ptr<state<human>>& get_state(state_type state);
     };
 
 } // namespace core

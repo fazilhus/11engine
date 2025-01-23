@@ -4,39 +4,43 @@
 
 namespace core::util {
 
-    std::string str(fsm_state state) {
+    std::string str(state_type state) {
         switch (state) {
-        case fsm_state::resting:
+        case state_type::resting:
             return "Resting";
-        case fsm_state::working_at_construction:
+        case state_type::working_at_construction:
             return "Working at Construction";
-        case fsm_state::working_at_office:
+        case state_type::working_at_office:
             return "Working at Office";
-        case fsm_state::eating:
+        case state_type::eating:
             return "Eating";
-        case fsm_state::drinking:
+        case state_type::drinking:
             return "Drinking";
-        case fsm_state::partying:
+        case state_type::partying:
             return "Partying";
+        case state_type::shopping:
+            return "Shopping";
         default:
             return "Unknown";
         }
     }
 
-    std::string str(loc location) {
+    std::string str(loc_type location) {
         switch (location) {
-        case loc::home:
+        case loc_type::home:
             return "Home";
-        case loc::construction:
+        case loc_type::construction:
             return "Construction";
-        case loc::office:
+        case loc_type::office:
             return "Office";
-        case loc::restaurant:
+        case loc_type::restaurant:
             return "Restaurant";
-        case loc::bar:
+        case loc_type::bar:
             return "Bar";
-        case loc::party:
+        case loc_type::party:
             return "Party";
+        case loc_type::mall:
+            return "Mall";
         default:
             return "Unknown";
         }
@@ -50,6 +54,8 @@ namespace core::util {
             return "Go Drinking";
         case message_type::go_partying:
             return "Go Partying";
+        case message_type::go_shopping:
+            return "Go Shopping";
         default:
             return "Unknown";
         }
