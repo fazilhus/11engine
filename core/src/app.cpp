@@ -121,10 +121,10 @@ namespace core {
 			int x = 10;
 			int y = 40;
 
-			if (i == 1) y += 250;
+			if (i == 1) y += 280;
 			if (i == 2) x += 400;
 			if (i == 3) {
-				x += 400; y += 250;
+				x += 400; y += 280;
 			}
 
 			auto h = dynamic_cast<human*>(e.get());
@@ -137,13 +137,14 @@ namespace core {
 	}
 
 	void app::draw_human(const human* h, int x, int y) const {
-		DrawText(("State: " + util::str(h->m_fsm_state)).c_str(), x, y, 20, WHITE);
-		DrawText(("Location: " + util::str(h->m_location)).c_str(), x, y + 30, 20, WHITE);
-		DrawText(("Money: " + h->m_money.str()).c_str(), x, y + 70, 20, WHITE);
-		DrawText(("Hunger: " + h->m_hunger.str()).c_str(), x, y + 100, 20, WHITE);
-		DrawText(("Thirst: " + h->m_thirst.str()).c_str(), x, y + 130, 20, WHITE);
-		DrawText(("Fatigue: " + h->m_fatigue.str()).c_str(), x, y + 160, 20, WHITE);
-		DrawText(("Loneliness: " + h->m_loneliness.str()).c_str(), x, y + 190, 20, WHITE);
+		DrawText(("Name: " + h->name()).c_str(), x, y, 20, WHITE);
+		DrawText(("State: " + util::str(h->m_fsm_state)).c_str(), x, y + 30, 20, WHITE);
+		DrawText(("Location: " + util::str(h->m_location)).c_str(), x, y + 60, 20, WHITE);
+		DrawText(("Money: " + h->m_money.str()).c_str(), x, y + 100, 20, WHITE);
+		DrawText(("Hunger: " + h->m_hunger.str()).c_str(), x, y + 130, 20, WHITE);
+		DrawText(("Thirst: " + h->m_thirst.str()).c_str(), x, y + 160, 20, WHITE);
+		DrawText(("Fatigue: " + h->m_fatigue.str()).c_str(), x, y + 190, 20, WHITE);
+		DrawText(("Loneliness: " + h->m_loneliness.str()).c_str(), x, y + 220, 20, WHITE);
 	}
 
 } // namespace core
