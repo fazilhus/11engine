@@ -98,4 +98,14 @@ namespace core {
         void exit(human* e) override;
     };
 
+    class shopping : public state<human> {
+    public:
+        void enter(human* e) override;
+        void execute(human* e) override;
+        void make_decision(human* e) override;
+        void process_messages(human* e) override;
+        void maybe_change_state(human* e) override;
+        void exit(human* e) override;
+    };
+
 } // namespace core

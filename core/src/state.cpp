@@ -36,6 +36,10 @@ namespace core {
             e->send_invite(message_type::go_partying, e->id());
             e->set_next_state(state_type::partying);
         }
+        else if (e->should_shop()) {
+            e->send_invite(message_type::go_shopping, e->id());
+            e->set_next_state(state_type::shopping);
+        }
         else {
             e->set_next_state(e->decide_where_to_work());
         }
@@ -61,6 +65,11 @@ namespace core {
             e->accept_invite(message_type::go_partying);
             e->set_next_state(state_type::partying);
         }
+        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
+            && e->could_shop()) {
+            e->accept_invite(message_type::go_shopping);
+            e->set_next_state(state_type::shopping);
+        }
     }
 
     void resting::maybe_change_state(human *e) {
@@ -81,7 +90,7 @@ namespace core {
 
     void working_at_construction::execute(human* e) {
         std::cout << e->name() << " is Working..." << std::endl;
-        e->m_money += 17;
+        e->m_money += 20;
         e->m_hunger += 10;
         e->m_thirst += 5;
         e->m_fatigue += 20;
@@ -103,6 +112,10 @@ namespace core {
         else if (e->should_party()) {
             e->send_invite(message_type::go_partying, e->id());
             e->set_next_state(state_type::partying);
+        }
+        else if (e->should_shop()) {
+            e->send_invite(message_type::go_shopping, e->id());
+            e->set_next_state(state_type::shopping);
         }
     }
 
@@ -126,6 +139,11 @@ namespace core {
             e->accept_invite(message_type::go_partying);
             e->set_next_state(state_type::partying);
         }
+        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
+            && e->could_shop()) {
+            e->accept_invite(message_type::go_shopping);
+            e->set_next_state(state_type::shopping);
+        }
     }
 
     void working_at_construction::maybe_change_state(human *e) {
@@ -146,7 +164,7 @@ namespace core {
 
     void working_at_office::execute(human* e) {
         std::cout << e->name() << " is Working..." << std::endl;
-        e->m_money += 12;
+        e->m_money += 15;
         e->m_hunger += 5;
         e->m_thirst += 5;
         e->m_fatigue += 10;
@@ -169,6 +187,10 @@ namespace core {
             e->send_invite(message_type::go_partying, e->id());
             e->set_next_state(state_type::partying);
         }
+        else if (e->should_shop()) {
+            e->send_invite(message_type::go_shopping, e->id());
+            e->set_next_state(state_type::shopping);
+        }
     }
 
     void working_at_office::process_messages(human* e) {
@@ -190,6 +212,11 @@ namespace core {
             && e->could_party()) {
             e->accept_invite(message_type::go_partying);
             e->set_next_state(state_type::partying);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
+            && e->could_shop()) {
+            e->accept_invite(message_type::go_shopping);
+            e->set_next_state(state_type::shopping);
         }
     }
 
@@ -234,6 +261,10 @@ namespace core {
             e->send_invite(message_type::go_partying, e->id());
             e->set_next_state(state_type::partying);
         }
+        else if (e->should_shop()) {
+            e->send_invite(message_type::go_shopping, e->id());
+            e->set_next_state(state_type::shopping);
+        }
         else {
             e->set_next_state(e->decide_where_to_work());
         }
@@ -253,6 +284,11 @@ namespace core {
             && e->could_party()) {
             e->accept_invite(message_type::go_partying);
             e->set_next_state(state_type::partying);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
+            && e->could_shop()) {
+            e->accept_invite(message_type::go_shopping);
+            e->set_next_state(state_type::shopping);
         }
     }
 
@@ -297,6 +333,10 @@ namespace core {
             e->send_invite(message_type::go_partying, e->id());
             e->set_next_state(state_type::partying);
         }
+        else if (e->should_shop()) {
+            e->send_invite(message_type::go_shopping, e->id());
+            e->set_next_state(state_type::shopping);
+        }
         else {
             e->set_next_state(e->decide_where_to_work());
         }
@@ -316,6 +356,11 @@ namespace core {
             && e->could_party()) {
             e->accept_invite(message_type::go_partying);
             e->set_next_state(state_type::partying);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
+            && e->could_shop()) {
+            e->accept_invite(message_type::go_shopping);
+            e->set_next_state(state_type::shopping);
         }
     }
 
@@ -360,6 +405,10 @@ namespace core {
         else if (e->is_tired()) {
             e->set_next_state(state_type::resting);
         }
+        else if (e->should_shop()) {
+            e->send_invite(message_type::go_shopping, e->id());
+            e->set_next_state(state_type::shopping);
+        }
         else {
             e->set_next_state(e->decide_where_to_work());
         }
@@ -380,6 +429,11 @@ namespace core {
             e->accept_invite(message_type::go_drinking);
             e->set_next_state(state_type::drinking);
         }
+        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
+            && e->could_shop()) {
+            e->accept_invite(message_type::go_shopping);
+            e->set_next_state(state_type::shopping);
+        }
     }
 
     void partying::maybe_change_state(human *e) {
@@ -390,6 +444,78 @@ namespace core {
 
     void partying::exit(human* e) {
         std::cout << e->name() << " is Exiting partying state" << std::endl;
+    }
+
+    void shopping::enter(human* e) {
+        std::cout << e->name() << " is Entering shopping state" << std::endl;
+        e->m_fsm_state = state_type::shopping;
+        e->m_location = loc_type::mall;
+    }
+
+    void shopping::execute(human* e) {
+        std::cout << e->name() << " is Shopping..." << std::endl;
+        e->m_money -= 30;
+        e->m_hunger += 5;
+        e->m_thirst += 5;
+        e->m_fatigue += 10;
+        e->m_loneliness += 5;
+    }
+
+    void shopping::make_decision(human* e) {
+        if (e->should_continue_shop()) {
+            return;
+        }
+
+        if (e->should_eat()) {
+            e->send_invite(message_type::go_eating, e->id());
+            e->set_next_state(state_type::eating);
+        }
+        else if (e->should_drink()) {
+            e->send_invite(message_type::go_drinking, e->id());
+            e->set_next_state(state_type::drinking);
+        }
+        else if (e->is_tired()) {
+            e->set_next_state(state_type::resting);
+        }
+        else if (e->should_party()) {
+            e->send_invite(message_type::go_partying, e->id());
+            e->set_next_state(state_type::partying);
+        }
+        else {
+            e->set_next_state(e->decide_where_to_work());
+        }
+    }
+
+    void shopping::process_messages(human* e) {
+        if (!e->inbox().has_messages()) {
+            return;
+        }
+
+        if (e->inbox().has_messages_of_type(message_type::go_eating)
+            && e->could_eat()) {
+            e->accept_invite(message_type::go_eating);
+            e->set_next_state(state_type::eating);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
+            && e->could_drink()) {
+            e->accept_invite(message_type::go_drinking);
+            e->set_next_state(state_type::drinking);
+        }
+        else if (e->inbox().has_messages_of_type(message_type::go_partying)
+            && e->could_party()) {
+            e->accept_invite(message_type::go_partying);
+            e->set_next_state(state_type::partying);
+        }
+    }
+
+    void shopping::maybe_change_state(human *e) {
+        if (e->next_state() != state_type::none) {
+            e->change_state();
+        }
+    }
+
+    void shopping::exit(human* e) {
+        std::cout << e->name() << " is Exiting shopping state" << std::endl;
     }
 
 } // namespace core
