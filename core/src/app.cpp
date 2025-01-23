@@ -53,10 +53,9 @@ namespace core {
 		m_entity_manager = new entity_manager();
 		m_message_sender = new message_sender();
 
-		m_entity_manager->add_entity(std::make_unique<human>(0, "Bob"));
-		m_entity_manager->add_entity(std::make_unique<human>(1, "Alice"));
-		m_entity_manager->add_entity(std::make_unique<human>(2, "Clark"));
-		m_entity_manager->add_entity(std::make_unique<human>(3, "Diana"));
+		for (int i = 0; i < 1000; ++i) {
+			m_entity_manager->add_entity(std::make_unique<human>(i, std::to_string(i)));
+		}
 
 		m_button = new ui::button("Pause", Vector2{ 1000, 10 }, 20);
 		m_slider = new ui::slider(1.0f / 60.0f, 2.0f, Vector2{ 540, 600 }, Vector2{ 200, 20 }, 10);
@@ -97,6 +96,8 @@ namespace core {
 		ClearBackground(DARKGRAY);
 
 		DrawText(("Tickrate: " + std::to_string(1.0f / m_slider->value())).c_str(), 10, 10, 20, WHITE);
+		DrawText(("Framerate: " + std::to_string(GetFrameTime())).c_str(), 300, 10, 20, WHITE);
+		DrawText(("Total Alive: " + std::to_string(m_entity_manager->instance()->entities().size())).c_str(), 600, 10, 20, WHITE);
 		
 		draw_humans();
 
@@ -133,6 +134,7 @@ namespace core {
 			draw_human(h, x, y);
 
 			i++;
+			if (i == 4) break;
 		}
 	}
 
