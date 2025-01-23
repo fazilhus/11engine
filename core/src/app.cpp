@@ -86,6 +86,7 @@ namespace core {
 		if (timer >= m_slider->value()) {
 			timer = 0;
 
+			std::cout << std::endl;
 			m_timer_manager->update();
 			m_entity_manager->update();
 		}

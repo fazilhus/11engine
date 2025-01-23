@@ -17,12 +17,12 @@ namespace core {
     }
 
     void entity::accept_invite(message_type type) {
-        // std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
+        std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
         m_inbox.messages().erase(type);
     }
 
     void entity::send_invite(message_type type, int sender_id) {
-        // std::cout << m_name << " sent invite to " << util::str(type) << std::endl;
+        std::cout << m_name << " sent invite to " << util::str(type) << std::endl;
         message_sender::instance()->send_to_everyone(type, sender_id);
     }
 
@@ -43,7 +43,13 @@ namespace core {
 
         int i = 0;
         for (auto& e : m_entities) {
-            e->update();
+            e->update_stage1();
+            i++;
+        }
+
+        i = 0;
+        for (auto& e : m_entities) {
+            e->update_stage2();
 
             auto h = dynamic_cast<human*>(e.get());
             if (!h) continue;
@@ -87,32 +93,50 @@ namespace core {
             m_money = stat(util::random_int(25, 60), 0, 100, 200, 1000);
             m_hunger = stat(util::random_int(10, 35), 0, 35, 65, 100);
             m_thirst = stat(util::random_int(10, 35), 0, 35, 65, 100);
-            m_fatigue = stat(util::random_int(10, 35), 0, 40, 60, 100);
+            m_fatigue = stat(util::random_int(10, 35), 0, 20, 60, 100);
             m_loneliness = stat(util::random_int(10, 35), 0, 25, 75, 100);
+            m_chance = util::random_float(0.33f, 0.66f);
             m_cycles = 0;
     }
 
     human::~human() {
     }
 
-    void human::update() {
+    void human::update_stage1() {
         m_cycles++;
         if (m_current_state) {
-            m_current_state->make_decision(this);
-            m_current_state->process_messages(this);
             m_current_state->execute(this);
+            m_current_state->make_decision(this);
+        }
+    }
+
+    void human::update_stage2() {
+        if (m_current_state) {
+            m_current_state->process_messages(this);
+            m_current_state->maybe_change_state(this);
         }
         m_inbox.clear_messages();
     }
 
-    void human::change_state(fsm_state new_state) {
-        if (m_fsm_state == new_state) {
+    void human::change_state() {
+        if (m_fsm_state == m_next_state && m_next_state != fsm_state::none) {
             return;
         }
 
         m_current_state->exit(this);
-        m_current_state = fsm::instance()->get_state(new_state);
+        m_current_state = fsm::instance()->get_state(m_next_state);
         m_current_state->enter(this);
+
+        m_next_state = fsm_state::none;
+    }
+
+    fsm_state human::decide_where_to_work() const {
+        if (is_not_tired()) {
+            return fsm_state::working_at_construction;
+        }
+        else {
+            return fsm_state::working_at_office;
+        }
     }
 
 } // namespace core
