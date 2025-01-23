@@ -57,6 +57,7 @@ namespace core {
         void remove_entities();
     };
 
+    template <typename entity_type>
     class state;
 
     class human : public entity {
@@ -71,7 +72,8 @@ namespace core {
         int m_cycles;
 
     private:
-        std::shared_ptr<state> m_current_state;
+        std::shared_ptr<state<human>> m_current_state;
+        fsm_state m_next_state;
 
     public:
         human(int id, const std::string& name);
@@ -81,6 +83,9 @@ namespace core {
 
         void change_state(fsm_state new_state);
 
+        fsm_state next_state() const { return m_next_state; }
+        void set_next_state(fsm_state state) { m_next_state = state; }
+
         bool is_dead() const {
             return m_cycles >= 1000 || m_hunger.is_max() || m_thirst.is_max() || m_fatigue.is_max() || m_loneliness.is_max();
         }
@@ -88,17 +93,17 @@ namespace core {
         bool is_wealthy() const { return m_money.is_higher(); }
         bool is_poor() const { return m_money.is_lower(); }
 
-        bool is_hungry() const { return m_hunger.is_higher(); }
-        bool is_not_hungry() const { return m_hunger.is_lower(); }
-
-        bool is_thirsty() const { return m_thirst.is_higher(); }
-        bool is_not_thirsty() const { return m_thirst.is_lower(); }
-
         bool is_tired() const { return m_fatigue.is_higher(); }
         bool is_not_tired() const { return m_fatigue.is_lower(); }
 
-        bool is_lonely() const { return m_loneliness.is_higher(); }
-        bool is_not_lonely() const { return m_loneliness.is_lower(); }
+        bool should_eat() const { return m_hunger.is_higher() && m_money >= 20; }
+        bool could_eat() const { return m_hunger.is_normal() && m_money >= 20; }
+
+        bool should_drink() const { return m_thirst.is_higher() && m_money >= 15; }
+        bool could_drink() const { return m_thirst.is_normal() && m_money >= 15; }
+
+        bool should_party() const { return m_loneliness.is_higher() && m_money >= 30; }
+        bool could_party() const { return m_loneliness.is_normal() && m_money >= 30; }
 
     };
 

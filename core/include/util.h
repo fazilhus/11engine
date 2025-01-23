@@ -5,6 +5,7 @@
 namespace core {
 
     enum class fsm_state {
+        none,
         resting,
         working_at_construction,
         working_at_office,
@@ -15,6 +16,7 @@ namespace core {
     };
 
     enum class loc {
+        none,
         home,
         construction,
         office,
@@ -25,6 +27,7 @@ namespace core {
     };
 
     enum class message_type {
+        none,
         go_eating,
         go_drinking,
         go_partying,

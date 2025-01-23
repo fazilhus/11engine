@@ -4,68 +4,71 @@
 
 namespace core {
 
-    class human;
-
+    template <typename entity_type>
     class state {
     public:
-        virtual ~state();
+        virtual ~state() {}
 
-        virtual void enter(human* e) = 0;
-        virtual void execute(human* e) = 0;
-        virtual void exit(human* e) = 0;
+        virtual void enter(entity_type* e) = 0;
+        virtual void make_decision(entity_type* e) = 0;
+        virtual void process_messages(entity_type* e) = 0;
+        virtual void execute(entity_type* e) = 0;
+        virtual void exit(entity_type* e) = 0;
     };
 
-    class resting : public state {
+    class human;
+
+    class resting : public state<human> {
     public:
         void enter(human* e) override;
-
+        void make_decision(human* e) override;
+        void process_messages(human* e) override;
         void execute(human* e) override;
-
         void exit(human* e) override;
     };
 
-    class working_at_construction : public state {
+    class working_at_construction : public state<human> {
     public:
         void enter(human* e) override;
-
+        void make_decision(human* e) override;
+        void process_messages(human* e) override;
         void execute(human* e) override;
-
         void exit(human* e) override;
     };
 
-    class working_at_office : public state {
+    class working_at_office : public state<human> {
     public:
         void enter(human* e) override;
-
+        void make_decision(human* e) override;
+        void process_messages(human* e) override;
         void execute(human* e) override;
-
         void exit(human* e) override;
     };
 
-    class eating : public state {
+    class eating : public state<human> {
     public:
         void enter(human* e) override;
-
+        void make_decision(human* e) override;
+        void process_messages(human* e) override;
         void execute(human* e) override;
-
         void exit(human* e) override;
     };
 
-    class drinking : public state {
+    class drinking : public state<human> {
     public:
         void enter(human* e) override;
-
+        void make_decision(human* e) override;
+        void process_messages(human* e) override;
         void execute(human* e) override;
-
         void exit(human* e) override;
     };
 
-    class partying : public state {
+    class partying : public state<human> {
     public:
         void enter(human* e) override;
-
+        void make_decision(human* e) override;
+        void process_messages(human* e) override;
         void execute(human* e) override;
-
         void exit(human* e) override;
     };
 

@@ -1,6 +1,7 @@
 #include "fsm.h"
 
 #include "state.h"
+#include "entity.h"
 
 namespace core {
 
@@ -33,7 +34,7 @@ namespace core {
         }
     }
 
-    const std::shared_ptr<state>& fsm::get_state(fsm_state state) {
+    const std::shared_ptr<state<human>>& fsm::get_state(fsm_state state) {
         return m_states[static_cast<int>(state)];
     }
 

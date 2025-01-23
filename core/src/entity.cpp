@@ -83,6 +83,7 @@ namespace core {
             m_fsm_state = fsm_state::resting;
             m_location = loc::home;
             m_current_state = fsm::instance()->get_state(m_fsm_state);
+            m_next_state = fsm_state::none;
             m_money = stat(util::random_int(25, 60), 0, 100, 200, 1000);
             m_hunger = stat(util::random_int(10, 35), 0, 35, 65, 100);
             m_thirst = stat(util::random_int(10, 35), 0, 35, 65, 100);
@@ -97,6 +98,8 @@ namespace core {
     void human::update() {
         m_cycles++;
         if (m_current_state) {
+            m_current_state->make_decision(this);
+            m_current_state->process_messages(this);
             m_current_state->execute(this);
         }
         m_inbox.clear_messages();
