@@ -1,6 +1,6 @@
 # 11Engine
 ## About
-And engine for building ai systems for games
+And engine for building AI systems for games
 
 ## Usage
 ### Pause Button
