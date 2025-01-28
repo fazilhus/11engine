@@ -7,6 +7,7 @@
 #include "need.h"
 #include "util.h"
 #include "message.h"
+#include "travel.h"
 
 namespace core {
 
@@ -94,14 +95,6 @@ namespace core {
     private:
         /// @brief Remove entities that are marked for removal.
         void remove_entities();
-    };
-
-    struct travel_data {
-        int travelled = 0;
-        int total = 0;
-        loc_type dest = loc_type::none;
-
-        void start_travelling_to(loc_type l, int d);
     };
 
     template <typename entity_type>

@@ -4,6 +4,7 @@
 #include "state_provider.h"
 #include "timer.h"
 #include "message.h"
+#include "travel.h"
 
 #include "button.h"
 #include "slider.h"
@@ -21,6 +22,7 @@ namespace core {
         timer_manager* m_timer_manager; ///< Timer manager for the app.
         entity_manager* m_entity_manager; ///< Entity manager for the app.
         message_sender* m_message_sender; ///< Message sender for the app.
+        map* m_map;
 
         ui::button* m_button; ///< UI button for the app.
         ui::slider* m_slider; ///< UI slider for the app.

@@ -41,11 +41,9 @@ namespace core {
 
     void state::execute(human* h) {
         if (h->curr_state() == state_type::travelling) {
-            h->travel().travelled++;
-            if (h->travel().travelled >= h->travel().total) {
-                h->set_curr_state(util::state_by(h->travel().dest));
-                h->set_next_state(state_type::none);
-            }
+            auto& t = h->travel();
+            t.m_travelled++;
+            std::cout << h->name() << " is " << util::str(h->curr_state()) << " to " << util::str(t.dest()) << ' ' << t.m_travelled << '/' << t.dist() << '\n';
         }
         else {
             switch (h->curr_state()) {
@@ -54,30 +52,34 @@ namespace core {
                     h->m_thirst += 1;
                     h->m_fatigue -= 12;
                     h->m_loneliness += 1;
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::working_at_construction: {
-                    h->m_money += 14;
+                    h->m_money += 16;
                     h->m_hunger += 4;
                     h->m_thirst += 1;
                     h->m_fatigue += 7;
                     h->m_loneliness += 1;
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::working_at_office: {
-                    h->m_money += 10;
+                    h->m_money += 12;
                     h->m_hunger += 1;
                     h->m_thirst += 1;
                     h->m_fatigue += 4;
                     h->m_loneliness -= 3;
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::eating: {
-                    h->m_money -= 7;
+                    h->m_money -= 6;
                     h->m_hunger -= 12;
                     h->m_thirst -= 3;
                     h->m_fatigue += 1;
                     h->m_loneliness -= 2;
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::drinking: {
@@ -86,30 +88,25 @@ namespace core {
                     h->m_thirst -= 11;
                     h->m_fatigue += 1;
                     h->m_loneliness -= 4;
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::partying: {
-                    h->m_money -= 10;
+                    h->m_money -= 9;
                     h->m_hunger -= 4;
                     h->m_thirst -= 6;
                     h->m_fatigue += 2;
                     h->m_loneliness -= 11;
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::shopping: {
-                    h->m_money -= 11;
+                    h->m_money -= 15;
                     h->m_hunger += 1;
                     h->m_thirst += 1;
                     h->m_fatigue += 3;
                     h->m_loneliness += 1;
-                    break;
-                }
-                case state_type::travelling: {
-                    h->m_hunger += 1;
-                    h->m_thirst += 1;
-                    h->m_fatigue += 1;
-                    h->m_loneliness += 1;
-                    h->travel().travelled += 1;
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 default:
@@ -122,45 +119,45 @@ namespace core {
         if (h->should_eat() && h->curr_state() != state_type::eating) {
             h->send_invite(message_type::go_eating, h->id());
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::restaurant, 1);
+            h->travel().start_travelling(h->m_location, loc_type::restaurant);
         }
         else if (h->should_drink() && h->curr_state() != state_type::drinking) {
             h->send_invite(message_type::go_drinking, h->id());
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::bar, 1);
+            h->travel().start_travelling(h->m_location, loc_type::bar);
         }
         else if (h->is_tired() && h->curr_state() != state_type::resting) {
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::home, 1);
+            h->travel().start_travelling(h->m_location, loc_type::home);
         }
         else if (h->should_party() && h->curr_state() != state_type::partying) {
             h->send_invite(message_type::go_partying, h->id());
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::party, 1);
+            h->travel().start_travelling(h->m_location, loc_type::party);
         }
         else if (h->should_shop() && h->curr_state() != state_type::shopping) {
             h->send_invite(message_type::go_shopping, h->id());
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::mall, 1);
+            h->travel().start_travelling(h->m_location, loc_type::mall);
         }
         else if (h->is_not_tired() && h->curr_state() != state_type::working_at_construction) {
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::construction, 1);
+            h->travel().start_travelling(h->m_location, loc_type::construction);
         }
         else if (h->curr_state() != state_type::working_at_office) {
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::office, 1);
+            h->travel().start_travelling(h->m_location, loc_type::office);
         }
     }
 
     void state::make_decision(human* h) {
         if (h->curr_state() == state_type::travelling) {
             const auto& t = h->travel();
-            if (t.travelled < t.total) {
+            if (!t.finished()) {
                 return;
             }
 
-            h->set_next_state(util::state_by(t.dest));
+            h->set_next_state(util::state_by(t.dest()));
             return;
         }
 
@@ -206,11 +203,11 @@ namespace core {
     void state::process_messages(human* h) {
         if (h->curr_state() == state_type::travelling) {
             const auto& t = h->travel();
-            if (t.travelled < t.total) {
+            if (!t.finished()) {
                 return;
             }
 
-            h->set_next_state(util::state_by(t.dest));
+            h->set_next_state(util::state_by(t.dest()));
             return;
         }
 
@@ -222,25 +219,25 @@ namespace core {
             && h->could_eat()) {
             h->accept_invite(message_type::go_eating);
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::restaurant, 1);
+            h->travel().start_travelling(h->m_location, loc_type::restaurant);
         }
         else if (h->inbox().has_messages_of_type(message_type::go_drinking)
             && h->could_drink()) {
             h->accept_invite(message_type::go_drinking);
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::bar, 1);
+            h->travel().start_travelling(h->m_location, loc_type::bar);
         }
         else if (h->inbox().has_messages_of_type(message_type::go_partying)
             && h->could_party()) {
             h->accept_invite(message_type::go_partying);
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::party, 1);
+            h->travel().start_travelling(h->m_location, loc_type::party);
         }
         else if (h->inbox().has_messages_of_type(message_type::go_shopping)
             && h->could_shop()) {
             h->accept_invite(message_type::go_shopping);
             h->set_next_state(state_type::travelling);
-            h->travel().start_travelling_to(loc_type::mall, 1);
+            h->travel().start_travelling(h->m_location, loc_type::mall);
         }
     }
 

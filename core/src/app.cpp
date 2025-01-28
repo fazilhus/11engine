@@ -53,6 +53,7 @@ namespace core {
 		m_timer_manager = new timer_manager();
 		m_entity_manager = new entity_manager();
 		m_message_sender = new message_sender();
+		m_map = new map();
 
 		for (int i = 0; i < 10; ++i) {
 			m_entity_manager->add_entity(std::make_unique<human>(i, std::to_string(i)));

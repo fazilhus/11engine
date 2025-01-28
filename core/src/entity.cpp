@@ -84,12 +84,6 @@ namespace core {
         while (!m_entities_to_remove.empty());
     }
 
-    void travel_data::start_travelling_to(loc_type l, int d) {
-        dest = l;
-        travelled = 0;
-        total = d;
-    }
-
     human::human(int id, const std::string& name)
         : entity(id, name) {
             m_location = loc_type::home;
@@ -98,7 +92,7 @@ namespace core {
             m_curr_state = state_type::resting;
             m_next_state = state_type::none;
             m_prev_state = state_type::none;
-            m_money = need(util::random_int(25, 60), 0, 35, 85, 1000);
+            m_money = need(util::random_int(25, 60), 0, 50, 100, 1000);
             m_hunger = need(util::random_int(10, 35), 0, 35, 65, 100);
             m_thirst = need(util::random_int(10, 35), 0, 35, 65, 100);
             m_fatigue = need(util::random_int(10, 35), 0, 20, 60, 100);
