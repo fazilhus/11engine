@@ -26,7 +26,7 @@ TEST_SUITE("Entity") {
 
     }
 
-    message_sender ms{};
+    message_dispatcher ms{};
 
     TEST_CASE("Entity Manager Creation") {
         human h1{0, "0"}, h2{1, "1"};

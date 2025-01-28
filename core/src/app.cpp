@@ -40,6 +40,10 @@ namespace core {
 				update();
 			}
 
+			if (cycles >= 1728000) { // roughly 8 hours
+				is_paused = true;
+			}
+
 			render();
 		}
 
@@ -55,7 +59,11 @@ namespace core {
 		m_message_dispatch = new message_dispatcher();
 		m_map = new map();
 
-		for (int i = 0; i < 1000; ++i) {
+#ifdef DEBUG
+		for (int i = 0; i < 100; ++i) {
+#else
+		for (int i = 0; i < 5000; ++i) {
+#endif
 			m_entity_manager->add_entity(std::make_unique<human>(i, std::to_string(i)));
 		}
 
@@ -88,10 +96,11 @@ namespace core {
 			timer = 0;
 			cycles++;
 
-			std::cout << std::endl;
+			// std::cout << std::endl;
 			m_timer_manager->update();
 			// m_message_dispatch->update();
 			m_entity_manager->update();
+
 		}
 	}
 

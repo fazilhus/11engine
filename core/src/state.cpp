@@ -35,7 +35,7 @@ namespace core {
     }
 
     void state::enter(human* h) {
-        std::cout << h->name() << " is entering state " << util::str(h->curr_state()) << '\n';
+        //std::cout << h->name() << " is entering state " << util::str(h->curr_state()) << '\n';
         h->m_location = util::loc_by(h->curr_state());
     }
 
@@ -43,70 +43,70 @@ namespace core {
         if (h->curr_state() == state_type::travelling) {
             auto& t = h->travel();
             t.m_travelled++;
-            std::cout << h->name() << " is " << util::str(h->curr_state()) << " to " << util::str(t.dest()) << ' ' << t.m_travelled << '/' << t.dist() << '\n';
+            //std::cout << h->name() << " is " << util::str(h->curr_state()) << " to " << util::str(t.dest()) << ' ' << t.m_travelled << '/' << t.dist() << '\n';
         }
         else {
             switch (h->curr_state()) {
                 case state_type::resting: {
                     h->m_hunger += 1;
                     h->m_thirst += 1;
-                    h->m_fatigue -= 13;
+                    h->m_fatigue -= 16;
                     h->m_loneliness += 1;
-                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::working_at_construction: {
-                    h->m_money += 17;
+                    h->m_money += 20;
                     h->m_hunger += 4;
                     h->m_thirst += 1;
-                    h->m_fatigue += 7;
+                    h->m_fatigue += 6;
                     h->m_loneliness += 1;
-                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::working_at_office: {
-                    h->m_money += 13;
+                    h->m_money += 16;
                     h->m_hunger += 1;
                     h->m_thirst += 1;
                     h->m_fatigue += 4;
                     h->m_loneliness -= 3;
-                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::eating: {
                     h->m_money -= 6;
                     h->m_hunger -= 12;
                     h->m_thirst -= 3;
-                    h->m_fatigue += 1;
+                    // h->m_fatigue += 1;
                     h->m_loneliness -= 2;
-                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::drinking: {
                     h->m_money -= 6;
                     h->m_hunger -= 3;
                     h->m_thirst -= 11;
-                    h->m_fatigue += 1;
+                    // h->m_fatigue += 1;
                     h->m_loneliness -= 4;
-                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::partying: {
-                    h->m_money -= 9;
+                    h->m_money -= 8;
                     h->m_hunger -= 4;
                     h->m_thirst -= 6;
                     h->m_fatigue += 1;
-                    h->m_loneliness -= 11;
-                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    h->m_loneliness -= 16;
+                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::shopping: {
                     h->m_money -= 13;
                     h->m_hunger += 1;
                     h->m_thirst += 1;
-                    h->m_fatigue += 3;
+                    h->m_fatigue += 1;
                     h->m_loneliness += 1;
-                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 default:
@@ -260,7 +260,7 @@ namespace core {
     }
 
     void state::exit(human* h) {
-        std::cout << h->name() << " is exiting state " << util::str(h->curr_state()) << '\n';
+        //std::cout << h->name() << " is exiting state " << util::str(h->curr_state()) << '\n';
     }
 
 } // namespace core

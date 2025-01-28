@@ -27,7 +27,7 @@ namespace core {
 
             if (t.is_done()) {
                 // Notify listener
-                std::cout << "Timer " << t.listener_id() << " done" << std::endl;
+                //std::cout << "Timer " << t.listener_id() << " done" << std::endl;
             }
         }
     }

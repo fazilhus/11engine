@@ -17,17 +17,17 @@ namespace core {
     }
 
     void entity::accept_invite(message_type type) {
-        std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
+        //std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
         // m_inbox.messages().erase(type);
     }
 
     void entity::send_invite(message_type type, int sender_id, int delay) {
-        std::cout << m_name << " sent invite to " << util::str(type) << " in " << delay << std::endl;
+        //std::cout << m_name << " sent invite to " << util::str(type) << " in " << delay << std::endl;
         message_dispatcher::instance()->send_to_everyone(type, sender_id, delay);
     }
 
     void entity::send_invite(message_type type, int sender_id, int receiver_id, int delay) {
-        std::cout << m_name << " sent invite to " << util::str(type) << " in " << delay << " to " << receiver_id <<  std::endl;
+        //std::cout << m_name << " sent invite to " << util::str(type) << " in " << delay << " to " << receiver_id <<  std::endl;
         message_dispatcher::instance()->send_to(type, sender_id, receiver_id, delay);
     }
 
@@ -98,10 +98,10 @@ namespace core {
             m_next_state = state_type::none;
             m_prev_state = state_type::none;
             m_money = need(util::random_int(25, 60), 0, 50, 100, 1000);
-            m_hunger = need(util::random_int(10, 35), 0, 35, 65, 100);
-            m_thirst = need(util::random_int(10, 35), 0, 35, 65, 100);
+            m_hunger = need(util::random_int(10, 35), 0, 30, 60, 100);
+            m_thirst = need(util::random_int(10, 35), 0, 30, 60, 100);
             m_fatigue = need(util::random_int(10, 35), 0, 20, 60, 100);
-            m_loneliness = need(util::random_int(10, 35), 0, 25, 75, 100);
+            m_loneliness = need(util::random_int(10, 35), 0, 35, 65, 100);
             m_chance = util::random_float(0.33f, 0.66f);
             m_cycles = 0;
     }
