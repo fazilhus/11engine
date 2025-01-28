@@ -20,7 +20,6 @@ baseName = path.getbasename(os.getcwd());
 project (baseName)
     kind "StaticLib"
     location "./"
-    staticruntime("off")
 
     vpaths 
     {
@@ -34,3 +33,11 @@ project (baseName)
     includedirs { "./include" }
 
     include_raylib()
+
+    filter("configurations:Debug")
+		defines({ "DEBUG" })
+		symbols("On")
+
+	filter("configurations:Release")
+		defines({ "NDEBUG" })
+		optimize("On")

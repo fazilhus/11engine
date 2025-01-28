@@ -53,5 +53,12 @@ project(workspaceName)
 
 	link_raylib()
 	link_to("core")
-	-- To link to a lib use link_to("LIB_FOLDER_NAME")
+	
+	filter("configurations:Debug")
+		defines({ "DEBUG" })
+		symbols("On")
+
+	filter("configurations:Release")
+		defines({ "NDEBUG" })
+		optimize("On")
 
