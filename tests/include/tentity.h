@@ -1,12 +1,12 @@
 #include "doctest/doctest.h"
 
-#include "fsm.h"
+#include "state_provider.h"
 #include "entity.h"
 #include "message.h"
 
 TEST_SUITE("Entity") {
     using namespace core;
-    fsm fsm{};
+    state_provider state_provider{};
     
     TEST_CASE("Entity Creation") {
         int id = 0;

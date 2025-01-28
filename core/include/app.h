@@ -1,7 +1,7 @@
 #pragma once
 
 #include "entity.h"
-#include "fsm.h"
+#include "state_provider.h"
 #include "timer.h"
 #include "message.h"
 
@@ -17,7 +17,7 @@ namespace core {
         bool is_running; ///< Flag indicating if the app is running.
         bool is_paused; ///< Flag indicating if the app is paused.
 
-        fsm* m_fsm; ///< Finite state machine for the app.
+        state_provider* m_fsm; ///< Finite state machine for the app.
         timer_manager* m_timer_manager; ///< Timer manager for the app.
         entity_manager* m_entity_manager; ///< Entity manager for the app.
         message_sender* m_message_sender; ///< Message sender for the app.
@@ -27,6 +27,7 @@ namespace core {
 
         float timer; ///< Timer for the app.
         float timer_max; ///< Maximum value for the timer.
+        long long cycles;
 
     public:
         /// @brief Constructor for the app class.

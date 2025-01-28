@@ -73,6 +73,8 @@ namespace core {
         /// @return A random float between min and max.
         float random_float(float min, float max);
 
+        loc_type loc_by(state_type s);
+
     }
 
 } // namespace core

@@ -7,9 +7,9 @@ namespace core {
     /// @brief pure virtual base 'state' class
     /// @tparam entity_type entity
     template <typename entity_type>
-    class state {
+    class istate {
     public:
-        virtual ~state() {}
+        virtual ~istate() {}
 
         /// @brief handles entering into a state
         /// @param e entity entering the state
@@ -29,7 +29,7 @@ namespace core {
 
         /// @brief checks if the entity should change state
         /// @param e entity checking for state change
-        virtual void maybe_change_state(entity_type* e) = 0;
+        virtual void change_state(entity_type* e) = 0;
 
         /// @brief handles exiting from a state
         /// @param e entity exiting the state
@@ -38,74 +38,19 @@ namespace core {
 
     class human;
 
-    class resting : public state<human> {
-    public:
-        void enter(human* e) override;
-        void execute(human* e) override;
-        void make_decision(human* e) override;
-        void process_messages(human* e) override;
-        void maybe_change_state(human* e) override;
-        void exit(human* e) override;
-    };
+    class state : public istate<human> {
+        public:
+            void enter(human* e) override;
 
-    class working_at_construction : public state<human> {
-    public:
-        void enter(human* e) override;
-        void execute(human* e) override;
-        void make_decision(human* e) override;
-        void process_messages(human* e) override;
-        void maybe_change_state(human* e) override;
-        void exit(human* e) override;
-    };
+            void execute(human* e) override;
 
-    class working_at_office : public state<human> {
-    public:
-        void enter(human* e) override;
-        void execute(human* e) override;
-        void make_decision(human* e) override;
-        void process_messages(human* e) override;
-        void maybe_change_state(human* e) override;
-        void exit(human* e) override;
-    };
+            void make_decision(human* e) override;
 
-    class eating : public state<human> {
-    public:
-        void enter(human* e) override;
-        void execute(human* e) override;
-        void make_decision(human* e) override;
-        void process_messages(human* e) override;
-        void maybe_change_state(human* e) override;
-        void exit(human* e) override;
-    };
+            void process_messages(human* e) override;
 
-    class drinking : public state<human> {
-    public:
-        void enter(human* e) override;
-        void execute(human* e) override;
-        void make_decision(human* e) override;
-        void process_messages(human* e) override;
-        void maybe_change_state(human* e) override;
-        void exit(human* e) override;
-    };
+            void change_state(human* e) override;
 
-    class partying : public state<human> {
-    public:
-        void enter(human* e) override;
-        void execute(human* e) override;
-        void make_decision(human* e) override;
-        void process_messages(human* e) override;
-        void maybe_change_state(human* e) override;
-        void exit(human* e) override;
-    };
-
-    class shopping : public state<human> {
-    public:
-        void enter(human* e) override;
-        void execute(human* e) override;
-        void make_decision(human* e) override;
-        void process_messages(human* e) override;
-        void maybe_change_state(human* e) override;
-        void exit(human* e) override;
+            void exit(human* e) override;
     };
 
 } // namespace core

@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include <string>
 
-#include "fsm.h"
+#include "state_provider.h"
 #include "timer.h"
 #include "state.h"
 #include "util.h"
@@ -23,6 +23,7 @@ namespace core {
 
 		timer = 0;
 		timer_max = 0.01f;
+		cycles = 0;
 	}
 
 	app::~app() {
@@ -48,7 +49,7 @@ namespace core {
 	void app::init() {
 		util::init_random();
 
-		m_fsm = new fsm();
+		m_fsm = new state_provider();
 		m_timer_manager = new timer_manager();
 		m_entity_manager = new entity_manager();
 		m_message_sender = new message_sender();
@@ -84,6 +85,7 @@ namespace core {
 		
 		if (timer >= m_slider->value()) {
 			timer = 0;
+			cycles++;
 
 			std::cout << std::endl;
 			m_timer_manager->update();
@@ -103,6 +105,8 @@ namespace core {
 
 		m_button->draw();
 		m_slider->draw();
+
+		DrawText(("Cycles: " + std::to_string(cycles)).c_str(), 900, 600, 20, WHITE);
 
 		if (is_paused) {
 			Vector2 label_size = MeasureTextEx(GetFontDefault(), "PAUSED", 30, 1);
@@ -140,7 +144,7 @@ namespace core {
 
 	void app::draw_human(const human* h, int x, int y) const {
 		DrawText(("Name: " + h->name()).c_str(), x, y, 20, WHITE);
-		DrawText(("State: " + util::str(h->m_fsm_state)).c_str(), x, y + 30, 20, WHITE);
+		DrawText(("State: " + util::str(h->curr_state())).c_str(), x, y + 30, 20, WHITE);
 		DrawText(("Location: " + util::str(h->m_location)).c_str(), x, y + 60, 20, WHITE);
 		DrawText(("Money: " + h->m_money.str()).c_str(), x, y + 100, 20, WHITE);
 		DrawText(("Hunger: " + h->m_hunger.str()).c_str(), x, y + 130, 20, WHITE);

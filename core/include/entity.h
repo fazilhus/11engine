@@ -97,7 +97,7 @@ namespace core {
     };
 
     template <typename entity_type>
-    class state;
+    class istate;
 
     /// @brief Class representing a human entity in the game.
     class human : public entity {
@@ -108,13 +108,14 @@ namespace core {
         need m_fatigue; ///< Fatigue need of the human.
         need m_loneliness; ///< Loneliness need of the human.
         float m_chance; ///< Chance of accepting an invite.
-        state_type m_fsm_state; ///< Current state of the human.
         loc_type m_location; ///< Current location of the human.
-        int m_cycles; ///< Number of cycles the human has lived.
+        long long m_cycles; ///< Number of cycles the human has lived.
 
     private:
-        std::shared_ptr<state<human>> m_current_state; ///< Current state of the human.
+        std::shared_ptr<istate<human>> m_state; ///< Current state of the human.
+        state_type m_curr_state;
         state_type m_next_state; ///< Next state of the human.
+        state_type m_prev_state;
 
     public:
         /// @brief Constructor for the human class.
@@ -134,18 +135,34 @@ namespace core {
         /// @brief Change the state of the human.
         void change_state();
 
+        /// @brief Get the current state of the human.
+        /// @return Current state of the human.
+        state_type curr_state() const { return m_curr_state; }
+
         /// @brief Get the next state of the human.
         /// @return Next state of the human.
         state_type next_state() const { return m_next_state; }
+
+        /// @brief Get the previous state of the human.
+        /// @return Previous state of the human.
+        state_type prev_state() const { return m_prev_state; }
+
+        /// @brief Set the current state of the human.
+        /// @param state Current state of the human.
+        void set_curr_state(state_type state) { m_curr_state = state; }
 
         /// @brief Set the next state of the human.
         /// @param state Next state of the human.
         void set_next_state(state_type state) { m_next_state = state; }
 
+        /// @brief Set the previous state of the human.
+        /// @param state Previous state of the human.
+        void set_prev_state(state_type state) { m_prev_state = state; }
+
         /// @brief Check if the human is dead.
         /// @return True if the human is dead, false otherwise.
         bool is_dead() const {
-            return m_cycles >= 1000 || m_hunger.is_max() || m_thirst.is_max() || m_fatigue.is_max() || m_loneliness.is_max();
+            return /*m_cycles >= 1000 ||*/ m_hunger.is_max() || m_thirst.is_max() || m_fatigue.is_max() || m_loneliness.is_max();
         }
 
         /// @brief Check if the human is wealthy.
@@ -243,10 +260,6 @@ namespace core {
         bool could_shop() const {
             return !is_hungry() && !is_thirsty() && !is_tired() && !is_lonely() && m_money >= 30 && want_accept_invite();
         }
-
-        /// @brief Decide where the human should work.
-        /// @return The state representing where the human should work.
-        state_type decide_where_to_work() const;
 
     private:
         /// @brief Check if the human wants to accept an invite.

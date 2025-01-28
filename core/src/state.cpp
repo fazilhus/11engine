@@ -1,521 +1,178 @@
 #include "state.h"
 
+#include <cassert>
+
 #include "entity.h"
 #include "message.h"
 
 namespace core {
 
-    void resting::enter(human* e) {
-        std::cout << e->name() << " is Entering resting state" << std::endl;
-        e->m_fsm_state = state_type::resting;
-        e->m_location = loc_type::home;
+    void state::enter(human* h) {
+        std::cout << h->name() << " is entering state " << util::str(h->curr_state()) << '\n';
+        h->m_location = util::loc_by(h->curr_state());
     }
 
-    void resting::execute(human* e) {
-        std::cout << e->name() << " is Resting..." << std::endl;
-        e->m_hunger += 5;
-        e->m_thirst += 5;
-        e->m_fatigue -= 25;
-        e->m_loneliness += 5;
+    void state::execute(human* h) {
+        std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+        switch (h->curr_state()) {
+            case state_type::resting: {
+                h->m_hunger += 5;
+                h->m_thirst += 5;
+                h->m_fatigue -= 25;
+                h->m_loneliness += 5;
+                break;
+            }
+            case state_type::working_at_construction: {
+                h->m_money += 20;
+                h->m_hunger += 10;
+                h->m_thirst += 5;
+                h->m_fatigue += 18;
+                h->m_loneliness += 5;
+                break;
+            }
+            case state_type::working_at_office: {
+                h->m_money += 15;
+                h->m_hunger += 5;
+                h->m_thirst += 5;
+                h->m_fatigue += 15;
+                h->m_loneliness -= 5;
+                break;
+            }
+            case state_type::eating: {
+                h->m_money -= 20;
+                h->m_hunger -= 20;
+                h->m_thirst -= 5;
+                h->m_fatigue += 5;
+                h->m_loneliness -= 5;
+                break;
+            }
+            case state_type::drinking: {
+                h->m_money -= 15;
+                h->m_hunger -= 5;
+                h->m_thirst -= 20;
+                h->m_fatigue += 5;
+                h->m_loneliness -= 10;
+                break;
+            }
+            case state_type::partying: {
+                h->m_money -= 30;
+                h->m_hunger -= 10;
+                h->m_thirst -= 20;
+                h->m_fatigue += 10;
+                h->m_loneliness -= 20;
+                break;
+            }
+            case state_type::shopping: {
+                h->m_money -= 30;
+                h->m_hunger += 5;
+                h->m_thirst += 5;
+                h->m_fatigue += 8;
+                h->m_loneliness += 5;
+                break;
+            }
+            default:
+                assert(false && "unreachable state");
+        }
     }
 
-    void resting::make_decision(human* e) {
-        if (!e->is_not_tired()) {
+    void make_decision_by(human* h) {
+        if (h->should_eat() && h->curr_state() != state_type::eating) {
+            h->send_invite(message_type::go_eating, h->id());
+            h->set_next_state(state_type::eating);
+        }
+        else if (h->should_drink() && h->curr_state() != state_type::drinking) {
+            h->send_invite(message_type::go_drinking, h->id());
+            h->set_next_state(state_type::drinking);
+        }
+        else if (h->is_tired() && h->curr_state() != state_type::resting) {
+            h->set_next_state(state_type::resting);
+        }
+        else if (h->should_party() && h->curr_state() != state_type::partying) {
+            h->send_invite(message_type::go_partying, h->id());
+            h->set_next_state(state_type::partying);
+        }
+        else if (h->should_shop() && h->curr_state() != state_type::shopping) {
+            h->send_invite(message_type::go_shopping, h->id());
+            h->set_next_state(state_type::shopping);
+        }
+        else if (h->is_not_tired() && h->curr_state() != state_type::working_at_construction) {
+            h->set_next_state(state_type::working_at_construction);
+        }
+        else if (h->curr_state() != state_type::working_at_office) {
+            h->set_next_state(state_type::working_at_office);
+        }
+    }
+
+    void state::make_decision(human* h) {
+        switch (h->curr_state()) {
+            case state_type::resting: {
+                if (!h->is_not_tired()) return;
+                make_decision_by(h);
+                break;
+            }
+            case state_type::working_at_construction:
+            case state_type::working_at_office: {
+                make_decision_by(h);
+                break;
+            }
+            case state_type::eating: {
+                if (h->should_continue_eat()) return;
+                make_decision_by(h);
+                break;
+            }
+            case state_type::drinking: {
+                if (h->should_continue_drink()) return;
+                make_decision_by(h);
+                break;
+            }
+            case state_type::partying: {
+                if (h->should_continue_party()) return;
+                make_decision_by(h);
+                break;
+            }
+            case state_type::shopping: {
+                if (h->should_continue_shop()) return;
+                make_decision_by(h);
+                break;
+            }
+            default:
+                assert(false && "unreachable state");
+        }
+    }
+
+    void state::process_messages(human* h) {
+        if (!h->inbox().has_messages()) {
             return;
         }
 
-        if (e->should_eat()) {
-            e->send_invite(message_type::go_eating, e->id());
-            e->set_next_state(state_type::eating);
+        if (h->inbox().has_messages_of_type(message_type::go_eating)
+            && h->could_eat()) {
+            h->accept_invite(message_type::go_eating);
+            h->set_next_state(state_type::eating);
         }
-        else if (e->should_drink()) {
-            e->send_invite(message_type::go_drinking, e->id());
-            e->set_next_state(state_type::drinking);
+        else if (h->inbox().has_messages_of_type(message_type::go_drinking)
+            && h->could_drink()) {
+            h->accept_invite(message_type::go_drinking);
+            h->set_next_state(state_type::drinking);
         }
-        else if (e->should_party()) {
-            e->send_invite(message_type::go_partying, e->id());
-            e->set_next_state(state_type::partying);
+        else if (h->inbox().has_messages_of_type(message_type::go_partying)
+            && h->could_party()) {
+            h->accept_invite(message_type::go_partying);
+            h->set_next_state(state_type::partying);
         }
-        else if (e->should_shop()) {
-            e->send_invite(message_type::go_shopping, e->id());
-            e->set_next_state(state_type::shopping);
-        }
-        else {
-            e->set_next_state(e->decide_where_to_work());
-        }
-    }
-
-    void resting::process_messages(human* e) {
-        if (!e->inbox().has_messages()) {
-            return;
-        }
-
-        if (e->inbox().has_messages_of_type(message_type::go_eating)
-            && e->could_eat()) {
-            e->accept_invite(message_type::go_eating);
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
-            && e->could_drink()) {
-            e->accept_invite(message_type::go_drinking);
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_partying)
-            && e->could_party()) {
-            e->accept_invite(message_type::go_partying);
-            e->set_next_state(state_type::partying);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
-            && e->could_shop()) {
-            e->accept_invite(message_type::go_shopping);
-            e->set_next_state(state_type::shopping);
+        else if (h->inbox().has_messages_of_type(message_type::go_shopping)
+            && h->could_shop()) {
+            h->accept_invite(message_type::go_shopping);
+            h->set_next_state(state_type::shopping);
         }
     }
 
-    void resting::maybe_change_state(human *e) {
-        if (e->next_state() != state_type::none) {
-            e->change_state();
-        }
+    void state::change_state(human* h) {
+        h->change_state();
     }
 
-    void resting::exit(human* e) {
-        std::cout << e->name() << " is Exiting resting state" << std::endl;
-    }
-
-    void working_at_construction::enter(human* e) {
-        std::cout << e->name() << " is Entering working state" << std::endl;
-        e->m_fsm_state = state_type::working_at_construction;
-        e->m_location = loc_type::construction;
-    }
-
-    void working_at_construction::execute(human* e) {
-        std::cout << e->name() << " is Working..." << std::endl;
-        e->m_money += 20;
-        e->m_hunger += 10;
-        e->m_thirst += 5;
-        e->m_fatigue += 20;
-        e->m_loneliness += 5;
-    }
-
-    void working_at_construction::make_decision(human* e) {
-        if (e->should_eat()) {
-            e->send_invite(message_type::go_eating, e->id());
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->should_drink()) {
-            e->send_invite(message_type::go_drinking, e->id());
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->is_tired()) {
-            e->set_next_state(state_type::resting);
-        }
-        else if (e->should_party()) {
-            e->send_invite(message_type::go_partying, e->id());
-            e->set_next_state(state_type::partying);
-        }
-        else if (e->should_shop()) {
-            e->send_invite(message_type::go_shopping, e->id());
-            e->set_next_state(state_type::shopping);
-        }
-    }
-
-    void working_at_construction::process_messages(human* e) {
-        if (!e->inbox().has_messages()) {
-            return;
-        }
-
-        if (e->inbox().has_messages_of_type(message_type::go_eating)
-            && e->could_eat()) {
-            e->accept_invite(message_type::go_eating);
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
-            && e->could_drink()) {
-            e->accept_invite(message_type::go_drinking);
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_partying)
-            && e->could_party()) {
-            e->accept_invite(message_type::go_partying);
-            e->set_next_state(state_type::partying);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
-            && e->could_shop()) {
-            e->accept_invite(message_type::go_shopping);
-            e->set_next_state(state_type::shopping);
-        }
-    }
-
-    void working_at_construction::maybe_change_state(human *e) {
-        if (e->next_state() != state_type::none) {
-            e->change_state();
-        }
-    }
-
-    void working_at_construction::exit(human* e) {
-        std::cout << e->name() << " is Exiting working state" << std::endl;
-    }
-
-    void working_at_office::enter(human* e) {
-        std::cout << e->name() << " is Entering working state" << std::endl;
-        e->m_fsm_state = state_type::working_at_office;
-        e->m_location = loc_type::office;
-    }
-
-    void working_at_office::execute(human* e) {
-        std::cout << e->name() << " is Working..." << std::endl;
-        e->m_money += 15;
-        e->m_hunger += 5;
-        e->m_thirst += 5;
-        e->m_fatigue += 10;
-        e->m_loneliness -= 5;
-    }
-
-    void working_at_office::make_decision(human* e) {
-        if (e->should_eat()) {
-            e->send_invite(message_type::go_eating, e->id());
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->should_drink()) {
-            e->send_invite(message_type::go_drinking, e->id());
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->is_tired()) {
-            e->set_next_state(state_type::resting);
-        }
-        else if (e->should_party()) {
-            e->send_invite(message_type::go_partying, e->id());
-            e->set_next_state(state_type::partying);
-        }
-        else if (e->should_shop()) {
-            e->send_invite(message_type::go_shopping, e->id());
-            e->set_next_state(state_type::shopping);
-        }
-    }
-
-    void working_at_office::process_messages(human* e) {
-        if (!e->inbox().has_messages()) {
-            return;
-        }
-
-        if (e->inbox().has_messages_of_type(message_type::go_eating)
-            && e->could_eat()) {
-            e->accept_invite(message_type::go_eating);
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
-            && e->could_drink()) {
-            e->accept_invite(message_type::go_drinking);
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_partying)
-            && e->could_party()) {
-            e->accept_invite(message_type::go_partying);
-            e->set_next_state(state_type::partying);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
-            && e->could_shop()) {
-            e->accept_invite(message_type::go_shopping);
-            e->set_next_state(state_type::shopping);
-        }
-    }
-
-    void working_at_office::maybe_change_state(human *e) {
-        if (e->next_state() != state_type::none) {
-            e->change_state();
-        }
-    }
-
-    void working_at_office::exit(human* e) {
-        std::cout << e->name() << " is Exiting working state" << std::endl;
-    }
-
-    void eating::enter(human* e) {
-        std::cout << e->name() << " is Entering eating state" << std::endl;
-        e->m_fsm_state = state_type::eating;
-        e->m_location = loc_type::restaurant;
-    }
-
-    void eating::execute(human* e) {
-        std::cout << e->name() << " is Eating..." << std::endl;
-        e->m_money -= 20;
-        e->m_hunger -= 20;
-        e->m_thirst -= 5;
-        e->m_fatigue += 5;
-        e->m_loneliness -= 5;
-    }
-
-    void eating::make_decision(human* e) {
-        if (e->should_continue_eat()) {
-            return;
-        }
-
-        if (e->should_drink()) {
-            e->send_invite(message_type::go_drinking, e->id());
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->is_tired()) {
-            e->set_next_state(state_type::resting);
-        }
-        else if (e->should_party()) {
-            e->send_invite(message_type::go_partying, e->id());
-            e->set_next_state(state_type::partying);
-        }
-        else if (e->should_shop()) {
-            e->send_invite(message_type::go_shopping, e->id());
-            e->set_next_state(state_type::shopping);
-        }
-        else {
-            e->set_next_state(e->decide_where_to_work());
-        }
-    }
-
-    void eating::process_messages(human* e) {
-        if (!e->inbox().has_messages()) {
-            return;
-        }
-
-        if (e->inbox().has_messages_of_type(message_type::go_drinking)
-            && e->could_drink()) {
-            e->accept_invite(message_type::go_drinking);
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_partying)
-            && e->could_party()) {
-            e->accept_invite(message_type::go_partying);
-            e->set_next_state(state_type::partying);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
-            && e->could_shop()) {
-            e->accept_invite(message_type::go_shopping);
-            e->set_next_state(state_type::shopping);
-        }
-    }
-
-    void eating::maybe_change_state(human *e) {
-        if (e->next_state() != state_type::none) {
-            e->change_state();
-        }
-    }
-
-    void eating::exit(human* e) {
-        std::cout << e->name() << " is Exiting eating state" << std::endl;
-    }
-
-    void drinking::enter(human* e) {
-        std::cout << e->name() << " is Entering drinking state" << std::endl;
-        e->m_fsm_state = state_type::drinking;
-        e->m_location = loc_type::bar;
-    }
-
-    void drinking::execute(human* e) {
-        std::cout << e->name() << " is Drinking..." << std::endl;
-        e->m_money -= 15;
-        e->m_hunger -= 5;
-        e->m_thirst -= 20;
-        e->m_fatigue += 5;
-        e->m_loneliness -= 10; 
-    }
-
-    void drinking::make_decision(human* e) {
-        if (e->should_continue_drink()) {
-            return;
-        }
-
-        if (e->should_eat()) {
-            e->send_invite(message_type::go_eating, e->id());
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->is_tired()) {
-            e->set_next_state(state_type::resting);
-        }
-        else if (e->should_party()) {
-            e->send_invite(message_type::go_partying, e->id());
-            e->set_next_state(state_type::partying);
-        }
-        else if (e->should_shop()) {
-            e->send_invite(message_type::go_shopping, e->id());
-            e->set_next_state(state_type::shopping);
-        }
-        else {
-            e->set_next_state(e->decide_where_to_work());
-        }
-    }
-
-    void drinking::process_messages(human* e) {
-        if (!e->inbox().has_messages()) {
-            return;
-        }
-
-        if (e->inbox().has_messages_of_type(message_type::go_eating)
-            && e->could_eat()) {
-            e->accept_invite(message_type::go_eating);
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_partying)
-            && e->could_party()) {
-            e->accept_invite(message_type::go_partying);
-            e->set_next_state(state_type::partying);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
-            && e->could_shop()) {
-            e->accept_invite(message_type::go_shopping);
-            e->set_next_state(state_type::shopping);
-        }
-    }
-
-    void drinking::maybe_change_state(human *e) {
-        if (e->next_state() != state_type::none) {
-            e->change_state();
-        }
-    }
-
-    void drinking::exit(human* e) {
-        std::cout << e->name() << " is Exiting drinking state" << std::endl;
-    }
-
-    void partying::enter(human* e) {
-        std::cout << e->name() << " is Entering partying state" << std::endl;
-        e->m_fsm_state = state_type::partying;
-        e->m_location = loc_type::party;
-    }
-
-    void partying::execute(human* e) {
-        std::cout << e->name() << " is Partying..." << std::endl;
-        e->m_money -= 30;
-        e->m_hunger -= 10;
-        e->m_thirst -= 20;
-        e->m_fatigue += 20;
-        e->m_loneliness -= 20;
-    }
-
-    void partying::make_decision(human* e) {
-        if (e->should_continue_party()) {
-            return;
-        }
-
-        if (e->should_eat()) {
-            e->send_invite(message_type::go_eating, e->id());
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->should_drink()) {
-            e->send_invite(message_type::go_drinking, e->id());
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->is_tired()) {
-            e->set_next_state(state_type::resting);
-        }
-        else if (e->should_shop()) {
-            e->send_invite(message_type::go_shopping, e->id());
-            e->set_next_state(state_type::shopping);
-        }
-        else {
-            e->set_next_state(e->decide_where_to_work());
-        }
-    }
-
-    void partying::process_messages(human* e) {
-        if (!e->inbox().has_messages()) {
-            return;
-        }
-
-        if (e->inbox().has_messages_of_type(message_type::go_eating)
-            && e->could_eat()) {
-            e->accept_invite(message_type::go_eating);
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
-            && e->could_drink()) {
-            e->accept_invite(message_type::go_drinking);
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_shopping)
-            && e->could_shop()) {
-            e->accept_invite(message_type::go_shopping);
-            e->set_next_state(state_type::shopping);
-        }
-    }
-
-    void partying::maybe_change_state(human *e) {
-        if (e->next_state() != state_type::none) {
-            e->change_state();
-        }
-    }
-
-    void partying::exit(human* e) {
-        std::cout << e->name() << " is Exiting partying state" << std::endl;
-    }
-
-    void shopping::enter(human* e) {
-        std::cout << e->name() << " is Entering shopping state" << std::endl;
-        e->m_fsm_state = state_type::shopping;
-        e->m_location = loc_type::mall;
-    }
-
-    void shopping::execute(human* e) {
-        std::cout << e->name() << " is Shopping..." << std::endl;
-        e->m_money -= 30;
-        e->m_hunger += 5;
-        e->m_thirst += 5;
-        e->m_fatigue += 10;
-        e->m_loneliness += 5;
-    }
-
-    void shopping::make_decision(human* e) {
-        if (e->should_continue_shop()) {
-            return;
-        }
-
-        if (e->should_eat()) {
-            e->send_invite(message_type::go_eating, e->id());
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->should_drink()) {
-            e->send_invite(message_type::go_drinking, e->id());
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->is_tired()) {
-            e->set_next_state(state_type::resting);
-        }
-        else if (e->should_party()) {
-            e->send_invite(message_type::go_partying, e->id());
-            e->set_next_state(state_type::partying);
-        }
-        else {
-            e->set_next_state(e->decide_where_to_work());
-        }
-    }
-
-    void shopping::process_messages(human* e) {
-        if (!e->inbox().has_messages()) {
-            return;
-        }
-
-        if (e->inbox().has_messages_of_type(message_type::go_eating)
-            && e->could_eat()) {
-            e->accept_invite(message_type::go_eating);
-            e->set_next_state(state_type::eating);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_drinking)
-            && e->could_drink()) {
-            e->accept_invite(message_type::go_drinking);
-            e->set_next_state(state_type::drinking);
-        }
-        else if (e->inbox().has_messages_of_type(message_type::go_partying)
-            && e->could_party()) {
-            e->accept_invite(message_type::go_partying);
-            e->set_next_state(state_type::partying);
-        }
-    }
-
-    void shopping::maybe_change_state(human *e) {
-        if (e->next_state() != state_type::none) {
-            e->change_state();
-        }
-    }
-
-    void shopping::exit(human* e) {
-        std::cout << e->name() << " is Exiting shopping state" << std::endl;
+    void state::exit(human* h) {
+        std::cout << h->name() << " is exiting state " << util::str(h->curr_state()) << '\n';
     }
 
 } // namespace core

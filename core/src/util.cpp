@@ -1,6 +1,7 @@
 #include "util.h"
 
 #include <ctime>
+#include <cassert>
 
 namespace core::util {
 
@@ -71,6 +72,27 @@ namespace core::util {
 
     float random_float(float min, float max) {
         return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+    }
+
+    loc_type loc_by(state_type s) {
+        switch (s) {
+        case state_type::resting:
+            return loc_type::home;
+            case state_type::working_at_construction:
+                return loc_type::construction;
+            case state_type::working_at_office:
+                return loc_type::office;
+            case state_type::eating:
+                return loc_type::restaurant;
+            case state_type::drinking:
+                return loc_type::bar;
+            case state_type::partying:
+                return loc_type::party;
+            case state_type::shopping:
+                return loc_type::mall;
+            default:
+                assert(false && "unreachable state");
+        }
     }
 
 } // namespace core::util

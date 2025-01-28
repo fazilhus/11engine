@@ -3,7 +3,7 @@
 #include <cassert>
 
 #include "state.h"
-#include "fsm.h"
+#include "state_provider.h"
 #include "message.h"
 #include "util.h"
 
@@ -86,10 +86,11 @@ namespace core {
 
     human::human(int id, const std::string& name)
         : entity(id, name) {
-            m_fsm_state = state_type::resting;
             m_location = loc_type::home;
-            m_current_state = fsm::instance()->get_state(m_fsm_state);
+            m_state = state_provider::instance()->get_state();
+            m_curr_state = state_type::resting;
             m_next_state = state_type::none;
+            m_prev_state = state_type::none;
             m_money = need(util::random_int(25, 60), 0, 100, 200, 1000);
             m_hunger = need(util::random_int(10, 35), 0, 35, 65, 100);
             m_thirst = need(util::random_int(10, 35), 0, 35, 65, 100);
@@ -104,39 +105,31 @@ namespace core {
 
     void human::update_stage1() {
         m_cycles++;
-        if (m_current_state) {
-            m_current_state->execute(this);
-            m_current_state->make_decision(this);
+        if (m_state) {
+            m_state->execute(this);
+            m_state->make_decision(this);
         }
     }
 
     void human::update_stage2() {
-        if (m_current_state) {
-            m_current_state->process_messages(this);
-            m_current_state->maybe_change_state(this);
+        if (m_state) {
+            m_state->process_messages(this);
+            m_state->change_state(this);
         }
         m_inbox.clear_messages();
     }
 
     void human::change_state() {
-        if (m_fsm_state == m_next_state && m_next_state != state_type::none) {
+        if (m_curr_state == m_next_state || m_next_state == state_type::none) {
             return;
         }
 
-        m_current_state->exit(this);
-        m_current_state = fsm::instance()->get_state(m_next_state);
-        m_current_state->enter(this);
-
+        m_prev_state = m_curr_state;
+        m_state->exit(this);
+        m_curr_state = m_next_state;
+        // m_state = state_provider::instance()->get_state();
+        m_state->enter(this);
         m_next_state = state_type::none;
-    }
-
-    state_type human::decide_where_to_work() const {
-        if (is_not_tired()) {
-            return state_type::working_at_construction;
-        }
-        else {
-            return state_type::working_at_office;
-        }
     }
 
 } // namespace core
