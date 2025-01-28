@@ -18,12 +18,17 @@ namespace core {
 
     void entity::accept_invite(message_type type) {
         std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
-        m_inbox.messages().erase(type);
+        // m_inbox.messages().erase(type);
     }
 
-    void entity::send_invite(message_type type, int sender_id) {
-        std::cout << m_name << " sent invite to " << util::str(type) << std::endl;
-        message_sender::instance()->send_to_everyone(type, sender_id);
+    void entity::send_invite(message_type type, int sender_id, int delay) {
+        std::cout << m_name << " sent invite to " << util::str(type) << " in " << delay << std::endl;
+        message_dispatcher::instance()->send_to_everyone(type, sender_id, delay);
+    }
+
+    void entity::send_invite(message_type type, int sender_id, int receiver_id, int delay) {
+        std::cout << m_name << " sent invite to " << util::str(type) << " in " << delay << " to " << receiver_id <<  std::endl;
+        message_dispatcher::instance()->send_to(type, sender_id, receiver_id, delay);
     }
 
     entity_manager* entity_manager::s_instance = nullptr;

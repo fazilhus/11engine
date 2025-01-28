@@ -21,7 +21,7 @@ namespace core {
         state_provider* m_fsm; ///< Finite state machine for the app.
         timer_manager* m_timer_manager; ///< Timer manager for the app.
         entity_manager* m_entity_manager; ///< Entity manager for the app.
-        message_sender* m_message_sender; ///< Message sender for the app.
+        message_dispatcher* m_message_dispatch; ///< Message sender for the app.
         map* m_map;
 
         ui::button* m_button; ///< UI button for the app.

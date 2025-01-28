@@ -52,10 +52,10 @@ namespace core {
 		m_fsm = new state_provider();
 		m_timer_manager = new timer_manager();
 		m_entity_manager = new entity_manager();
-		m_message_sender = new message_sender();
+		m_message_dispatch = new message_dispatcher();
 		m_map = new map();
 
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 1000; ++i) {
 			m_entity_manager->add_entity(std::make_unique<human>(i, std::to_string(i)));
 		}
 
@@ -67,7 +67,7 @@ namespace core {
 		delete m_fsm;
 		delete m_timer_manager;
 		delete m_entity_manager;
-		delete m_message_sender;
+		delete m_message_dispatch;
 
 		delete m_button;
 	}
@@ -90,6 +90,7 @@ namespace core {
 
 			std::cout << std::endl;
 			m_timer_manager->update();
+			// m_message_dispatch->update();
 			m_entity_manager->update();
 		}
 	}

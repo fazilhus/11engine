@@ -101,6 +101,21 @@ namespace core::util {
         }
     }
 
+    loc_type loc_by(message_type m) {
+        switch (m) {
+            case message_type::go_eating:
+                return loc_type::restaurant;
+            case message_type::go_drinking:
+                return loc_type::bar;
+            case message_type::go_partying:
+                return loc_type::party;
+            case message_type::go_shopping:
+                return loc_type::mall;
+            default:
+                assert(false && "unreachable message type");
+        }
+    }
+
     state_type state_by(loc_type l) {
         switch (l) {
             case loc_type::home:
@@ -122,6 +137,21 @@ namespace core::util {
             default: {
                 assert(false && "unreachable location");
             }
+        }
+    }
+
+    state_type state_by(message_type m) {
+        switch (m) {
+            case message_type::go_eating:
+                return state_type::eating;
+            case message_type::go_drinking:
+                return state_type::drinking;
+            case message_type::go_partying:
+                return state_type::partying;
+            case message_type::go_shopping:
+                return state_type::shopping;
+            default:
+                assert(false && "unreachable message type");
         }
     }
 

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <map>
+#include <vector>
 
+// #include "pqueue.h"
 #include "util.h"
 
 namespace core {
@@ -11,12 +12,23 @@ namespace core {
         message_type m_type; ///< Type of the message.
         int m_sender_id; ///< ID of the sender.
         int m_receiver_id; ///< ID of the receiver.
+        int m_delay;
+        int m_waited;
     };
+
+    //struct message_cmp {
+    //    bool operator()(const message& a, const message& b) const {
+    //        return a.m_delay < b.m_delay;
+    //    }
+    //};
 
     /// @brief Class representing an inbox for receiving messages.
     class inbox {
+    public:
+        using iterator = std::vector<message>::iterator;
+        using const_iterator = std::vector<message>::const_iterator;
     private:
-        std::multimap<message_type, message> m_messages; ///< Multimap of messages.
+        std::vector<message> m_messages; ///< Multimap of messages.
 
     public:
         /// @brief Default constructor for the inbox class.
@@ -32,7 +44,11 @@ namespace core {
         /// @brief Check if the inbox has messages of a specific type.
         /// @param type Type of the messages to check for.
         /// @return True if the inbox has messages of the specified type, false otherwise.
-        bool has_messages_of_type(message_type type) const;
+        const_iterator has_messages_of_type(message_type type) const;
+        iterator has_messages_of_type(message_type type);
+
+        const_iterator has_messages_from(int id) const;
+        iterator has_messages_from(int id);
 
         /// @brief Receive a message and add it to the inbox.
         /// @param msg The message to receive.
@@ -43,33 +59,43 @@ namespace core {
 
         /// @brief Get the multimap of messages.
         /// @return Const reference to the multimap of messages.
-        const std::multimap<message_type, message>& messages() const { return m_messages; }
+        const std::vector<message>& messages() const { return m_messages; }
 
         /// @brief Get the multimap of messages.
         /// @return Reference to the multimap of messages.
-        std::multimap<message_type, message>& messages() { return m_messages; }
+        std::vector<message>& messages() { return m_messages; }
     };
 
     /// @brief Class for sending messages to entities.
-    class message_sender {
+    class message_dispatcher {
     private:
-        static message_sender* s_instance; ///< Singleton instance of the message sender.
+        static message_dispatcher* s_instance; ///< Singleton instance of the message sender.
+
+        // container::pqueue<message, message_cmp> m_message_queue;
 
     public:
         /// @brief Constructor for the message sender class.
-        message_sender();
+        message_dispatcher();
 
         /// @brief Default destructor for the message sender class.
-        ~message_sender() = default;
+        ~message_dispatcher() = default;
 
         /// @brief Get the singleton instance of the message sender.
         /// @return Singleton instance of the message sender.
-        static message_sender* instance() { return s_instance; }
+        static message_dispatcher* instance() { return s_instance; }
 
         /// @brief Send a message to all entities.
         /// @param type Type of the message to send.
         /// @param sender_id ID of the sender.
-        void send_to_everyone(message_type type, int sender_id);
+        /// @param receiver ID of the receiver
+        void send_to(message_type type, int sender_id, int receiver_id, int delay);
+
+        /// @brief Send a message to all entities.
+        /// @param type Type of the message to send.
+        /// @param sender_id ID of the sender.
+        void send_to_everyone(message_type type, int sender_id, int delay);
+
+        // void update();
     };
 
 } // namespace core

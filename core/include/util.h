@@ -76,7 +76,9 @@ namespace core {
         float random_float(float min, float max);
 
         loc_type loc_by(state_type s);
+        loc_type loc_by(message_type m);
         state_type state_by(loc_type l);
+        state_type state_by(message_type m);
 
     }
 
