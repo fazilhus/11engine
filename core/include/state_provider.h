@@ -17,6 +17,7 @@ namespace core {
     private:
         static state_provider* s_instance; ///< Singleton instance
 
+        std::shared_ptr<istate<human>> m_global_state;
         std::shared_ptr<istate<human>> m_state; ///< Instances of all posible states
 
     public:
@@ -28,10 +29,19 @@ namespace core {
         /// @return Pointer to the singleton instance of the state_provider.
         static state_provider* instance() { return s_instance; }
 
+        /// @brief 'getter' for global_state instances
+        /// @param state controls instance of which state is going to be accessed
+        /// @return shared_ptr to the global_state instance
+        const std::shared_ptr<istate<human>>& get_global_state() const {
+            return m_global_state;
+        }
+
         /// @brief 'getter' for state instances
         /// @param state controls instance of which state is going to be accessed
         /// @return shared_ptr to the state instance
-        const std::shared_ptr<istate<human>>& get_state();
+        const std::shared_ptr<istate<human>>& get_state() const {
+            return m_state;
+        }
     };
 
 } // namespace core

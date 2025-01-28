@@ -84,14 +84,21 @@ namespace core {
         while (!m_entities_to_remove.empty());
     }
 
+    void travel_data::start_travelling_to(loc_type l, int d) {
+        dest = l;
+        travelled = 0;
+        total = d;
+    }
+
     human::human(int id, const std::string& name)
         : entity(id, name) {
             m_location = loc_type::home;
+            m_global_state = state_provider::instance()->get_global_state();
             m_state = state_provider::instance()->get_state();
             m_curr_state = state_type::resting;
             m_next_state = state_type::none;
             m_prev_state = state_type::none;
-            m_money = need(util::random_int(25, 60), 0, 100, 200, 1000);
+            m_money = need(util::random_int(25, 60), 0, 35, 85, 1000);
             m_hunger = need(util::random_int(10, 35), 0, 35, 65, 100);
             m_thirst = need(util::random_int(10, 35), 0, 35, 65, 100);
             m_fatigue = need(util::random_int(10, 35), 0, 20, 60, 100);
@@ -105,6 +112,11 @@ namespace core {
 
     void human::update_stage1() {
         m_cycles++;
+        if (m_global_state) {
+            m_global_state->execute(this);
+            m_global_state->make_decision(this);
+        }
+
         if (m_state) {
             m_state->execute(this);
             m_state->make_decision(this);
@@ -112,6 +124,10 @@ namespace core {
     }
 
     void human::update_stage2() {
+        if (m_global_state) {
+            m_global_state->process_messages(this);
+            m_global_state->change_state(this);
+        }
         if (m_state) {
             m_state->process_messages(this);
             m_state->change_state(this);

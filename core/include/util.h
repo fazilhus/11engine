@@ -14,6 +14,7 @@ namespace core {
         drinking,
         partying,
         shopping,
+        travelling,
         num_states
     };
 
@@ -27,6 +28,7 @@ namespace core {
         bar,
         party,
         mall,
+        road,
         num_locs
     };
 
@@ -74,6 +76,7 @@ namespace core {
         float random_float(float min, float max);
 
         loc_type loc_by(state_type s);
+        state_type state_by(loc_type l);
 
     }
 

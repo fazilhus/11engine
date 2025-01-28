@@ -54,7 +54,7 @@ namespace core {
 		m_entity_manager = new entity_manager();
 		m_message_sender = new message_sender();
 
-		for (int i = 0; i < 1000; ++i) {
+		for (int i = 0; i < 10; ++i) {
 			m_entity_manager->add_entity(std::make_unique<human>(i, std::to_string(i)));
 		}
 

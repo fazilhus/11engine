@@ -21,6 +21,8 @@ namespace core::util {
             return "Partying";
         case state_type::shopping:
             return "Shopping";
+        case state_type::travelling:
+            return "Travelling";
         default:
             return "Unknown";
         }
@@ -42,6 +44,8 @@ namespace core::util {
             return "Party";
         case loc_type::mall:
             return "Mall";
+        case loc_type::road:
+            return "Road";
         default:
             return "Unknown";
         }
@@ -76,8 +80,8 @@ namespace core::util {
 
     loc_type loc_by(state_type s) {
         switch (s) {
-        case state_type::resting:
-            return loc_type::home;
+            case state_type::resting:
+                return loc_type::home;
             case state_type::working_at_construction:
                 return loc_type::construction;
             case state_type::working_at_office:
@@ -90,8 +94,34 @@ namespace core::util {
                 return loc_type::party;
             case state_type::shopping:
                 return loc_type::mall;
+            case state_type::travelling:
+                return loc_type::road;
             default:
                 assert(false && "unreachable state");
+        }
+    }
+
+    state_type state_by(loc_type l) {
+        switch (l) {
+            case loc_type::home:
+                return state_type::resting;
+            case loc_type::construction:
+                return state_type::working_at_construction;
+            case loc_type::office:
+                return state_type::working_at_office;
+            case loc_type::restaurant:
+                return state_type::eating;
+            case loc_type::bar:
+                return state_type::drinking;
+            case loc_type::party:
+                return state_type::partying;
+            case loc_type::mall:
+                return state_type::shopping;
+            case loc_type::road:
+                return state_type::travelling;
+            default: {
+                assert(false && "unreachable location");
+            }
         }
     }
 

@@ -96,6 +96,14 @@ namespace core {
         void remove_entities();
     };
 
+    struct travel_data {
+        int travelled = 0;
+        int total = 0;
+        loc_type dest = loc_type::none;
+
+        void start_travelling_to(loc_type l, int d);
+    };
+
     template <typename entity_type>
     class istate;
 
@@ -112,10 +120,13 @@ namespace core {
         long long m_cycles; ///< Number of cycles the human has lived.
 
     private:
+        std::shared_ptr<istate<human>> m_global_state;
         std::shared_ptr<istate<human>> m_state; ///< Current state of the human.
         state_type m_curr_state;
         state_type m_next_state; ///< Next state of the human.
         state_type m_prev_state;
+
+        travel_data m_travel;
 
     public:
         /// @brief Constructor for the human class.
@@ -158,6 +169,9 @@ namespace core {
         /// @brief Set the previous state of the human.
         /// @param state Previous state of the human.
         void set_prev_state(state_type state) { m_prev_state = state; }
+
+        const travel_data& travel() const { return m_travel; }
+        travel_data& travel() { return m_travel; }
 
         /// @brief Check if the human is dead.
         /// @return True if the human is dead, false otherwise.
