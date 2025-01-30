@@ -75,9 +75,21 @@ namespace core {
         /// @return A random float between min and max.
         float random_float(float min, float max);
 
+        /// @brief Location from State
+        /// @param s State
+        /// @return Location
         loc_type loc_by(state_type s);
+        /// @brief Location from Message
+        /// @param m Message
+        /// @return Location
         loc_type loc_by(message_type m);
+        /// @brief State from Location
+        /// @param l Location
+        /// @return State
         state_type state_by(loc_type l);
+        /// @brief State from Message
+        /// @param m Message
+        /// @return State
         state_type state_by(message_type m);
 
     }

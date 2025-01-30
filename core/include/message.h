@@ -12,8 +12,8 @@ namespace core {
         message_type m_type; ///< Type of the message.
         int m_sender_id; ///< ID of the sender.
         int m_receiver_id; ///< ID of the receiver.
-        int m_delay;
-        int m_waited;
+        int m_delay; ///< some time on the future
+        // int m_waited; 
     };
 
     //struct message_cmp {
@@ -43,11 +43,22 @@ namespace core {
 
         /// @brief Check if the inbox has messages of a specific type.
         /// @param type Type of the messages to check for.
-        /// @return True if the inbox has messages of the specified type, false otherwise.
+        /// @return const_iterator
         const_iterator has_messages_of_type(message_type type) const;
+
+        /// @brief Check if the inbox has messages of a specific type.
+        /// @param type Type of the messages to check for.
+        /// @return iterator
         iterator has_messages_of_type(message_type type);
 
+        /// @brief Check if the inbox has messages of a specific type.
+        /// @param id Sender of the messages to check for.
+        /// @return const_iterator
         const_iterator has_messages_from(int id) const;
+
+        /// @brief Check if the inbox has messages of a specific type.
+        /// @param id Sender of the messages to check for.
+        /// @return iterator
         iterator has_messages_from(int id);
 
         /// @brief Receive a message and add it to the inbox.

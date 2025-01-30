@@ -22,14 +22,14 @@ namespace core {
         timer_manager* m_timer_manager; ///< Timer manager for the app.
         entity_manager* m_entity_manager; ///< Entity manager for the app.
         message_dispatcher* m_message_dispatch; ///< Message sender for the app.
-        map* m_map;
+        map* m_map; ///< A map singleton
 
         ui::button* m_button; ///< UI button for the app.
         ui::slider* m_slider; ///< UI slider for the app.
 
         float timer; ///< Timer for the app.
         float timer_max; ///< Maximum value for the timer.
-        long long cycles;
+        long long cycles; ///< amount of simulation ticks
 
     public:
         /// @brief Constructor for the app class.

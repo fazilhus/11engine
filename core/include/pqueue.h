@@ -7,27 +7,62 @@
 
 namespace core::container {
 
+    /// A priority queue implemented using a std::vector.
+    /// \tparam T The type of elements stored in the priority queue.
+    /// \tparam Comp The comparison functor used to order the elements.
     template <typename T, typename Comp>
     class pqueue {
     public:
         using iterator = typename std::vector<T>::iterator;
         using const_iterator = typename std::vector<T>::const_iterator;
 
+        /// Constructs an empty priority queue.
         pqueue();
         ~pqueue() = default;
 
+        /// Pushes a new element onto the priority queue.
+        /// \param value The value of the element to push.
         void push(const T& value);
+
+        /// Constructs and pushes a new element onto the priority queue.
+        /// \tparam Args The types of the arguments to forward to the constructor of T.
+        /// \param args The arguments to forward to the constructor of T.
         template <typename... Args>
         void emplace(Args&&... args);
+
+        /// Removes the top element from the priority queue.
         void pop();
+
+        /// Returns a reference to the top element in the priority queue.
+        /// \return A reference to the top element.
         const T& top() const;
+
+        /// Returns a reference to the top element in the priority queue.
+        /// \return A reference to the top element.
         T& top();
+
+        /// Checks if the priority queue is empty.
+        /// \return True if the priority queue is empty, false otherwise.
         bool empty() const;
+
+        /// Returns the number of elements in the priority queue.
+        /// \return The number of elements.
         std::size_t size() const;
 
+        /// Returns an iterator to the beginning of the priority queue.
+        /// \return An iterator to the beginning.
         iterator begin();
+
+        /// Returns an iterator to the end of the priority queue.
+        /// \return An iterator to the end.
         iterator end();
+
+        /// Returns a const iterator to the beginning of the priority queue.
+        /// \return A const iterator to the beginning.
         const_iterator begin() const;
+
+        /// Returns a const iterator to the end of the priority queue.
+        /// \return A const iterator to the end.
         const_iterator end() const;
 
     private:

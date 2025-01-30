@@ -58,7 +58,14 @@ namespace core {
         /// @brief Send an invite of a specific type.
         /// @param type Type of the invite.
         /// @param sender_id ID of the sender.
+        /// @param delay a time in the future
         void send_invite(message_type type, int sender_id, int delay);
+
+        /// @brief Send an invite of a specific type.
+        /// @param type Type of the invite.
+        /// @param sender_id ID of the sender.
+        /// @param receiver_id ID of the receiver
+        /// @param delay a time in the future
         void send_invite(message_type type, int sender_id, int receiver_id, int delay);
     };
 
@@ -114,13 +121,13 @@ namespace core {
         long long m_cycles; ///< Number of cycles the human has lived.
 
     private:
-        std::shared_ptr<istate<human>> m_global_state;
-        std::shared_ptr<istate<human>> m_state; ///< Current state of the human.
-        state_type m_curr_state;
+        std::shared_ptr<istate<human>> m_global_state; ///< A reference to a current global state of the human.
+        std::shared_ptr<istate<human>> m_state; ///< A reference to a current state of the human.
+        state_type m_curr_state; ///< Current state of the human
         state_type m_next_state; ///< Next state of the human.
-        state_type m_prev_state;
+        state_type m_prev_state; ///< Previous state of the human.
 
-        travel_data m_travel;
+        travel_data m_travel; ///< travel data
 
     public:
         /// @brief Constructor for the human class.
