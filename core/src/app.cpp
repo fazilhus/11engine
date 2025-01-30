@@ -62,7 +62,7 @@ namespace core {
 #ifdef DEBUG
 		for (int i = 0; i < 100; ++i) {
 #else
-		for (int i = 0; i < 5000; ++i) {
+		for (int i = 0; i < 1000; ++i) {
 #endif
 			m_entity_manager->add_entity(std::make_unique<human>(i, std::to_string(i)));
 		}
