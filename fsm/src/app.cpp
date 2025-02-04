@@ -13,7 +13,7 @@ namespace core {
 	app* app::s_instance = nullptr;
 
 	app::app() {
-		InitWindow(1280, 720, "11Engine");
+		InitWindow(1280, 720, "11Engine: FSM");
 		SetTargetFPS(60);
 
 		s_instance = this;
