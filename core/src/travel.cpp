@@ -4,12 +4,12 @@ namespace core {
 
     void travel_data::start_travelling(loc_type from, loc_type to) {
         m_travelled = 0;
-        m_link = {from, to, map::instance()->distance(from, to)};
+        m_link = {from, to, graph::instance()->distance(from, to)};
     }
 
-    map* map::s_instance = nullptr;
+    graph* graph::s_instance = nullptr;
 
-    map::map() {
+    graph::graph() {
         s_instance = this;
 
     int n = static_cast<int>(loc_type::num_locs);

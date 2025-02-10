@@ -57,7 +57,7 @@ namespace core {
 		m_timer_manager = new timer_manager();
 		m_entity_manager = new entity_manager();
 		m_message_dispatch = new message_dispatcher();
-		m_map = new map();
+		m_map = new graph();
 
 #ifdef DEBUG
 		for (int i = 0; i < 4; ++i) {

@@ -36,21 +36,21 @@ namespace core {
         int dist() const { return m_link.m_distance; }
     };
 
-    /// Represents a map with distances between locations.
-    class map {
+    /// Represents a graph with distances between locations.
+    class graph {
     private:
-        static map* s_instance; ///< The singleton instance of the map.
+        static graph* s_instance; ///< The singleton instance of the graph.
 
         std::array<std::array<int, static_cast<int>(loc_type::num_locs)>, static_cast<int>(loc_type::num_locs)> m_map; ///< The 2D array representing distances between locations.
 
     public:
-        /// Constructs a map and initializes the singleton instance.
-        map();
-        ~map() = default;
+        /// Constructs a graph and initializes the singleton instance.
+        graph();
+        ~graph() = default;
 
-        /// Gets the singleton instance of the map.
+        /// Gets the singleton instance of the graph.
         /// \return The singleton instance.
-        static map* instance() { return s_instance; }
+        static graph* instance() { return s_instance; }
 
         /// Gets the distance between two locations.
         /// \param from The starting location.
