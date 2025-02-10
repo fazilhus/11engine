@@ -18,12 +18,10 @@ namespace core {
 
 		s_instance = this;
 
-		is_running = true;
-		is_paused = true;
+		m_is_running = true;
+		m_is_paused = true;
 
-		timer = 0;
-		timer_max = 0.01f;
-		cycles = 0;
+		m_timer = 0;
 	}
 
 	app::~app() {
@@ -36,12 +34,12 @@ namespace core {
 		while (!WindowShouldClose() && !should_quit()) {
 			update_ui();
 
-			if (!is_paused) {
+			if (!m_is_paused) {
 				update();
 			}
 
-			if (cycles >= 1728000) { // roughly 8 hours
-				is_paused = true;
+			if (timer_manager::instance()->clock() >= 1728000) { // roughly 8 hours
+				m_is_paused = true;
 			}
 
 			render();
@@ -60,7 +58,7 @@ namespace core {
 		m_map = new map();
 
 #ifdef DEBUG
-		for (int i = 0; i < 100; ++i) {
+		for (int i = 0; i < 4; ++i) {
 #else
 		for (int i = 0; i < 1000; ++i) {
 #endif
@@ -76,8 +74,10 @@ namespace core {
 		delete m_timer_manager;
 		delete m_entity_manager;
 		delete m_message_dispatch;
+		delete m_map;
 
 		delete m_button;
+		delete m_slider;
 	}
 
 	void app::update_ui() {
@@ -85,20 +85,19 @@ namespace core {
 		m_slider->update();
 
 		if (m_button->is_pressed()) {
-			is_paused = !is_paused;
+			m_is_paused = !m_is_paused;
 		}
 	}
 
 	void app::update() {
-		timer += GetFrameTime();
+		m_timer += GetFrameTime();
 		
-		if (timer >= m_slider->value()) {
-			timer = 0;
-			cycles++;
+		if (m_timer >= m_slider->value()) {
+			m_timer = 0;
 
-			// std::cout << std::endl;
+			std::cout << std::endl;
 			m_timer_manager->update();
-			// m_message_dispatch->update();
+			m_message_dispatch->update();
 			m_entity_manager->update();
 
 		}
@@ -117,9 +116,9 @@ namespace core {
 		m_button->draw();
 		m_slider->draw();
 
-		DrawText(("Cycles: " + std::to_string(cycles)).c_str(), 900, 600, 20, WHITE);
+		DrawText(("Cycles: " + std::to_string(timer_manager::instance()->clock())).c_str(), 900, 600, 20, WHITE);
 
-		if (is_paused) {
+		if (m_is_paused) {
 			Vector2 label_size = MeasureTextEx(GetFontDefault(), "PAUSED", 30, 1);
 			DrawText("PAUSED", 640 - static_cast<int>(label_size.x) / 2, 360 - static_cast<int>(label_size.y) / 2, 30, RED);
 		}

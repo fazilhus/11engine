@@ -15,8 +15,8 @@ namespace core {
     class app {
     private:
         static app* s_instance; ///< Singleton instance of the app.
-        bool is_running; ///< Flag indicating if the app is running.
-        bool is_paused; ///< Flag indicating if the app is paused.
+        bool m_is_running; ///< Flag indicating if the app is running.
+        bool m_is_paused; ///< Flag indicating if the app is paused.
 
         state_provider* m_fsm; ///< Finite state machine for the app.
         timer_manager* m_timer_manager; ///< Timer manager for the app.
@@ -27,9 +27,7 @@ namespace core {
         ui::button* m_button; ///< UI button for the app.
         ui::slider* m_slider; ///< UI slider for the app.
 
-        float timer; ///< Timer for the app.
-        float timer_max; ///< Maximum value for the timer.
-        long long cycles; ///< amount of simulation ticks
+        float m_timer; ///< Timer for the app.
 
     public:
         /// @brief Constructor for the app class.

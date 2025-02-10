@@ -1,17 +1,21 @@
 #pragma once
 
+#include "button.h"
+#include "slider.h"
+
 namespace core {
 
     /// @brief Class representing the main application.
     class app {
     private:
         static app* s_instance; ///< Singleton instance of the app.
-        bool is_running; ///< Flag indicating if the app is running.
-        bool is_paused; ///< Flag indicating if the app is paused.
+        bool m_is_running; ///< Flag indicating if the app is running.
+        bool m_is_paused; ///< Flag indicating if the app is paused.
 
-        float timer; ///< Timer for the app.
-        float timer_max; ///< Maximum value for the timer.
-        long long cycles; ///< amount of simulation ticks
+        float m_timer; ///< Timer for the app.
+
+        ui::button* m_button; ///< UI button for the app.
+        ui::slider* m_slider; ///< UI slider for the app.
 
     public:
         /// @brief Constructor for the app class.

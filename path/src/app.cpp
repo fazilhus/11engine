@@ -15,12 +15,10 @@ namespace core {
 
 		s_instance = this;
 
-		is_running = true;
-		is_paused = true;
+		m_is_running = true;
+		m_is_paused = true;
 
-		timer = 0;
-		timer_max = 0.01f;
-		cycles = 0;
+		m_timer = 0;
 	}
 
 	app::~app() {
@@ -33,12 +31,8 @@ namespace core {
 		while (!WindowShouldClose()) {
 			update_ui();
 
-			if (!is_paused) {
+			if (!m_is_paused) {
 				update();
-			}
-
-			if (cycles >= 1728000) { // roughly 8 hours
-				is_paused = true;
 			}
 
 			render();
@@ -58,11 +52,10 @@ namespace core {
 	}
 
 	void app::update() {
-		timer += GetFrameTime();
+		m_timer += GetFrameTime();
 		
-		if (timer >= 0.5f) {
-			timer = 0;
-			cycles++;
+		if (m_timer >= 0.5f) {
+			m_timer = 0;
 		}
 	}
 
