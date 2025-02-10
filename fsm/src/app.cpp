@@ -5,7 +5,7 @@
 
 #include "state_provider.h"
 #include "timer.h"
-#include "state.h"
+#include "hstate.h"
 #include "util.h"
 
 namespace core {
@@ -52,6 +52,8 @@ namespace core {
 		util::init_random();
 
 		m_fsm = new state_provider();
+		m_fsm->set_global_state<global_state>();
+		m_fsm->set_state<state>();
 		m_timer_manager = new timer_manager();
 		m_entity_manager = new entity_manager();
 		m_message_dispatch = new message_dispatcher();

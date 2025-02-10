@@ -36,11 +36,21 @@ namespace core {
             return m_global_state;
         }
 
+        template <typename state_type>
+        void set_global_state() {
+            m_global_state = std::make_shared<state_type>();
+        }
+
         /// @brief 'getter' for state instances
         /// @param state controls instance of which state is going to be accessed
         /// @return shared_ptr to the state instance
         const std::shared_ptr<istate<human>>& get_state() const {
             return m_state;
+        }
+
+        template <typename state_type>
+        void set_state() {
+            m_state = std::make_shared<state_type>();
         }
     };
 
