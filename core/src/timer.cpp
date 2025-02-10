@@ -19,9 +19,12 @@ namespace core {
 
     timer_manager::timer_manager() {
         s_instance = this;
+        m_clock = 0;
     }
 
     void timer_manager::update() {
+        m_clock++;
+
         for (auto& t : m_timers) {
             t.update();
 

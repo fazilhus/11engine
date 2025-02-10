@@ -59,14 +59,14 @@ namespace core {
         /// @param type Type of the invite.
         /// @param sender_id ID of the sender.
         /// @param delay a time in the future
-        void send_invite(message_type type, int sender_id, int delay);
+        void send_invite(message_type type, int sender_id, int timestamp, int delay = 0);
 
         /// @brief Send an invite of a specific type.
         /// @param type Type of the invite.
         /// @param sender_id ID of the sender.
         /// @param receiver_id ID of the receiver
         /// @param delay a time in the future
-        void send_invite(message_type type, int sender_id, int receiver_id, int delay);
+        void send_invite(message_type type, int sender_id, int receiver_id, int timestamp, int delay = 0);
     };
 
     /// @brief Manager class for handling all entities in the game.

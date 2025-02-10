@@ -2,7 +2,7 @@
 
 #include <vector>
 
-// #include "pqueue.h"
+#include "pqueue.h"
 #include "util.h"
 
 namespace core {
@@ -12,15 +12,16 @@ namespace core {
         message_type m_type; ///< Type of the message.
         int m_sender_id; ///< ID of the sender.
         int m_receiver_id; ///< ID of the receiver.
-        int m_delay; ///< some time on the future
-        // int m_waited; 
+        int m_timestamp; ///< some time on the future
+        int m_delay; ///< delay of the message
+        int m_waited;
     };
 
-    //struct message_cmp {
-    //    bool operator()(const message& a, const message& b) const {
-    //        return a.m_delay < b.m_delay;
-    //    }
-    //};
+    struct message_cmp {
+       bool operator()(const message& a, const message& b) const {
+           return a.m_delay < b.m_delay;
+       }
+    };
 
     /// @brief Class representing an inbox for receiving messages.
     class inbox {
@@ -82,7 +83,7 @@ namespace core {
     private:
         static message_dispatcher* s_instance; ///< Singleton instance of the message sender.
 
-        // container::pqueue<message, message_cmp> m_message_queue;
+        container::pqueue<message, message_cmp> m_message_queue;
 
     public:
         /// @brief Constructor for the message sender class.
@@ -99,14 +100,14 @@ namespace core {
         /// @param type Type of the message to send.
         /// @param sender_id ID of the sender.
         /// @param receiver ID of the receiver
-        void send_to(message_type type, int sender_id, int receiver_id, int delay);
+        void send_to(message_type type, int sender_id, int receiver_id, int timestamp, int delay = 0);
 
         /// @brief Send a message to all entities.
         /// @param type Type of the message to send.
         /// @param sender_id ID of the sender.
-        void send_to_everyone(message_type type, int sender_id, int delay);
+        void send_to_everyone(message_type type, int sender_id, int timestamp, int delay = 0);
 
-        // void update();
+        void update();
     };
 
 } // namespace core

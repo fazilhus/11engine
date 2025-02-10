@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "entity.h"
+#include "timer.h"
 #include "message.h"
 
 namespace core {
@@ -35,7 +36,7 @@ namespace core {
     }
 
     void state::enter(human* h) {
-        //std::cout << h->name() << " is entering state " << util::str(h->curr_state()) << '\n';
+        std::cout << h->name() << " is entering state " << util::str(h->curr_state()) << '\n';
         h->m_location = util::loc_by(h->curr_state());
     }
 
@@ -43,7 +44,7 @@ namespace core {
         if (h->curr_state() == state_type::travelling) {
             auto& t = h->travel();
             t.m_travelled++;
-            //std::cout << h->name() << " is " << util::str(h->curr_state()) << " to " << util::str(t.dest()) << ' ' << t.m_travelled << '/' << t.dist() << '\n';
+            std::cout << h->name() << " is " << util::str(h->curr_state()) << " to " << util::str(t.dest()) << ' ' << t.m_travelled << '/' << t.dist() << '\n';
         }
         else {
             switch (h->curr_state()) {
@@ -52,7 +53,7 @@ namespace core {
                     h->m_thirst += 1;
                     h->m_fatigue -= 16;
                     h->m_loneliness += 1;
-                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::working_at_construction: {
@@ -61,7 +62,7 @@ namespace core {
                     h->m_thirst += 1;
                     h->m_fatigue += 6;
                     h->m_loneliness += 1;
-                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::working_at_office: {
@@ -70,7 +71,7 @@ namespace core {
                     h->m_thirst += 1;
                     h->m_fatigue += 4;
                     h->m_loneliness -= 3;
-                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::eating: {
@@ -79,7 +80,7 @@ namespace core {
                     h->m_thirst -= 3;
                     // h->m_fatigue += 1;
                     h->m_loneliness -= 2;
-                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::drinking: {
@@ -88,7 +89,7 @@ namespace core {
                     h->m_thirst -= 11;
                     // h->m_fatigue += 1;
                     h->m_loneliness -= 4;
-                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::partying: {
@@ -97,7 +98,7 @@ namespace core {
                     h->m_thirst -= 6;
                     h->m_fatigue += 1;
                     h->m_loneliness -= 16;
-                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 case state_type::shopping: {
@@ -106,7 +107,7 @@ namespace core {
                     h->m_thirst += 1;
                     h->m_fatigue += 1;
                     h->m_loneliness += 1;
-                    //std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
+                    std::cout << h->name() << " is " << util::str(h->curr_state()) << '\n';
                     break;
                 }
                 default:
@@ -117,13 +118,13 @@ namespace core {
 
     void make_decision_by(human* h) {
         if (h->should_eat() && h->curr_state() != state_type::eating) {
-            int travel_time = map::instance()->distance(h->m_location, loc_type::restaurant);
+            int travel_time = timer_manager::instance()->clock() + map::instance()->distance(h->m_location, loc_type::restaurant);
             h->send_invite(message_type::go_eating, h->id(), travel_time);
             h->set_next_state(state_type::travelling);
             h->travel().start_travelling(h->m_location, loc_type::restaurant);
         }
         else if (h->should_drink() && h->curr_state() != state_type::drinking) {
-            int travel_time = map::instance()->distance(h->m_location, loc_type::bar);
+            int travel_time = timer_manager::instance()->clock() + map::instance()->distance(h->m_location, loc_type::bar);
             h->send_invite(message_type::go_drinking, h->id(), travel_time);
             h->set_next_state(state_type::travelling);
             h->travel().start_travelling(h->m_location, loc_type::bar);
@@ -133,13 +134,13 @@ namespace core {
             h->travel().start_travelling(h->m_location, loc_type::home);
         }
         else if (h->should_party() && h->curr_state() != state_type::partying) {
-            int travel_time = map::instance()->distance(h->m_location, loc_type::party);
+            int travel_time = timer_manager::instance()->clock() + map::instance()->distance(h->m_location, loc_type::party);
             h->send_invite(message_type::go_partying, h->id(), travel_time);
             h->set_next_state(state_type::travelling);
             h->travel().start_travelling(h->m_location, loc_type::party);
         }
         else if (h->should_shop() && h->curr_state() != state_type::shopping) {
-            int travel_time = map::instance()->distance(h->m_location, loc_type::mall);
+            int travel_time = timer_manager::instance()->clock() + map::instance()->distance(h->m_location, loc_type::mall);
             h->send_invite(message_type::go_shopping, h->id(), travel_time);
             h->set_next_state(state_type::travelling);
             h->travel().start_travelling(h->m_location, loc_type::mall);
@@ -206,14 +207,14 @@ namespace core {
 
     void process_message(human* h, const message& msg) {
         loc_type dest = util::loc_by(msg.m_type);
-        int travel_time = map::instance()->distance(h->m_location, dest);
-        if (msg.m_delay == travel_time) {
+        int travel_time = timer_manager::instance()->clock() + map::instance()->distance(h->m_location, dest);
+        if (msg.m_timestamp == travel_time) {
             h->accept_invite(msg.m_type);
             h->set_next_state(util::state_by(msg.m_type));
             h->travel().start_travelling(h->m_location, dest);
         }
-        else if (msg.m_delay > travel_time) {
-            h->send_invite(msg.m_type, h->id(), h->id(), msg.m_delay - travel_time);
+        else if (msg.m_timestamp > travel_time) {
+            h->send_invite(msg.m_type, h->id(), h->id(), msg.m_timestamp, msg.m_timestamp - travel_time);
         }
     }
 
@@ -260,7 +261,7 @@ namespace core {
     }
 
     void state::exit(human* h) {
-        //std::cout << h->name() << " is exiting state " << util::str(h->curr_state()) << '\n';
+        std::cout << h->name() << " is exiting state " << util::str(h->curr_state()) << '\n';
     }
 
 } // namespace core

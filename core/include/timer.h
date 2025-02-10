@@ -39,6 +39,7 @@ namespace core {
     class timer_manager {
     private:
         static timer_manager* s_instance; ///< Singleton instance of the timer manager.
+        long long m_clock;
 
         std::vector<timer> m_timers; ///< List of all currently running timers.
 
@@ -52,6 +53,8 @@ namespace core {
         /// @brief Get the singleton instance of the timer manager.
         /// @return Singleton instance of the timer manager.
         static timer_manager* instance() { return s_instance; }
+
+        long long clock() const { return m_clock; }
 
         /// @brief Update all timers managed by the timer manager.
         void update();

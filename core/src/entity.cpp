@@ -17,18 +17,17 @@ namespace core {
     }
 
     void entity::accept_invite(message_type type) {
-        //std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
-        // m_inbox.messages().erase(type);
+        std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
     }
 
-    void entity::send_invite(message_type type, int sender_id, int delay) {
-        //std::cout << m_name << " sent invite to " << util::str(type) << " in " << delay << std::endl;
-        message_dispatcher::instance()->send_to_everyone(type, sender_id, delay);
+    void entity::send_invite(message_type type, int sender_id, int timestamp, int delay) {
+        std::cout << m_name << " sent invite to " << util::str(type) << " in " << timestamp << std::endl;
+        message_dispatcher::instance()->send_to_everyone(type, sender_id, timestamp, delay);
     }
 
-    void entity::send_invite(message_type type, int sender_id, int receiver_id, int delay) {
-        //std::cout << m_name << " sent invite to " << util::str(type) << " in " << delay << " to " << receiver_id <<  std::endl;
-        message_dispatcher::instance()->send_to(type, sender_id, receiver_id, delay);
+    void entity::send_invite(message_type type, int sender_id, int receiver_id, int timestamp, int delay) {
+        std::cout << m_name << " sent invite to " << util::str(type) << " in " << timestamp << " to " << receiver_id <<  std::endl;
+        message_dispatcher::instance()->send_to(type, sender_id, receiver_id, timestamp, delay);
     }
 
     entity_manager* entity_manager::s_instance = nullptr;
