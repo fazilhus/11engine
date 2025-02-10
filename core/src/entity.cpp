@@ -1,9 +1,8 @@
 #include "entity.h"
 
 #include <cassert>
+#include <iostream>
 
-#include "state.h"
-#include "state_provider.h"
 #include "message.h"
 #include "util.h"
 
@@ -16,18 +15,18 @@ namespace core {
     entity::~entity() {
     }
 
-    void entity::accept_invite(message_type type) {
-        std::cout << m_name << " accepted invite to " << util::str(type) << std::endl;
+    void entity::accept_invite(uint8_t msg_type) {
+        std::cout << m_name << " accepted invite to " << msg_type << std::endl;
     }
 
-    void entity::send_invite(message_type type, int sender_id, int timestamp, int delay) {
-        std::cout << m_name << " sent invite to " << util::str(type) << " in " << timestamp << std::endl;
-        message_dispatcher::instance()->send_to_everyone(type, sender_id, timestamp, delay);
+    void entity::send_invite(uint8_t msg_type, int sender_id, long long timestamp, int delay) {
+        std::cout << m_name << " sent invite to " << msg_type << " in " << timestamp << std::endl;
+        message_dispatcher::instance()->send_to_everyone(msg_type, sender_id, timestamp, delay);
     }
 
-    void entity::send_invite(message_type type, int sender_id, int receiver_id, int timestamp, int delay) {
-        std::cout << m_name << " sent invite to " << util::str(type) << " in " << timestamp << " to " << receiver_id <<  std::endl;
-        message_dispatcher::instance()->send_to(type, sender_id, receiver_id, timestamp, delay);
+    void entity::send_invite(uint8_t msg_type, int sender_id, int receiver_id, long long timestamp, int delay) {
+        std::cout << m_name << " sent invite to " << msg_type << " in " << timestamp << " to " << receiver_id <<  std::endl;
+        message_dispatcher::instance()->send_to(msg_type, sender_id, receiver_id, timestamp, delay);
     }
 
     entity_manager* entity_manager::s_instance = nullptr;
@@ -55,17 +54,7 @@ namespace core {
         for (auto& e : m_entities) {
             e->update_stage2();
 
-            auto h = dynamic_cast<human*>(e.get());
-            if (!h) continue;
-
-            if (h->is_dead()) {
-                std::cout << "Human " << h->name() << " is dead :(" << std::endl;
-				std::cout << "Human lived for " << h->m_cycles << " cycles" << std::endl;
-				std::cout << "Wealth: " << h->m_money.str() << std::endl;
-				std::cout << "Hunger: " << h->m_hunger.str() << std::endl;
-				std::cout << "Thirst: " << h->m_thirst.str() << std::endl;
-				std::cout << "Fatigue: " << h->m_fatigue.str() << std::endl;
-				std::cout << "Loneliness: " << h->m_loneliness.str() << std::endl;
+            if (e->is_dead()) {
                 m_entities_to_remove.push(i);
             }
 
@@ -86,64 +75,6 @@ namespace core {
             }
         }
         while (!m_entities_to_remove.empty());
-    }
-
-    human::human(int id, const std::string& name)
-        : entity(id, name) {
-            m_location = loc_type::home;
-            m_global_state = state_provider::instance()->get_global_state();
-            m_state = state_provider::instance()->get_state();
-            m_curr_state = state_type::resting;
-            m_next_state = state_type::none;
-            m_prev_state = state_type::none;
-            m_money = need(util::random_int(25, 60), 0, 50, 100, 1000);
-            m_hunger = need(util::random_int(10, 35), 0, 30, 60, 100);
-            m_thirst = need(util::random_int(10, 35), 0, 30, 60, 100);
-            m_fatigue = need(util::random_int(10, 35), 0, 20, 60, 100);
-            m_loneliness = need(util::random_int(10, 35), 0, 35, 65, 100);
-            m_chance = util::random_float(0.33f, 0.66f);
-            m_cycles = 0;
-    }
-
-    human::~human() {
-    }
-
-    void human::update_stage1() {
-        m_cycles++;
-        if (m_global_state) {
-            m_global_state->execute(this);
-            m_global_state->make_decision(this);
-        }
-
-        if (m_state) {
-            m_state->execute(this);
-            m_state->make_decision(this);
-        }
-    }
-
-    void human::update_stage2() {
-        if (m_global_state) {
-            m_global_state->process_messages(this);
-            m_global_state->change_state(this);
-        }
-        if (m_state) {
-            m_state->process_messages(this);
-            m_state->change_state(this);
-        }
-        m_inbox.clear_messages();
-    }
-
-    void human::change_state() {
-        if (m_curr_state == m_next_state || m_next_state == state_type::none) {
-            return;
-        }
-
-        m_prev_state = m_curr_state;
-        m_state->exit(this);
-        m_curr_state = m_next_state;
-        // m_state = state_provider::instance()->get_state();
-        m_state->enter(this);
-        m_next_state = state_type::none;
     }
 
 } // namespace core

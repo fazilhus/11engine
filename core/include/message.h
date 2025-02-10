@@ -7,12 +7,12 @@
 
 namespace core {
 
-    /// @brief Struct representing a message.
+    /// @brief Struct representing a message. 
     struct message {
-        message_type m_type; ///< Type of the message.
+        uint8_t m_type; ///< Type of the message.
         int m_sender_id; ///< ID of the sender.
         int m_receiver_id; ///< ID of the receiver.
-        int m_timestamp; ///< some time on the future
+        long long m_timestamp; ///< some time on the future
         int m_delay; ///< delay of the message
         int m_waited;
     };
@@ -45,12 +45,12 @@ namespace core {
         /// @brief Check if the inbox has messages of a specific type.
         /// @param type Type of the messages to check for.
         /// @return const_iterator
-        const_iterator has_messages_of_type(message_type type) const;
+        const_iterator has_messages_of_type(uint8_t msg_type) const;
 
         /// @brief Check if the inbox has messages of a specific type.
         /// @param type Type of the messages to check for.
         /// @return iterator
-        iterator has_messages_of_type(message_type type);
+        iterator has_messages_of_type(uint8_t msg_type);
 
         /// @brief Check if the inbox has messages of a specific type.
         /// @param id Sender of the messages to check for.
@@ -100,12 +100,12 @@ namespace core {
         /// @param type Type of the message to send.
         /// @param sender_id ID of the sender.
         /// @param receiver ID of the receiver
-        void send_to(message_type type, int sender_id, int receiver_id, int timestamp, int delay = 0);
+        void send_to(uint8_t msg_type, int sender_id, int receiver_id, long long timestamp, int delay = 0);
 
         /// @brief Send a message to all entities.
         /// @param type Type of the message to send.
         /// @param sender_id ID of the sender.
-        void send_to_everyone(message_type type, int sender_id, int timestamp, int delay = 0);
+        void send_to_everyone(uint8_t msg_type, int sender_id, long long timestamp, int delay = 0);
 
         void update();
     };

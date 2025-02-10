@@ -6,7 +6,9 @@
 #include "state_provider.h"
 #include "timer.h"
 #include "hstate.h"
+#include "hentity.h"
 #include "util.h"
+#include "enum.h"
 
 namespace core {
 
@@ -57,7 +59,7 @@ namespace core {
 		m_timer_manager = new timer_manager();
 		m_entity_manager = new entity_manager();
 		m_message_dispatch = new message_dispatcher();
-		m_map = new graph();
+		m_map = new graph(loc_type_num);
 
 #ifdef DEBUG
 		for (int i = 0; i < 4; ++i) {
@@ -156,8 +158,8 @@ namespace core {
 
 	void app::draw_human(const human* h, int x, int y) const {
 		DrawText(("Name: " + h->name()).c_str(), x, y, 20, WHITE);
-		DrawText(("State: " + util::str(h->curr_state())).c_str(), x, y + 30, 20, WHITE);
-		DrawText(("Location: " + util::str(h->m_location)).c_str(), x, y + 60, 20, WHITE);
+		DrawText(("State: " + util::state_to_str(h->curr_state())).c_str(), x, y + 30, 20, WHITE);
+		DrawText(("Location: " + util::loc_to_str(h->m_location)).c_str(), x, y + 60, 20, WHITE);
 		DrawText(("Money: " + h->m_money.str()).c_str(), x, y + 100, 20, WHITE);
 		DrawText(("Hunger: " + h->m_hunger.str()).c_str(), x, y + 130, 20, WHITE);
 		DrawText(("Thirst: " + h->m_thirst.str()).c_str(), x, y + 160, 20, WHITE);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <array>
+#include <vector>
 
 #include "util.h"
 
@@ -8,8 +8,8 @@ namespace core {
 
     /// Represents a link between two locations with a distance.
     struct link {
-        loc_type m_from = loc_type::none; ///< The starting location.
-        loc_type m_to = loc_type::none; ///< The destination location.
+        uint8_t m_from = 0; ///< The starting location.
+        uint8_t m_to = 0; ///< The destination location.
         int m_distance = 0; ///< The distance between the locations.
     };
 
@@ -21,7 +21,7 @@ namespace core {
         /// Starts travelling from one location to another.
         /// \param from The starting location.
         /// \param to The destination location.
-        void start_travelling(loc_type from, loc_type to);
+        void start_travelling(uint8_t from, uint8_t to);
 
         /// Checks if the travel is finished.
         /// \return True if the travel is finished, false otherwise.
@@ -29,7 +29,7 @@ namespace core {
 
         /// Gets the destination location.
         /// \return The destination location.
-        loc_type dest() const { return m_link.m_to; }
+        uint8_t dest() const { return m_link.m_to; }
 
         /// Gets the distance of the travel.
         /// \return The distance of the travel.
@@ -41,11 +41,11 @@ namespace core {
     private:
         static graph* s_instance; ///< The singleton instance of the graph.
 
-        std::array<std::array<int, static_cast<int>(loc_type::num_locs)>, static_cast<int>(loc_type::num_locs)> m_map; ///< The 2D array representing distances between locations.
+        std::vector<std::vector<uint8_t>> m_map; ///< The 2D array representing distances between locations.
 
     public:
         /// Constructs a graph and initializes the singleton instance.
-        graph();
+        graph(uint8_t num_locs);
         ~graph() = default;
 
         /// Gets the singleton instance of the graph.
@@ -56,8 +56,8 @@ namespace core {
         /// \param from The starting location.
         /// \param to The destination location.
         /// \return The distance between the locations.
-        int distance(loc_type from, loc_type to) const {
-            return m_map[static_cast<int>(from)][static_cast<int>(to)];
+        int distance(uint8_t from, uint8_t to) const {
+            return m_map[from][to];
         }
     };
 
