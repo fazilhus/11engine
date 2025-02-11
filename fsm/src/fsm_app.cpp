@@ -1,4 +1,4 @@
-#include "app.h"
+#include "fsm_app.h"
 
 #include "raylib.h"
 #include <string>
@@ -59,7 +59,7 @@ namespace core {
 		m_timer_manager = new timer_manager();
 		m_entity_manager = new entity_manager();
 		m_message_dispatch = new message_dispatcher();
-		m_map = new graph(loc_type_num);
+		m_graph = new graph(loc_type_num);
 
 #ifdef DEBUG
 		for (int i = 0; i < 4; ++i) {
@@ -78,7 +78,7 @@ namespace core {
 		delete m_timer_manager;
 		delete m_entity_manager;
 		delete m_message_dispatch;
-		delete m_map;
+		delete m_graph;
 
 		delete m_button;
 		delete m_slider;

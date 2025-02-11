@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include "util.h"
-
 namespace core {
 
     /// Represents a link between two locations with a distance.
@@ -36,16 +34,19 @@ namespace core {
         int dist() const { return m_link.m_distance; }
     };
 
+    class map;
+
     /// Represents a graph with distances between locations.
     class graph {
     private:
         static graph* s_instance; ///< The singleton instance of the graph.
 
-        std::vector<std::vector<uint8_t>> m_map; ///< The 2D array representing distances between locations.
+        std::vector<std::vector<uint8_t>> m_graph; ///< The 2D array representing distances between locations.
 
     public:
         /// Constructs a graph and initializes the singleton instance.
         graph(uint8_t num_locs);
+        graph(const map& map);
         ~graph() = default;
 
         /// Gets the singleton instance of the graph.
@@ -57,7 +58,7 @@ namespace core {
         /// \param to The destination location.
         /// \return The distance between the locations.
         int distance(uint8_t from, uint8_t to) const {
-            return m_map[from][to];
+            return m_graph[from][to];
         }
     };
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "pmap.h"
+
 namespace core {
 
     /// @brief Class representing the main application.
@@ -10,6 +12,8 @@ namespace core {
         bool m_is_paused; ///< Flag indicating if the app is paused.
 
         float m_timer; ///< Timer for the app.
+
+        map* m_map;
 
     public:
         /// @brief Constructor for the app class.

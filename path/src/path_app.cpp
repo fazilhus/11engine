@@ -1,10 +1,12 @@
-#include "app.h"
+#include "path_app.h"
+
 
 #include "raylib.h"
-#include <string>
 #include <iostream>
+#include <filesystem>
 
 #include "util.h"
+#include "pmap.h"
 
 namespace core {
 
@@ -44,6 +46,8 @@ namespace core {
 
 	void app::init() {
 		util::init_random();
+
+		m_map = new map(std::filesystem::absolute("./path/res/Map1.txt"));
 	}
 
 	void app::deinit() {

@@ -22,7 +22,7 @@ namespace core {
         timer_manager* m_timer_manager; ///< Timer manager for the app.
         entity_manager* m_entity_manager; ///< Entity manager for the app.
         message_dispatcher* m_message_dispatch; ///< Message sender for the app.
-        graph* m_map; ///< A graph singleton
+        graph* m_graph; ///< A graph singleton
 
         ui::button* m_button; ///< UI button for the app.
         ui::slider* m_slider; ///< UI slider for the app.
