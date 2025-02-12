@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "enum.h"
+#include "pqueue.h"
 
 namespace core {
 
@@ -81,7 +82,7 @@ namespace core {
             std::vector<int> costs(m_tiles.size(), -1);
             costs[from->posy * m_ymax + from->posx] = 0;
             std::queue<std::pair<int, int>> q;
-            q.push({from->posx, from->posy});
+            q.emplace(from->posx, from->posy);
 
             while (!q.empty()) {
                 auto coords = q.front();
@@ -97,7 +98,7 @@ namespace core {
                     int travel_cost = costs[tile->posy * m_ymax + tile->posx] + cost;
                     if (-1 != current_cost && current_cost < travel_cost) continue;
                     costs[n_tile->posy * m_ymax + n_tile->posx] = travel_cost;
-                    q.push({n_tile->posx, n_tile->posy});
+                    q.emplace(n_tile->posx, n_tile->posy);
                 }
             }
 
@@ -123,13 +124,38 @@ namespace core {
             std::reverse(path.m_path.begin(), path.m_path.end());
             return path;
         }
-        
-        path<tile_t> _get_path_astar(const_reference from, const_reference to) const {
+
+        path<tile_t> _get_path_dijkstra(const_reference from, const_reference to) const {
+            std::vector<int> costs(m_tiles.size(), -1);
+            costs[from->posy * m_ymax + from->posx] = 0;
+            using connection = std::pair<int, std::pair<int, int>>;
+            auto comp = [](const connection& l, const connection& r) {
+                return l.first < r.first;
+            };
+            container::pqueue<connection, decltype(comp)> pq(comp);
+            pq.emplace(0, {from->posx, from->posy});
+
+            while (!pq.empty()) {
+                connection next = pq.front();
+                const auto& tile = get(next.second);
+                pq.pop();
+
+                //TODO
+                //if ()
+
+                for (auto i = 0; i < tile->m_neighbours.size(); i++) {
+                    const auto& next_tile = tile->m_neighbours[i].lock();
+                    int cost = 10;
+                    if (abs(next_tile->posx - tile->posx) == 1 && abs(next_tile->posy - tile->posy) == 1 ) cost = 15;
+                    pq.emplace(cost, {next_tile->posx, next_tile->posy});
+                }
+            }
+            
             path<tile_t> path;
             return path;
         }
         
-        path<tile_t> _get_path_dijkstra(const_reference from, const_reference to) const {
+        path<tile_t> _get_path_astar(const_reference from, const_reference to) const {
             path<tile_t> path;
             return path;
         }

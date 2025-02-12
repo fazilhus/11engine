@@ -17,6 +17,7 @@ namespace core::container {
         using const_iterator = typename std::vector<T>::const_iterator;
 
         /// Constructs an empty priority queue.
+        explicit pqueue(const Comp& comp);
         pqueue();
         ~pqueue() = default;
 
@@ -71,8 +72,12 @@ namespace core::container {
     };
 
     template <typename T, typename Comp>
-    pqueue<T, Comp>::pqueue() {
+    pqueue<T, Comp>::pqueue(const Comp& comp) : m_comp(comp) {
         m_data.reserve(16);
+    }
+
+    template <typename T, typename Comp>
+    pqueue<T, Comp>::pqueue() : pqueue(Comp()) {
     }
 
     template <typename T, typename Comp>
