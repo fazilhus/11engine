@@ -6,7 +6,11 @@
 #include <filesystem>
 
 #include "util.h"
+#include "enum.h"
 #include "pmap.h"
+
+//#define USE_DIJKSTRA
+//#define USE_ASTAR
 
 namespace core {
 
@@ -48,9 +52,21 @@ namespace core {
 		util::init_random();
 
 		m_map = new map(std::filesystem::absolute("./path/res/Map1.txt"));
+#ifdef DIJKSTRA
+		const auto& p = m_map->get_path(tile_type_start, tile_type_finish, path_algo_dijkstra);
+#elif ASTAR
+		const auto& p = m_map->get_path(tile_type_start, tile_type_finish, path_algo_astar);
+#else
+		const auto& p = m_map->get_path(tile_type_start, tile_type_finish);
+#endif
+		
+		for (const auto& tile : p.m_path) {
+			std::cout << "tile " << tile.lock()->posx << " " << tile.lock()->posy << '\n';
+		}
 	}
 
 	void app::deinit() {
+		delete m_map;
 	}
 
 	void app::update_ui() {

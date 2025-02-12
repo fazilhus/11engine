@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 namespace core::util {
 
     /// @brief Initialize the random number generator.

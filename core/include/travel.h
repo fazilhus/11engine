@@ -46,7 +46,7 @@ namespace core {
     public:
         /// Constructs a graph and initializes the singleton instance.
         graph(uint8_t num_locs);
-        graph(const map& map);
+        // graph(const map& map);
         ~graph() = default;
 
         /// Gets the singleton instance of the graph.

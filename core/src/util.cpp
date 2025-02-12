@@ -1,5 +1,6 @@
 #include "util.h"
 
+#include <cstdlib>
 #include <ctime>
 
 namespace core::util {

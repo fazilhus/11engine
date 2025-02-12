@@ -23,25 +23,23 @@ namespace core {
         std::string line;
         int n = 0, m = 0;
         while (std::getline(file, line)) {
-            m++;
             n = 0;
             for (char c : line) {
-                n++;
                 switch (c) {
                     case 'X': {
-                        m_tiles.emplace_back(std::make_shared<tile_type>(tile_type_rock));
+                        m_tiles.emplace_back(std::make_shared<tile_t>(tile_type_rock, n, m));
                         break;
                     }
                     case '0': {
-                        m_tiles.emplace_back(std::make_shared<tile_type>(tile_type_road));
+                        m_tiles.emplace_back(std::make_shared<tile_t>(tile_type_road, n, m));
                         break;
                     }
                     case 'S': {
-                        m_tiles.emplace_back(std::make_shared<tile_type>(tile_type_start));
+                        m_tiles.emplace_back(std::make_shared<tile_t>(tile_type_start, n, m));
                         break;
                     }
                     case 'F': {
-                        m_tiles.emplace_back(std::make_shared<tile_type>(tile_type_finish));
+                        m_tiles.emplace_back(std::make_shared<tile_t>(tile_type_finish, n, m));
                         break;
                     }
                     case '\n':
@@ -52,7 +50,9 @@ namespace core {
 #endif
                     }
                 }
+                n++;
             }
+            m++;
         }
         m_xmax = n;
         m_ymax = m;
@@ -124,4 +124,36 @@ namespace core {
         file.close();
     }
 
+    path<default_map<tile_type>::tile_t> map::get_path(tile_type from, tile_type to, path_algo algo) const {
+        auto start = find_target(from);
+        path<tile_t> null_path{};
+        if (start.expired()) {
+            std::cerr << "map::get_path: no target found\n";
+            return null_path;
+        }
+
+        auto finish = find_target(to);
+        if (finish.expired()) {
+            std::cerr << "map::get_path: no target found\n";
+            return null_path;
+        }
+
+        switch (algo) {
+        case path_algo_default:
+            return _get_path(start.lock(), finish.lock());
+        case path_algo_dijkstra:
+        case path_algo_astar: {
+#ifdef DEBUG
+                assert(false && "unsupported map path algorithm");
+#endif
+                return null_path;
+        }
+        default: {
+#ifdef DEBUG
+                assert(false && "invalid map path algorithm");
+#endif
+                return null_path;
+        }
+        }
+    }
 } // namespace core

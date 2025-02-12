@@ -11,6 +11,8 @@ namespace core {
     public:
         map(const std::filesystem::path& path);
         ~map() override = default;
+
+        path<tile_t> get_path(tile_type from, tile_type to, path_algo algo = path_algo_default) const override;
     };
 
 } // namespace core
