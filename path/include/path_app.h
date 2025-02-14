@@ -14,6 +14,9 @@ namespace core {
         float m_timer; ///< Timer for the app.
 
         map* m_map;
+        path<tile<tile_type>> m_path;
+        path<tile<tile_type>> m_path_d;
+        path<tile<tile_type>> m_path_a;
 
     public:
         /// @brief Constructor for the app class.
@@ -40,6 +43,9 @@ namespace core {
 
         /// @brief Render the app.
         void render();
+
+        void draw_map(const map* m, int x0 = 0, int y0 = 0) const;
+        void draw_path(const path<tile<tile_type>>& p, int x0 = 0, int y0 = 0) const;
     };
 
 } // namespace core

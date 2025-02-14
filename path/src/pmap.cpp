@@ -142,12 +142,9 @@ namespace core {
         case path_algo_default:
             return _get_path(start.lock(), finish.lock());
         case path_algo_dijkstra:
-        case path_algo_astar: {
-#ifdef DEBUG
-                assert(false && "unsupported map path algorithm");
-#endif
-                return null_path;
-        }
+            return _get_path_dijkstra(start.lock(), finish.lock());
+        case path_algo_astar:
+            return _get_path_astar(start.lock(), finish.lock());
         default: {
 #ifdef DEBUG
                 assert(false && "invalid map path algorithm");
