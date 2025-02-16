@@ -17,9 +17,13 @@ namespace core {
         path<tile<tile_type>> m_path;
         path<tile<tile_type>> m_path_d;
         path<tile<tile_type>> m_path_a;
-        long long m_time;
-        long long m_time_d;
-        long long m_time_a;
+
+        int m_map_size_px_x, m_map_size_px_y;
+        int m_tile_size, m_path_tile_size;
+        
+        float m_time;
+        float m_time_d;
+        float m_time_a;
 
     public:
         /// @brief Constructor for the app class.
