@@ -3,13 +3,12 @@
 #include "raylib.h"
 #include <iostream>
 #include <filesystem>
+#include <chrono>
 
 #include "util.h"
 #include "enum.h"
 #include "pmap.h"
 
-//#define USE_DIJKSTRA
-#define USE_ASTAR
 
 namespace core {
 
@@ -52,9 +51,27 @@ namespace core {
 
 		m_map = new map(std::filesystem::absolute("./path/res/Map3.txt"));
 
-		m_path_d = m_map->get_path(tile_type_start, tile_type_finish, path_algo_dijkstra);
-		m_path_a = m_map->get_path(tile_type_start, tile_type_finish, path_algo_astar);
-		m_path = m_map->get_path(tile_type_start, tile_type_finish);
+		{
+			auto start = std::chrono::high_resolution_clock::now();
+			m_path = m_map->get_path(tile_type_start, tile_type_finish);
+			auto stop = std::chrono::high_resolution_clock::now();
+			auto dur = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+			m_time = dur.count();
+		}
+		{
+			auto start = std::chrono::high_resolution_clock::now();
+			m_path_d = m_map->get_path(tile_type_start, tile_type_finish, path_algo_dijkstra);
+			auto stop = std::chrono::high_resolution_clock::now();
+			auto dur = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+			m_time_d = dur.count();
+		}
+		{
+			auto start = std::chrono::high_resolution_clock::now();
+			m_path_a = m_map->get_path(tile_type_start, tile_type_finish, path_algo_astar);
+			auto stop = std::chrono::high_resolution_clock::now();
+			auto dur = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+			m_time_a = dur.count();
+		}
 	}
 
 	void app::deinit() {
@@ -82,6 +99,10 @@ namespace core {
 		draw_path(m_path_d, 416, 0);
 		draw_map(m_map, 832, 0);
 		draw_path(m_path_a, 832, 0);
+
+		DrawText(("Breadth-First " + std::to_string(m_time)).c_str(), 10, 450, 20, WHITE);
+		DrawText(("Dijkstra " + std::to_string(m_time_d)).c_str(), 416, 450, 20, WHITE);
+		DrawText(("A* " + std::to_string(m_time_a)).c_str(), 832, 450, 20, WHITE);
 
 		EndDrawing();
 	}
