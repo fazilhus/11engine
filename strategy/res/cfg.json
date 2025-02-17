@@ -1,0 +1,49 @@
+{
+    "map": {
+        "size": {
+            "w": 100,
+            "h": 100
+        },
+        "tile": {
+            "size": 10,
+            "types": {
+                "T": {
+                    "desc": "forest",
+                    "walkable": true,
+                    "discovered": false,
+                    "contents": 5,
+                    "speed": 1.0
+                },
+                "V": {
+                    "desc": "water",
+                    "walkable": false,
+                    "discovered": false,
+                    "contents": 0,
+                    "speed": 0.0
+                },
+                "G": {
+                    "desc": "swamp",
+                    "walkable": true,
+                    "discovered": false,
+                    "contents": 0,
+                    "speed": 0.5
+                },
+                "B": {
+                    "desc": "mountans",
+                    "walkable": false,
+                    "discovered": false,
+                    "contents": 0,
+                    "speed": 0.0
+                },
+                "M": {
+                    "desc": "grass",
+                    "walkable": true,
+                    "discovered": false,
+                    "contents": 0,
+                    "speed": 1
+                }
+            }
+        }
+    }
+
+}
