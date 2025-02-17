@@ -96,15 +96,15 @@ namespace core {
                 q.pop();
 
                 for (auto i = 0; i < tile->m_neighbours.size(); i++) {
-                    const auto& n_tile = tile->m_neighbours[i].lock();
+                    const auto& next_tile = tile->m_neighbours[i].lock();
                     int cost = 10;
-                    if (abs(n_tile->posx - tile->posx) == 1 && abs(n_tile->posy - tile->posy) == 1 ) cost = 15;
+                    if (abs(next_tile->posx - tile->posx) == 1 && abs(next_tile->posy - tile->posy) == 1 ) cost = 15;
 
-                    int current_cost = costs[n_tile->posy * m_xmax + n_tile->posx];
+                    int current_cost = costs[next_tile->posy * m_xmax + next_tile->posx];
                     int travel_cost = costs[tile->posy * m_xmax + tile->posx] + cost;
                     if (-1 != current_cost && current_cost < travel_cost) continue;
-                    costs[n_tile->posy * m_xmax + n_tile->posx] = travel_cost;
-                    q.emplace(n_tile->posx, n_tile->posy);
+                    costs[next_tile->posy * m_xmax + next_tile->posx] = travel_cost;
+                    q.emplace(next_tile->posx, next_tile->posy);
                 }
             }
 
