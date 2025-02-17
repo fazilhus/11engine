@@ -73,6 +73,7 @@ namespace core {
 		else {
 			if (IsKeyPressed(KEY_Q)) {
 				delete m_map;
+				m_map = nullptr;
 				m_map_choice = -1;
 			}
 		}
