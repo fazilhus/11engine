@@ -9,9 +9,6 @@ namespace core {
     private:
         static app* s_instance; ///< Singleton instance of the app.
         bool m_is_running; ///< Flag indicating if the app is running.
-        bool m_is_paused; ///< Flag indicating if the app is paused.
-
-        float m_timer; ///< Timer for the app.
 
         map* m_map;
         path<tile<tile_type>> m_path;
@@ -24,6 +21,8 @@ namespace core {
         float m_time;
         float m_time_d;
         float m_time_a;
+
+        int m_map_choice;
 
     public:
         /// @brief Constructor for the app class.
@@ -51,6 +50,7 @@ namespace core {
         /// @brief Render the app.
         void render();
 
+        void load_map();
         void draw_map(const map* m, int x0 = 0, int y0 = 0) const;
         void draw_path(const path<tile<tile_type>>& p, int x0 = 0, int y0 = 0) const;
     };

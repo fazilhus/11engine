@@ -21,9 +21,9 @@ namespace core {
 		s_instance = this;
 
 		m_is_running = true;
-		m_is_paused = true;
 
-		m_timer = 0;
+		m_map = nullptr;
+		m_map_choice = -1;
 	}
 
 	app::~app() {
@@ -35,10 +35,7 @@ namespace core {
 
 		while (!WindowShouldClose()) {
 			update_ui();
-
-			if (!m_is_paused) {
-				update();
-			}
+			update();
 
 			render();
 		}
@@ -48,8 +45,83 @@ namespace core {
 
 	void app::init() {
 		util::init_random();
+	}
 
-		m_map = new map(std::filesystem::absolute("./path/res/Map3.txt"));
+	void app::deinit() {
+		if (m_map)
+			delete m_map;
+	}
+
+	void app::update_ui() {
+	}
+
+	void app::update() {
+		if (m_map_choice == -1) {
+			if (IsKeyPressed(KEY_ONE)) {
+				m_map_choice = 1;
+				load_map();
+			}
+			if (IsKeyPressed(KEY_TWO)) {
+				m_map_choice = 2;
+				load_map();
+			}
+			if (IsKeyPressed(KEY_THREE)) {
+				m_map_choice = 3;
+				load_map();
+			}
+		}
+		else {
+			if (IsKeyPressed(KEY_Q)) {
+				delete m_map;
+				m_map_choice = -1;
+			}
+		}
+	}
+
+	void app::render() {
+		BeginDrawing();
+		ClearBackground(BLACK);
+
+		if (m_map_choice == -1) {
+			DrawText("Select the Map:", 500, 315, 20, WHITE);
+			DrawText("Map1: Press 1", 500, 345, 20, WHITE);
+			DrawText("Map2: Press 2", 500, 375, 20, WHITE);
+			DrawText("Map3: Press 3", 500, 405, 20, WHITE);
+		}
+		else {
+			draw_map(m_map);
+			draw_path(m_path);
+			DrawText(("Breadth-First " + std::to_string(m_time) + " ms").c_str(), 10, m_map_size_px_y + 25, 20, WHITE);
+
+			draw_map(m_map, m_map_size_px_x, 0);
+			draw_path(m_path_d, m_map_size_px_x, 0);
+			DrawText(("Dijkstra " + std::to_string(m_time_d) + " ms").c_str(), m_map_size_px_x + 10, m_map_size_px_y + 25, 20, WHITE);
+
+			draw_map(m_map, m_map_size_px_x * 2, 0);
+			draw_path(m_path_a, m_map_size_px_x * 2, 0);
+			DrawText(("A* " + std::to_string(m_time_a) + " ms").c_str(), m_map_size_px_x * 2 + 10, m_map_size_px_y + 25, 20, WHITE);
+
+			DrawText("To go back to Selection: Press Q", 10, 680, 20, WHITE);
+		}
+
+		EndDrawing();
+	}
+
+	void app::load_map() {
+		switch (m_map_choice) {
+		case 1:
+			m_map = new map(std::filesystem::absolute("./path/res/Map1.txt"));
+			break;
+		case 2:
+			m_map = new map(std::filesystem::absolute("./path/res/Map2.txt"));
+			break;
+		case 3:
+			m_map = new map(std::filesystem::absolute("./path/res/Map3.txt"));
+			break;
+		default:
+			std::cerr << "[ERROR] invalid map\n";
+			exit(1);
+		}
 
 		int x = GetScreenWidth();
 		int y = GetScreenHeight();
@@ -82,40 +154,6 @@ namespace core {
 			auto dur = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
 			m_time_a = static_cast<float>(dur.count()) / 1000000.0f;
 		}
-	}
-
-	void app::deinit() {
-		delete m_map;
-	}
-
-	void app::update_ui() {
-	}
-
-	void app::update() {
-		m_timer += GetFrameTime();
-		
-		if (m_timer >= 0.5f) {
-			m_timer = 0;
-		}
-	}
-
-	void app::render() {
-		BeginDrawing();
-		ClearBackground(BLACK);
-
-		draw_map(m_map);
-		draw_path(m_path);
-		DrawText(("Breadth-First " + std::to_string(m_time) + " ms").c_str(), 10, m_map_size_px_y + 25, 20, WHITE);
-
-		draw_map(m_map, m_map_size_px_x, 0);
-		draw_path(m_path_d, m_map_size_px_x, 0);
-		DrawText(("Dijkstra " + std::to_string(m_time_d) + " ms").c_str(), m_map_size_px_x + 10, m_map_size_px_y + 25, 20, WHITE);
-
-		draw_map(m_map, m_map_size_px_x * 2, 0);
-		draw_path(m_path_a, m_map_size_px_x * 2, 0);
-		DrawText(("A* " + std::to_string(m_time_a) + " ms").c_str(), m_map_size_px_x * 2 + 10, m_map_size_px_y + 25, 20, WHITE);
-
-		EndDrawing();
 	}
 
 	void app::draw_map(const map* map, int x0, int y0) const {
