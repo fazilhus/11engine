@@ -1,26 +1,17 @@
 #pragma once
 
-#include <cstdint>
 #include <vector>
 #include <memory>
 #include <cassert>
 #include <queue>
 #include <cmath>
 #include <algorithm>
-#include <set>
 
 #include "enum.h"
 #include "pqueue.h"
+#include "tile.h"
 
 namespace core {
-
-    template <typename T>
-    struct tile {
-        using value_type = std::weak_ptr<tile>;
-        T type;
-        int posx, posy;
-        std::vector<value_type> m_neighbours;
-    };
 
     template <typename T>
     struct path {
@@ -95,8 +86,8 @@ namespace core {
                 const auto& tile = get(coords);
                 q.pop();
 
-                for (auto i = 0; i < tile->m_neighbours.size(); i++) {
-                    const auto& next_tile = tile->m_neighbours[i].lock();
+                for (auto i = 0; i < tile->neighbours.size(); i++) {
+                    const auto& next_tile = tile->neighbours[i].lock();
                     int cost = 10;
                     if (abs(next_tile->posx - tile->posx) == 1 && abs(next_tile->posy - tile->posy) == 1 ) cost = 15;
 
@@ -144,8 +135,8 @@ namespace core {
                     break;
                 }
 
-                for (auto i = 0; i < tile->m_neighbours.size(); i++) {
-                    const auto& next_tile = tile->m_neighbours[i].lock();
+                for (auto i = 0; i < tile->neighbours.size(); i++) {
+                    const auto& next_tile = tile->neighbours[i].lock();
                     if (visited[next_tile->posy * m_xmax + next_tile->posx]) continue;
 
                     int cost = 10;
@@ -202,8 +193,8 @@ namespace core {
                     break;
                 }
 
-                for (auto i = 0; i < tile->m_neighbours.size(); i++) {
-                    const auto& next_tile = tile->m_neighbours[i].lock();
+                for (auto i = 0; i < tile->neighbours.size(); i++) {
+                    const auto& next_tile = tile->neighbours[i].lock();
                     if (visited[next_tile->posy * m_xmax + next_tile->posx]) continue;
 
                     int cost = 10;
@@ -231,7 +222,7 @@ namespace core {
                 int min_cost = costs[current->posy * m_xmax + current->posx];
                 std::weak_ptr<tile_t> next_tile;
 
-                for (const auto& neighbour : current->m_neighbours) {
+                for (const auto& neighbour : current->neighbours) {
                     auto n_tile = neighbour.lock();
                     int cost = costs[n_tile->posy * m_xmax + n_tile->posx];
                     if (cost >= 0 && cost < min_cost) {

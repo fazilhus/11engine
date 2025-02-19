@@ -1,9 +1,10 @@
 #include "strategy_app.h"
 
-#include "raylib.h"
 #include <iostream>
 #include <filesystem>
 #include <chrono>
+#include <fstream>
+#include <sstream>
 
 #include "util.h"
 #include "enum.h"
@@ -23,10 +24,17 @@ namespace core {
 		m_is_running = true;
 		m_timer = 0.0f;
 
+		m_tile_provider = nullptr;
 		m_map = nullptr;
+
+		// Create a texture for the map
+		m_map_texture = LoadRenderTexture(1000, 1000);
 	}
 
 	app::~app() {
+		// Unload the map texture
+		UnloadRenderTexture(m_map_texture);
+
 		CloseWindow();
 	}
 
@@ -51,11 +59,26 @@ namespace core {
 
 	void app::init() {
 		util::init_random();
+
+		m_tile_provider = new tile_provider<tile_type>();
+		
+		std::fstream f(std::filesystem::absolute("./strategy/res/cfg.json"), std::ios::binary | std::ios::in);
+		std::stringstream buf;
+		buf << f.rdbuf();
+		
+		auto doc = nlohmann::json::parse(buf);
+		f.close();
+		m_tile_provider->load_from_json(doc.at("map").at("tile"));
+
+		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
 	}
 
 	void app::deinit() {
 		if (m_map)
 			delete m_map;
+
+		if (m_tile_provider)
+			delete m_tile_provider;
 	}
 
 	void app::update_ui() {
@@ -68,7 +91,50 @@ namespace core {
 		BeginDrawing();
 		ClearBackground(BLACK);
 
+		// Draw the map texture
+		draw_map(m_map);
+		DrawTextureRec(m_map_texture.texture, {0, 0, (float)m_map_texture.texture.width, (float)m_map_texture.texture.height}, {0, 0}, WHITE);
+
 		EndDrawing();
 	}
+
+    void app::draw_map(const map *map) const {
+		BeginTextureMode(m_map_texture);
+		ClearBackground(BLACK);
+
+		// Draw the map onto the texture
+		auto [n, m] = map->get_dim();
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				tile_type tile = map->get(i, j)->type;
+				Color color;
+
+				switch (tile) {
+					case tile_type_forest:
+						color = DARKGREEN;
+						break;
+					case tile_type_water:
+						color = BLUE;
+						break;
+					case tile_type_swamp:
+						color = BROWN;
+						break;
+						case tile_type_mountain:
+						color = GRAY;
+						break;
+					case tile_type_grass:
+						color = GREEN;
+						break;
+					default:
+						color = WHITE;
+						break;
+				}
+
+				DrawRectangle(i * 10, j * 10, 10, 10, color); // Assuming each tile is 10x10 pixels
+			}
+		}
+
+		EndTextureMode();
+    }
 
 } // namespace core

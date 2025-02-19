@@ -47,6 +47,11 @@ function string.starts(String, Start)
 	return string.sub(String, 1, string.len(Start)) == Start
 end
 
+function include_lib(lib)
+	includedirs("../" .. lib .. "/include")
+	includedirs("../" .. lib .. "/")
+end
+
 function link_to(lib)
 	links(lib)
 	includedirs("../" .. lib .. "/include")

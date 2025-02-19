@@ -33,6 +33,8 @@ project (baseName)
     includedirs { "./include" }
 
     include_raylib()
+    include_lib("nlohmann")
+
 
     filter("configurations:Debug")
 		defines({ "DEBUG" })

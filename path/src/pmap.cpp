@@ -89,7 +89,7 @@ namespace core {
                             auto& tile_right = get(i + dif_right.first, j + dif_right.second);
 
                             if (tile_left->type != tile_type_rock && tile_right->type != tile_type_rock) {
-                                tile->m_neighbours.push_back(dif_tile);
+                                tile->neighbours.push_back(dif_tile);
                             }
                             break;
                     }
@@ -110,7 +110,7 @@ namespace core {
                     case tile_type_start:
                     case tile_type_finish:
                     case tile_type_road: {
-                            tile->m_neighbours.push_back(dif_tile);
+                            tile->neighbours.push_back(dif_tile);
                             break;
                     }
                     default: {

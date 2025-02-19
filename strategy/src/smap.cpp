@@ -25,31 +25,42 @@ namespace core {
         while (std::getline(file, line)) {
             n = 0;
             for (char c : line) {
-                switch (c) {
-                    case 'X': {
-                        m_tiles.emplace_back(std::make_shared<tile_t>(tile_type_rock, n, m));
-                        break;
-                    }
-                    case '0': {
-                        m_tiles.emplace_back(std::make_shared<tile_t>(tile_type_road, n, m));
-                        break;
-                    }
-                    case 'S': {
-                        m_tiles.emplace_back(std::make_shared<tile_t>(tile_type_start, n, m));
-                        break;
-                    }
-                    case 'F': {
-                        m_tiles.emplace_back(std::make_shared<tile_t>(tile_type_finish, n, m));
-                        break;
-                    }
-                    case '\n':
-                    case '\r': break;
-                    default: {
+                const auto tp = tile_provider<tile_type>::instance();
+                if (!tp->is_valid(c)) {
 #ifdef DEBUG
-                        assert(false && "invalid map tile type");
+                    assert(false && "invalid map tile type");
 #endif
-                    }
+                    return;
                 }
+
+                auto t = tp->create(c);
+                t.posx = n;
+                t.posy = m;
+                switch (c) {
+                    case 'T': {
+                        t.type = tile_type_forest;
+                        break;
+                    }
+                    case 'V': {
+                        t.type = tile_type_water;
+                        break;
+                    }
+                    case 'G': {
+                        t.type = tile_type_swamp;
+                        break;
+                    }
+                    case 'B': {
+                        t.type = tile_type_mountain;
+                        break;
+                    }
+                    case 'M': {
+                        t.type = tile_type_grass;
+                        break;
+                    }
+                    default: {}
+                }
+                m_tiles.emplace_back(std::make_shared<tile_t>(t));
+
                 n++;
             }
             m++;
@@ -63,39 +74,26 @@ namespace core {
         for (int i = 0; i < m_xmax; i++) {
             for (int j = 0; j < m_ymax; j++) {
                 auto& tile = get(i, j);
-                if (tile->type == tile_type_rock) continue;
-                if (tile->type == tile_type_start || tile->type == tile_type_finish) {
-                    m_targets.emplace_back(tile);
-                }
+                if (!tile->walkable) continue;
 
                 for (int k = 0; k < 4; k++) {
                     auto& dif = diag[k];
                     if (i + dif.first < 0 || i + dif.first >= m_xmax || j + dif.second < 0 || j + dif.second >= m_ymax) continue;
                     
                     auto& dif_tile = get(i + dif.first, j + dif.second);
-                    switch (dif_tile->type) {
-                    case tile_type_rock: {
-                            break;
-                    }
-                    case tile_type_start:
-                    case tile_type_finish:
-                    case tile_type_road: {
-                            auto& dif_left = direct[k];
-                            if (i + dif_left.first < 0 || i + dif_left.first >= m_xmax || j + dif_left.second < 0 || j + dif_left.second >= m_ymax) continue;
-                            auto& tile_left = get(i + dif_left.first, j + dif_left.second);
-                            
-                            auto& dif_right = direct[(k + 1) % 4];
-                            if (i + dif_right.first < 0 || i + dif_right.first >= m_xmax || j + dif_right.second < 0 || j + dif_right.second >= m_ymax) continue;
-                            auto& tile_right = get(i + dif_right.first, j + dif_right.second);
+                    
+                    if (!dif_tile->walkable) continue;
+                    
+                    auto& dif_left = direct[k];
+                    if (i + dif_left.first < 0 || i + dif_left.first >= m_xmax || j + dif_left.second < 0 || j + dif_left.second >= m_ymax) continue;
+                    auto& tile_left = get(i + dif_left.first, j + dif_left.second);
+                    
+                    auto& dif_right = direct[(k + 1) % 4];
+                    if (i + dif_right.first < 0 || i + dif_right.first >= m_xmax || j + dif_right.second < 0 || j + dif_right.second >= m_ymax) continue;
+                    auto& tile_right = get(i + dif_right.first, j + dif_right.second);
 
-                            if (tile_left->type != tile_type_rock && tile_right->type != tile_type_rock) {
-                                tile->m_neighbours.push_back(dif_tile);
-                            }
-                            break;
-                    }
-                    default: {
-                            break;
-                    }
+                    if (tile_left->walkable && tile_right->walkable) {
+                        tile->neighbours.push_back(dif_tile);
                     }
                 }
 
@@ -103,20 +101,10 @@ namespace core {
                     auto& dif = direct[k];
                     if (i + dif.first < 0 || i + dif.first >= m_xmax || j + dif.second < 0 || j + dif.second >= m_ymax) continue;
                     auto& dif_tile = get(i + dif.first, j + dif.second);
-                    switch (dif_tile->type) {
-                    case tile_type_rock: {
-                            break;
-                    }
-                    case tile_type_start:
-                    case tile_type_finish:
-                    case tile_type_road: {
-                            tile->m_neighbours.push_back(dif_tile);
-                            break;
-                    }
-                    default: {
-                            break;
-                    }
-                    }
+
+                    if (!dif_tile->walkable) continue;
+
+                    tile->neighbours.push_back(dif_tile);
                 }
             }
         }

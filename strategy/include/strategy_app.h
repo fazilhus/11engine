@@ -1,6 +1,9 @@
 #pragma once
 
+#include "raylib.h"
+
 #include "smap.h"
+#include "tile.h"
 
 namespace core {
 
@@ -12,7 +15,10 @@ namespace core {
         
         float m_timer;
 
+        tile_provider<tile_type>* m_tile_provider;
         map* m_map;
+
+        RenderTexture2D m_map_texture;
 
     public:
         /// @brief Constructor for the app class.
@@ -39,6 +45,8 @@ namespace core {
 
         /// @brief Render the app.
         void render();
+
+        void draw_map(const map* m) const;
     };
 
 } // namespace core

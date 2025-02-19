@@ -1,49 +1,43 @@
 {
-    "map": {
-        "size": {
-            "w": 100,
-            "h": 100
+    "map" : {
+        "size" : {
+            "w" : 100,
+            "h" : 100
         },
-        "tile": {
-            "size": 10,
-            "types": {
-                "T": {
-                    "desc": "forest",
-                    "walkable": true,
-                    "discovered": false,
-                    "contents": 5,
-                    "speed": 1.0
+        "tile" : {
+            "size" : 10,
+            "types" : {
+                "T" : {
+                    "desc" : "forest",
+                    "walkable" : true,
+                    "contents" : 5,
+                    "speed_mod" : 1.0
                 },
-                "V": {
-                    "desc": "water",
-                    "walkable": false,
-                    "discovered": false,
-                    "contents": 0,
-                    "speed": 0.0
+                "V" : {
+                    "desc" : "water",
+                    "walkable" : false,
+                    "contents" : 0,
+                    "speed_mod" : 0.0
                 },
-                "G": {
-                    "desc": "swamp",
-                    "walkable": true,
-                    "discovered": false,
-                    "contents": 0,
-                    "speed": 0.5
+                "G" : {
+                    "desc" : "swamp",
+                    "walkable" : true,
+                    "contents" : 0,
+                    "speed_mod" : 0.5
                 },
-                "B": {
-                    "desc": "mountans",
-                    "walkable": false,
-                    "discovered": false,
-                    "contents": 0,
-                    "speed": 0.0
+                "B" : {
+                    "desc" : "mountain",
+                    "walkable" : false,
+                    "contents" : 0,
+                    "speed_mod" : 0.0
                 },
-                "M": {
-                    "desc": "grass",
-                    "walkable": true,
-                    "discovered": false,
-                    "contents": 0,
-                    "speed": 1
+                "M" : {
+                    "desc" : "grass",
+                    "walkable" : true,
+                    "contents" : 0,
+                    "speed_mod" : 1
                 }
             }
         }
     }
-
 }
