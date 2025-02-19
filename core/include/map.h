@@ -88,6 +88,9 @@ namespace core {
 
                 for (auto i = 0; i < tile->neighbours.size(); i++) {
                     const auto& next_tile = tile->neighbours[i].lock();
+
+                    if (!next_tile->walkable) continue;
+
                     int cost = 10;
                     if (abs(next_tile->posx - tile->posx) == 1 && abs(next_tile->posy - tile->posy) == 1 ) cost = 15;
 
@@ -137,6 +140,9 @@ namespace core {
 
                 for (auto i = 0; i < tile->neighbours.size(); i++) {
                     const auto& next_tile = tile->neighbours[i].lock();
+
+                    if (!next_tile->walkable) continue;
+
                     if (visited[next_tile->posy * m_xmax + next_tile->posx]) continue;
 
                     int cost = 10;
@@ -195,6 +201,9 @@ namespace core {
 
                 for (auto i = 0; i < tile->neighbours.size(); i++) {
                     const auto& next_tile = tile->neighbours[i].lock();
+
+                    if (!next_tile->walkable) continue;
+
                     if (visited[next_tile->posy * m_xmax + next_tile->posx]) continue;
 
                     int cost = 10;
@@ -224,6 +233,9 @@ namespace core {
 
                 for (const auto& neighbour : current->neighbours) {
                     auto n_tile = neighbour.lock();
+
+                    if (!n_tile->walkable) continue;
+                    
                     int cost = costs[n_tile->posy * m_xmax + n_tile->posx];
                     if (cost >= 0 && cost < min_cost) {
                         min_cost = cost;

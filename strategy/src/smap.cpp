@@ -82,7 +82,7 @@ namespace core {
                     
                     auto& dif_tile = get(i + dif.first, j + dif.second);
                     
-                    if (!dif_tile->walkable) continue;
+                    // if (!dif_tile->walkable) continue;
                     
                     auto& dif_left = direct[k];
                     if (i + dif_left.first < 0 || i + dif_left.first >= m_xmax || j + dif_left.second < 0 || j + dif_left.second >= m_ymax) continue;
@@ -102,7 +102,7 @@ namespace core {
                     if (i + dif.first < 0 || i + dif.first >= m_xmax || j + dif.second < 0 || j + dif.second >= m_ymax) continue;
                     auto& dif_tile = get(i + dif.first, j + dif.second);
 
-                    if (!dif_tile->walkable) continue;
+                    // if (!dif_tile->walkable) continue;
 
                     tile->neighbours.push_back(dif_tile);
                 }
