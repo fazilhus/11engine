@@ -51,7 +51,7 @@ namespace core {
 
         /// Gets the singleton instance of the graph.
         /// \return The singleton instance.
-        static graph* instance() { return s_instance; }
+        static graph* get() { return s_instance; }
 
         /// Gets the distance between two locations.
         /// \param from The starting location.

@@ -4,8 +4,8 @@
 
 namespace core {
 
-    timer::timer(int max_cycles, int listener_id)
-        : m_cycles(0), m_max_cycles(max_cycles), m_listener_id(listener_id), m_done(false) {
+    timer::timer(int max_cycles, int listener_id, std::function<void()> callback)
+        : m_cycles(0), m_max_cycles(max_cycles), m_listener_id(listener_id), m_callback(callback), m_done(false) {
     }
 
     void timer::update() {
@@ -30,7 +30,10 @@ namespace core {
 
             if (t.is_done()) {
                 // Notify listener
-                //std::cout << "Timer " << t.listener_id() << " done" << std::endl;
+                if (t.callback()) {
+                    t.callback()();
+                }
+                std::cout << "Timer " << t.listener_id() << " done" << std::endl;
             }
         }
     }

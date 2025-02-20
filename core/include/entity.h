@@ -27,12 +27,7 @@ namespace core {
         virtual ~entity();
 
         /// @brief Update the entity in the first stage.
-        virtual void update_stage1() = 0;
-
-        /// @brief Update the entity in the second stage.
-        virtual void update_stage2() = 0;
-
-        virtual bool is_dead() const = 0;
+        virtual void update() = 0;
 
         /// @brief Get the unique identifier of the entity.
         /// @return Unique identifier of the entity.
@@ -75,7 +70,7 @@ namespace core {
 
         std::vector<std::unique_ptr<entity>> m_entities; ///< List of all entities.
 
-        std::priority_queue<int> m_entities_to_remove; ///< Queue of entities to be removed.
+        std::queue<int> m_entities_to_remove; ///< Queue of entities to be removed.
 
     public:
         /// @brief Constructor for the entity manager class.
@@ -86,7 +81,7 @@ namespace core {
 
         /// @brief Get the singleton instance of the entity manager.
         /// @return Singleton instance of the entity manager.
-        static entity_manager* instance() { return s_instance; }
+        static entity_manager* get() { return s_instance; }
 
         /// @brief Get the list of all entities.
         /// @return List of all entities.

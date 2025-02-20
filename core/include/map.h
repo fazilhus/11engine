@@ -13,16 +13,14 @@
 
 namespace core {
 
-    template <typename T>
     struct path {
-        using value_type = std::weak_ptr<T>;
+        using value_type = std::weak_ptr<tile>;
         std::vector<value_type> m_path;
     };
 
-    template <typename T>
     class default_map{
     public:
-        using tile_t = tile<T>;
+        using tile_t = tile;
         using value_t = std::shared_ptr<tile_t>;
         using reference = value_t&;
         using const_reference = const value_t&;
@@ -63,7 +61,7 @@ namespace core {
 
         const std::vector<std::weak_ptr<tile_t>>& get_targets() const { return m_targets; }
 
-        const std::weak_ptr<tile_t>& find_target(T tile) const {
+        const std::weak_ptr<tile_t>& find_target(tile_type tile) const {
             for (auto& target : m_targets) {
                 if (target.lock()->type == tile) {
                     return target;
@@ -72,10 +70,10 @@ namespace core {
             return {};
         }
 
-        virtual path<tile_t> get_path(T from, T to, path_algo algo = path_algo_default) const = 0;
+        virtual path get_path(tile_type from, tile_type to, path_algo algo = path_algo_default) const = 0;
 
     protected:
-        path<tile_t> _get_path(const_reference from, const_reference to) const {
+        path _get_path(const_reference from, const_reference to) const {
             std::vector<int> costs(m_tiles.size(), -1);
             costs[from->posy * m_xmax + from->posx] = 0;
             std::queue<std::pair<int, int>> q;
@@ -106,7 +104,7 @@ namespace core {
             return _make_path(costs, from, to);
         }
 
-        path<tile_t> _get_path_dijkstra(const_reference from, const_reference to) const {
+        path _get_path_dijkstra(const_reference from, const_reference to) const {
             std::vector<int> costs(m_tiles.size(), INT_MAX);
             costs[from->posy * m_xmax + from->posx] = 0;
 
@@ -161,7 +159,7 @@ namespace core {
             return _make_path(costs, from, to);
         }
         
-        path<tile_t> _get_path_astar(const_reference from, const_reference to) const {
+        path _get_path_astar(const_reference from, const_reference to) const {
             std::vector<int> costs(m_tiles.size(), INT_MAX);
             costs[from->posy * m_xmax + from->posx] = 0;
 
@@ -223,8 +221,8 @@ namespace core {
         }
         
     private:
-        path<tile_t> _make_path(const std::vector<int>& costs, const_reference from, const_reference to) const {
-            path<tile_t> path;
+        path _make_path(const std::vector<int>& costs, const_reference from, const_reference to) const {
+            path path;
             auto current = to;
             while (current != from) {
                 path.m_path.push_back(current);

@@ -94,7 +94,7 @@ namespace core {
 
         /// @brief Get the singleton instance of the message sender.
         /// @return Singleton instance of the message sender.
-        static message_dispatcher* instance() { return s_instance; }
+        static message_dispatcher* get() { return s_instance; }
 
         /// @brief Send a message to all entities.
         /// @param type Type of the message to send.

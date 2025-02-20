@@ -2,8 +2,8 @@
 
 #include "raylib.h"
 
+#include "cfg.h"
 #include "smap.h"
-#include "tile.h"
 
 namespace core {
 
@@ -15,7 +15,8 @@ namespace core {
         
         float m_timer;
 
-        tile_provider<tile_type>* m_tile_provider;
+        game_config* m_config;
+
         map* m_map;
 
         RenderTexture2D m_map_texture;

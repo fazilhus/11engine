@@ -63,7 +63,7 @@ namespace core {
     }
 
     void message_dispatcher::send_to_everyone(uint8_t msg_type, int sender_id, long long timestamp, int delay) {
-        for (int receiver_id = 0; receiver_id < entity_manager::instance()->entities().size(); ++receiver_id) {
+        for (int receiver_id = 0; receiver_id < entity_manager::get()->entities().size(); ++receiver_id) {
             if (receiver_id == sender_id) {
                 continue;
             }
@@ -81,7 +81,7 @@ namespace core {
            auto msg = m_message_queue.top();
            if ((msg.m_delay - msg.m_waited) > 0) break;
     
-           entity_manager::instance()->entities()[msg.m_receiver_id]->inbox().receive(msg);
+           entity_manager::get()->entities()[msg.m_receiver_id]->inbox().receive(msg);
            m_message_queue.pop();
        }
     }

@@ -1,43 +1,98 @@
 {
     "map" : {
-        "size" : {
-            "w" : 100,
-            "h" : 100
-        },
-        "tile" : {
-            "size" : 10,
-            "types" : {
-                "T" : {
-                    "desc" : "forest",
-                    "walkable" : true,
-                    "contents" : 5,
-                    "speed_mod" : 1.0
-                },
-                "V" : {
-                    "desc" : "water",
-                    "walkable" : false,
-                    "contents" : 0,
-                    "speed_mod" : 0.0
-                },
-                "G" : {
-                    "desc" : "swamp",
-                    "walkable" : true,
-                    "contents" : 0,
-                    "speed_mod" : 0.5
-                },
-                "B" : {
-                    "desc" : "mountain",
-                    "walkable" : false,
-                    "contents" : 0,
-                    "speed_mod" : 0.0
-                },
-                "M" : {
-                    "desc" : "grass",
-                    "walkable" : true,
-                    "contents" : 0,
-                    "speed_mod" : 1
-                }
+        "width" : 100,
+        "height" : 100
+    },
+    "tile" : {
+        "size" : 10,
+        "types" : {
+            "forest" : {
+                "type" : "T",
+                "walkable" : true,
+                "contents" : 5,
+                "speed_mod" : 1.0
+            },
+            "water" : {
+                "type" : "V",
+                "walkable" : false,
+                "contents" : 0,
+                "speed_mod" : 0.0
+            },
+            "swamp" : {
+                "type" : "G",
+                "walkable" : true,
+                "contents" : 0,
+                "speed_mod" : 0.5
+            },
+            "mountain" : {
+                "type" : "B",
+                "walkable" : false,
+                "contents" : 0,
+                "speed_mod" : 0.0
+            },
+            "grass" : {
+                "type" : "M",
+                "walkable" : true,
+                "contents" : 0,
+                "speed_mod" : 1
             }
+        }
+    },
+    "buildings" : {
+        "tile" : "M",
+        "types" : {
+            "coal_mine" : {
+                "builders" : 1,
+                "resources" : {
+                    "wood" : 10,
+                    "coal" : 0
+                },
+                "time" : 60
+            }
+        }
+    },
+    "resources" : {
+        "wood" : {
+            "in" : {
+                "wood" : 0,
+                "coal" : 0
+            },
+            "out" : 1,
+            "time" : 30
+        },
+        "coal" : {
+            "in" : {
+                "wood" : 2,
+                "coal" : 0
+            },
+            "out" : 1,
+            "time" : 30
+        }
+    },
+    "units" : {
+        "worker" : {
+            "from" : "",
+            "upgrade_time" : 0,
+            "carry" : 1,
+            "visibility_range" : 0
+        },
+        "scout" : {
+            "from" : "worker",
+            "upgrade_time" : 60,
+            "carry" : 0,
+            "visibility_range" : 10
+        },
+        "builder" : {
+            "from" : "worker",
+            "upgrade_time" : 120,
+            "carry" : 0,
+            "visibility_range" : 0
+        },
+        "miner" : {
+            "from" : "worker",
+            "upgrade_time" : 120,
+            "carry" : 0,
+            "visibility_range" : 0
         }
     }
 }

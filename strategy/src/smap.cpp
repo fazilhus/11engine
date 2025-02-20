@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <array>
 
+#include "tile.h"
+
 namespace core {
 
     map::map(const std::filesystem::path& path) {
@@ -20,46 +22,28 @@ namespace core {
             return;
         }
 
+        const auto cfg = game_config::get();
+
         std::string line;
         int n = 0, m = 0;
-        while (std::getline(file, line)) {
+        while (std::getline(file, line) && m < cfg->map_cfg.height) {
             n = 0;
             for (char c : line) {
-                const auto tp = tile_provider<tile_type>::instance();
-                if (!tp->is_valid(c)) {
+                if (n >= cfg->map_cfg.width) break;
+                if (c == '\n' || c == '\r') continue;
+
+                tile_type tt = util::char_to_tile(c);
+
+                if (tt == tile_type_none) {
 #ifdef DEBUG
                     assert(false && "invalid map tile type");
 #endif
                     return;
                 }
 
-                auto t = tp->create(c);
-                t.posx = n;
-                t.posy = m;
-                switch (c) {
-                    case 'T': {
-                        t.type = tile_type_forest;
-                        break;
-                    }
-                    case 'V': {
-                        t.type = tile_type_water;
-                        break;
-                    }
-                    case 'G': {
-                        t.type = tile_type_swamp;
-                        break;
-                    }
-                    case 'B': {
-                        t.type = tile_type_mountain;
-                        break;
-                    }
-                    case 'M': {
-                        t.type = tile_type_grass;
-                        break;
-                    }
-                    default: {}
-                }
-                m_tiles.emplace_back(std::make_shared<tile_t>(t));
+                m_tiles.emplace_back(std::make_shared<tile_t>(
+                    cfg->tile_cfg[tt], n, m
+                ));
 
                 n++;
             }
@@ -112,9 +96,9 @@ namespace core {
         file.close();
     }
 
-    path<default_map<tile_type>::tile_t> map::get_path(tile_type from, tile_type to, path_algo algo) const {
+    path map::get_path(tile_type from, tile_type to, path_algo algo) const {
         auto start = find_target(from);
-        path<tile_t> null_path{};
+        path null_path{};
         if (start.expired()) {
             std::cerr << "map::get_path: no target found\n";
             return null_path;

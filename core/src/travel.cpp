@@ -7,7 +7,7 @@ namespace core {
 
     void travel_data::start_travelling(uint8_t from, uint8_t to) {
         m_travelled = 0;
-        m_link = {from, to, graph::instance()->distance(from, to)};
+        m_link = {from, to, graph::get()->distance(from, to)};
     }
 
     graph* graph::s_instance = nullptr;

@@ -6,17 +6,16 @@
 #include <fstream>
 #include <sstream>
 
-#include "util.h"
-#include "enum.h"
-#include "smap.h"
+#include "nlohmann/json.hpp"
 
+#include "util.h"
 
 namespace core {
 
 	app* app::s_instance = nullptr;
 
 	app::app() {
-		InitWindow(1920, 1080, "11Engine: Pathfinding");
+		InitWindow(1600, 1000, "11Engine: Pathfinding");
 		SetTargetFPS(60);
 
 		s_instance = this;
@@ -24,7 +23,8 @@ namespace core {
 		m_is_running = true;
 		m_timer = 0.0f;
 
-		m_tile_provider = nullptr;
+		m_config = nullptr;
+
 		m_map = nullptr;
 
 		// Create a texture for the map
@@ -59,8 +59,6 @@ namespace core {
 
 	void app::init() {
 		util::init_random();
-
-		m_tile_provider = new tile_provider<tile_type>();
 		
 		std::fstream f(std::filesystem::absolute("./strategy/res/cfg.json"), std::ios::binary | std::ios::in);
 		std::stringstream buf;
@@ -68,17 +66,18 @@ namespace core {
 		
 		auto doc = nlohmann::json::parse(buf);
 		f.close();
-		m_tile_provider->load_from_json(doc.at("map").at("tile"));
-
+		
+		m_config = new game_config(doc);
+		
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
 	}
 
 	void app::deinit() {
+		if (m_config)
+			delete m_config;
+
 		if (m_map)
 			delete m_map;
-
-		if (m_tile_provider)
-			delete m_tile_provider;
 	}
 
 	void app::update_ui() {

@@ -21,12 +21,12 @@ namespace core {
 
     void entity::send_invite(uint8_t msg_type, int sender_id, long long timestamp, int delay) {
         std::cout << m_name << " sent invite to " << msg_type << " in " << timestamp << std::endl;
-        message_dispatcher::instance()->send_to_everyone(msg_type, sender_id, timestamp, delay);
+        message_dispatcher::get()->send_to_everyone(msg_type, sender_id, timestamp, delay);
     }
 
     void entity::send_invite(uint8_t msg_type, int sender_id, int receiver_id, long long timestamp, int delay) {
         std::cout << m_name << " sent invite to " << msg_type << " in " << timestamp << " to " << receiver_id <<  std::endl;
-        message_dispatcher::instance()->send_to(msg_type, sender_id, receiver_id, timestamp, delay);
+        message_dispatcher::get()->send_to(msg_type, sender_id, receiver_id, timestamp, delay);
     }
 
     entity_manager* entity_manager::s_instance = nullptr;
@@ -44,37 +44,23 @@ namespace core {
             remove_entities();
         }
 
-        int i = 0;
         for (auto& e : m_entities) {
-            e->update_stage1();
-            i++;
-        }
-
-        i = 0;
-        for (auto& e : m_entities) {
-            e->update_stage2();
-
-            if (e->is_dead()) {
-                m_entities_to_remove.push(i);
-            }
-
-            i++;
+            e->update();
         }
     }
 
     void entity_manager::remove_entities() {
-        do {
-            auto idx = m_entities_to_remove.top();
+        while (!m_entities_to_remove.empty()) {
+            auto idx = m_entities_to_remove.front();
             m_entities_to_remove.pop();
 
             assert(idx >= 0 && idx < m_entities.size());
             m_entities.erase(m_entities.begin() + idx);
-
-            for (int i = 0; i < m_entities.size(); ++i) {
-                m_entities[i]->set_id(i);
-            }
         }
-        while (!m_entities_to_remove.empty());
+
+        for (int i = 0; i < m_entities.size(); ++i) {
+            m_entities[i]->set_id(i);
+        }
     }
 
 } // namespace core
