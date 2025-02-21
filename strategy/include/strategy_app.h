@@ -2,8 +2,10 @@
 
 #include "raylib.h"
 
-#include "cfg.h"
+#include "game_config.h"
+#include "clock.h"
 #include "smap.h"
+#include "scout.h"
 
 namespace core {
 
@@ -16,8 +18,9 @@ namespace core {
         float m_timer;
 
         game_config* m_config;
-
+        clock* m_clock;
         map* m_map;
+        entity_manager* m_em;
 
         RenderTexture2D m_map_texture;
 
@@ -31,6 +34,8 @@ namespace core {
         /// @brief Run the main loop of the app.
         void run();
 
+        const map* get_map() const { return m_map; }
+
     private:
         /// @brief Initialize the app.
         void init();
@@ -42,12 +47,13 @@ namespace core {
         void update_ui();
 
         /// @brief Update the app state.
-        void update();
+        void update(int dt = 1);
 
         /// @brief Render the app.
         void render();
 
-        void draw_map(const map* m) const;
+        void draw_map() const;
+        void draw_entities() const;
     };
 
 } // namespace core

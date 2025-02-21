@@ -1,11 +1,13 @@
 #pragma once
 
 #include <memory>
+#include <array>
 #include <vector>
 #include <queue>
 #include <string>
 
 #include "message.h"
+#include "tile.h"
 
 namespace core {
 
@@ -17,6 +19,9 @@ namespace core {
         int m_id; ///< Unique identifier for the entity.
         std::string m_name; ///< Name of the entity.
         inbox m_inbox; ///< Inbox for receiving messages.
+        std::array<int, 2> m_pos;
+        std::weak_ptr<tile> m_tile;
+        int m_speed;
 
     public:
         /// @brief Constructor for the entity class.
@@ -28,7 +33,9 @@ namespace core {
         virtual ~entity();
 
         /// @brief Update the entity in the first stage.
-        virtual void update() = 0;
+        virtual void update(int dt = 1) = 0;
+
+        virtual void change_state() = 0;
 
         /// @brief Get the unique identifier of the entity.
         /// @return Unique identifier of the entity.
@@ -41,6 +48,14 @@ namespace core {
         /// @brief Get the name of the entity.
         /// @return Name of the entity.
         const std::string& name() const { return m_name; }
+
+        std::array<int, 2> pos() const { return m_pos; }
+        void set_pos(std::array<int, 2> p) { m_pos = p; }
+
+        std::weak_ptr<tile> get_tile() const { return m_tile; }
+        void set_tile(std::weak_ptr<tile> t) { m_tile = t; }
+
+        int speed() const { return m_speed; }
 
         /// @brief Get the inbox of the entity.
         /// @return Inbox of the entity.
@@ -93,7 +108,7 @@ namespace core {
         void add_entity(std::unique_ptr<entity> entity);
 
         /// @brief Update all entities managed by the entity manager.
-        void update();
+        void update(int dt = 1);
 
     private:
         /// @brief Remove entities that are marked for removal.

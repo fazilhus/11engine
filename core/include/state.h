@@ -17,7 +17,7 @@ namespace core {
 
         /// @brief executes the state's behavior
         /// @param e entity executing the state
-        virtual void execute(entity_type* e) = 0;
+        virtual void execute(entity_type* e, int dt = 1) = 0;
 
         /// @brief makes decisions based on the entity's current state
         /// @param e entity making the decision

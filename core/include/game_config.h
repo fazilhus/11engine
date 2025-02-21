@@ -13,6 +13,7 @@ namespace core {
         struct map_cfg {
             int width;
             int height;
+            std::array<int, 2> start;
         };
 
         struct tile_cfg {

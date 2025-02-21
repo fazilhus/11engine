@@ -5,11 +5,18 @@
 
 #include "message.h"
 #include "util.h"
+#include "game_config.h"
+#include "tile.h"
+#include "map.h"
 
 namespace core {
 
     entity::entity(int id, const std::string& name)
         : m_id(id), m_name(name) {
+            const auto cfg = game_config::get();
+            m_tile = default_map::get()->get_tile(cfg->map_cfg.start);
+            m_pos = util::tile_to_pos(m_tile.lock()->pos);
+            m_speed = cfg->unit_cfg[1].speed;
     }
 
     entity::~entity() {
@@ -39,13 +46,13 @@ namespace core {
         m_entities.push_back(std::move(entity));
     }
 
-    void entity_manager::update() {
+    void entity_manager::update(int dt) {
         if (!m_entities_to_remove.empty()) {
             remove_entities();
         }
 
         for (auto& e : m_entities) {
-            e->update();
+            e->update(dt);
         }
     }
 

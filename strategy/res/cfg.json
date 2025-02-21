@@ -1,7 +1,8 @@
 {
     "map" : {
         "width" : 100,
-        "height" : 100
+        "height" : 100,
+        "start" : [60, 40]
     },
     "tile" : {
         "size" : 10,

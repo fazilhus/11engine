@@ -10,6 +10,7 @@
 #include "enum.h"
 #include "pqueue.h"
 #include "tile.h"
+#include "util.h"
 
 namespace core {
 
@@ -19,6 +20,9 @@ namespace core {
     };
 
     class default_map{
+    private:
+        static default_map* s_instance;
+
     public:
         using tile_t = tile;
         using value_t = std::shared_ptr<tile_t>;
@@ -30,29 +34,37 @@ namespace core {
         std::vector<value_t> m_tiles;
         std::vector<std::weak_ptr<tile_t>> m_targets;
 
-        default_map() = default;
+        default_map();
 
     public:
         virtual ~default_map() = default;
+
+        static const default_map* get() { return s_instance; }
 
         std::pair<int, int> get_dim() const {
             return { m_xmax, m_ymax };
         }
 
-        reference get(const std::pair<int, int>& pos) {
-            return get(pos.first, pos.second);
+        reference get_tile(std::pair<int, int> pos) {
+            return get_tile(pos.first, pos.second);
         }
-        reference get(int i, int j) {
+        reference get_tile(std::array<int, 2> pos) {
+            return get_tile(pos[0], pos[1]);
+        }
+        reference get_tile(int i, int j) {
 #ifdef DEBUG
             assert(i < m_xmax && j < m_ymax && "map index out of bounds");
 #endif
             return m_tiles[j * m_xmax + i];
         }
 
-        const_reference get(const std::pair<int, int>& pos) const {
-            return get(pos.first, pos.second);
+        const_reference get_tile(std::pair<int, int> pos) const {
+            return get_tile(pos.first, pos.second);
         }
-        const_reference get(int i, int j) const {
+        const_reference get_tile(std::array<int, 2> pos) const {
+            return get_tile(pos[0], pos[1]);
+        }
+        const_reference get_tile(int i, int j) const {
 #ifdef DEBUG
             assert(i < m_xmax && j < m_ymax && "map index out of bounds");
 #endif
@@ -81,7 +93,7 @@ namespace core {
 
             while (!q.empty()) {
                 auto coords = q.front();
-                const auto& tile = get(coords);
+                const auto& tile = get_tile(coords);
                 q.pop();
 
                 for (auto i = 0; i < tile->neighbours.size(); i++) {
@@ -122,7 +134,7 @@ namespace core {
             std::vector<bool> visited(m_tiles.size(), false);
 
             connection con = pq.top();
-            auto tile = get(con.posx, con.posy);
+            auto tile = get_tile(con.posx, con.posy);
             while (tile != to) {
                 while (!pq.empty()) {
                     con = pq.top();
@@ -131,7 +143,7 @@ namespace core {
                         continue;
                     }
 
-                    tile = get(con.posx, con.posy);
+                    tile = get_tile(con.posx, con.posy);
                     pq.pop();
                     break;
                 }
@@ -183,7 +195,7 @@ namespace core {
             std::vector<bool> visited(m_tiles.size(), false);
 
             connection con = pq.top();
-            auto tile = get(con.posx, con.posy);
+            auto tile = get_tile(con.posx, con.posy);
             while (tile != to) {
                 while (!pq.empty()) {
                     con = pq.top();
@@ -192,7 +204,7 @@ namespace core {
                         continue;
                     }
 
-                    tile = get(con.posx, con.posy);
+                    tile = get_tile(con.posx, con.posy);
                     pq.pop();
                     break;
                 }

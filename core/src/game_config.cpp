@@ -1,4 +1,4 @@
-#include "cfg.h"
+#include "game_config.h"
 
 #include "nlohmann/json.hpp"
 
@@ -11,8 +11,12 @@ namespace core {
     game_config::game_config(const nlohmann::json& doc) {
         s_instance = this;
 
-        map_cfg.width = doc.at("map").at("width");
-        map_cfg.height = doc.at("map").at("height");
+        {
+            const auto& m = doc.at("map");
+            map_cfg.width = m.at("width");
+            map_cfg.height = m.at("height");
+            map_cfg.start = m.at("start").get<std::array<int, 2>>();
+        }
 
         {
             int size = doc.at("tile").at("size").get<int>();

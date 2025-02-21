@@ -8,8 +8,8 @@ namespace core {
         : m_cycles(0), m_max_cycles(max_cycles), m_listener_id(listener_id), m_callback(callback), m_done(false) {
     }
 
-    void timer::update() {
-        m_cycles++;
+    void timer::update(int dt) {
+        m_cycles += dt;
         if (m_cycles >= m_max_cycles) {
             m_done = true;
         }
@@ -19,14 +19,11 @@ namespace core {
 
     timer_manager::timer_manager() {
         s_instance = this;
-        m_clock = 0;
     }
 
-    void timer_manager::update() {
-        m_clock++;
-
+    void timer_manager::update(int dt) {
         for (auto& t : m_timers) {
-            t.update();
+            t.update(dt);
 
             if (t.is_done()) {
                 // Notify listener

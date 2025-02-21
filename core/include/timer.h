@@ -26,7 +26,7 @@ namespace core {
         ~timer() = default;
 
         /// @brief Update the timer.
-        void update();
+        void update(int dt = 1);
 
         const std::function<void()>& callback() const { return m_callback; }
 
@@ -43,7 +43,6 @@ namespace core {
     class timer_manager {
     private:
         static timer_manager* s_instance; ///< Singleton instance of the timer manager.
-        long long m_clock;
 
         std::vector<timer> m_timers; ///< List of all currently running timers.
 
@@ -58,10 +57,8 @@ namespace core {
         /// @return Singleton instance of the timer manager.
         static timer_manager* get() { return s_instance; }
 
-        long long clock() const { return m_clock; }
-
         /// @brief Update all timers managed by the timer manager.
-        void update();
+        void update(int dt = 1);
 
         /// @brief Add a new timer to the manager.
         /// @param max_cycles Maximum cycle count for the timer.

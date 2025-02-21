@@ -24,8 +24,9 @@ namespace core {
 		m_timer = 0.0f;
 
 		m_config = nullptr;
-
+		m_clock = nullptr;
 		m_map = nullptr;
+		m_em = nullptr;
 
 		// Create a texture for the map
 		m_map_texture = LoadRenderTexture(1000, 1000);
@@ -44,12 +45,7 @@ namespace core {
 		while (!WindowShouldClose()) {
 			update_ui();
 
-			if (m_timer > 0.1f) {
-				m_timer = 0;
-	
-				// update stuff
-				update();
-			}
+			update();
 
 			render();
 		}
@@ -68,22 +64,43 @@ namespace core {
 		f.close();
 		
 		m_config = new game_config(doc);
-		
+
+		m_clock = new clock();
+
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
+		m_em = new entity_manager();
+		for (int i = 0; i < 10; ++i) {
+			m_em->add_entity(std::make_unique<scout>(i, std::to_string(i)));
+		}
 	}
 
 	void app::deinit() {
-		if (m_config)
-			delete m_config;
-
+		if (m_em)
+			delete m_em;	
+			
 		if (m_map)
 			delete m_map;
+
+		if (m_clock)
+			delete m_clock;
+			
+		if (m_config)
+				delete m_config;
 	}
 
 	void app::update_ui() {
 	}
 
-	void app::update() {
+	void app::update(int dt) {
+		m_timer += GetFrameTime();
+
+		if (m_timer > 0.25f) {
+			m_timer = 0;
+
+			// update stuff
+			m_clock->update(dt);
+			m_em->update(dt);
+		}
 	}
 
 	void app::render() {
@@ -91,24 +108,32 @@ namespace core {
 		ClearBackground(BLACK);
 
 		// Draw the map texture
-		draw_map(m_map);
+		BeginTextureMode(m_map_texture);
+		ClearBackground(BLACK);
+		
+		draw_map();
+		draw_entities();
+		
+		EndTextureMode();
+		
 		DrawTextureRec(m_map_texture.texture, {0, 0, (float)m_map_texture.texture.width, (float)m_map_texture.texture.height}, {0, 0}, WHITE);
 
 		EndDrawing();
 	}
 
-    void app::draw_map(const map *map) const {
-		BeginTextureMode(m_map_texture);
-		ClearBackground(BLACK);
-
+    void app::draw_map() const {
 		// Draw the map onto the texture
-		auto [n, m] = map->get_dim();
+		auto [n, m] = m_map->get_dim();
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < m; j++) {
-				tile_type tile = map->get(i, j)->type;
+				const auto& tile = m_map->get_tile(i, j);
 				Color color;
 
-				switch (tile) {
+				if (!tile->discovered) {
+					color = BLACK;
+				}
+				else {
+					switch (tile->type) {
 					case tile_type_forest:
 						color = DARKGREEN;
 						break;
@@ -127,13 +152,19 @@ namespace core {
 					default:
 						color = WHITE;
 						break;
+					}
 				}
 
 				DrawRectangle(i * 10, j * 10, 10, 10, color); // Assuming each tile is 10x10 pixels
 			}
 		}
+    }
 
-		EndTextureMode();
+    void app::draw_entities() const {
+		for (const auto& e : m_em->entities()) {
+			auto [x, y] = e->pos();
+			DrawCircle(x, y, 1, DARKGRAY);
+		}
     }
 
 } // namespace core
