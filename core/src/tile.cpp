@@ -2,10 +2,11 @@
 
 namespace core {
 
-    tile::tile(const config::tile &cfg, int x, int y) {
+    tile::tile(const config::tile_cfg &cfg, int x, int y) {
         type = cfg.name;
         posx = x;
         posy = y;
+        size = cfg.size;
         walkable = cfg.walkable;
         discovered = false;
         contents = cfg.contents;

@@ -10,12 +10,12 @@ namespace core {
 
     namespace config {
 
-        struct map {
+        struct map_cfg {
             int width;
             int height;
         };
 
-        struct tile {
+        struct tile_cfg {
             int size;
             tile_type name;
             bool walkable;
@@ -23,7 +23,7 @@ namespace core {
             float speed_mod;
         };
         
-        struct building {
+        struct building_cfg {
             tile_type tile;
             building_type name;
             int builders;
@@ -31,16 +31,17 @@ namespace core {
             int time;
         };
 
-        struct resource {
+        struct resource_cfg {
             resource_type name;
             std::array<int, resource_type_num> in;
             int out;
             int time;
         };
 
-        struct unit {
+        struct unit_cfg {
             unit_type name;
             unit_type from;
+            int speed;
             int carry;
             int upgrade_time;
         };
@@ -49,11 +50,11 @@ namespace core {
 
     struct game_config {
 
-        config::map map_cfg;
-        std::array<config::tile, tile_type_num> tile_cfg;
-        std::array<config::building, building_type_num> building_cfg;
-        std::array<config::resource, resource_type_num> resource_cfg;
-        std::array<config::unit, unit_type_num> unit_cfg;
+        config::map_cfg map_cfg;
+        std::array<config::tile_cfg, tile_type_num> tile_cfg;
+        std::array<config::building_cfg, building_type_num> building_cfg;
+        std::array<config::resource_cfg, resource_type_num> resource_cfg;
+        std::array<config::unit_cfg, unit_type_num> unit_cfg;
         
         game_config(const nlohmann::json& doc);
         

@@ -23,7 +23,7 @@ namespace core {
 
         std::vector<value_type> neighbours;
 
-        tile(const config::tile& cfg, int x, int y);
+        tile(const config::tile_cfg& cfg, int x, int y);
     };
 
 } // namespace core

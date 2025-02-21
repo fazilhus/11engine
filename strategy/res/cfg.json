@@ -70,29 +70,32 @@
         }
     },
     "units" : {
-        "worker" : {
-            "from" : "",
-            "upgrade_time" : 0,
-            "carry" : 1,
-            "visibility_range" : 0
-        },
-        "scout" : {
-            "from" : "worker",
-            "upgrade_time" : 60,
-            "carry" : 0,
-            "visibility_range" : 10
-        },
-        "builder" : {
-            "from" : "worker",
-            "upgrade_time" : 120,
-            "carry" : 0,
-            "visibility_range" : 0
-        },
-        "miner" : {
-            "from" : "worker",
-            "upgrade_time" : 120,
-            "carry" : 0,
-            "visibility_range" : 0
+        "speed" : 1,
+        "types" : {
+            "worker" : {
+                "from" : "",
+                "upgrade_time" : 0,
+                "carry" : 1,
+                "visibility_range" : 0
+            },
+            "scout" : {
+                "from" : "worker",
+                "upgrade_time" : 60,
+                "carry" : 0,
+                "visibility_range" : 10
+            },
+            "builder" : {
+                "from" : "worker",
+                "upgrade_time" : 120,
+                "carry" : 0,
+                "visibility_range" : 0
+            },
+            "miner" : {
+                "from" : "worker",
+                "upgrade_time" : 120,
+                "carry" : 0,
+                "visibility_range" : 0
+            }
         }
     }
 }

@@ -42,7 +42,7 @@ namespace core {
                 }
 
                 m_tiles.emplace_back(std::make_shared<tile_t>(
-                    cfg->tile_cfg[tt], n, m
+                    tile(cfg->tile_cfg[tt], n, m)
                 ));
 
                 n++;
