@@ -2,7 +2,7 @@
 
 #include "scout.h"
 #include "tile.h"
-#include "smap.h"
+#include "map.h"
 
 namespace core {
 

@@ -6,6 +6,7 @@
 #include <queue>
 #include <cmath>
 #include <algorithm>
+#include <filesystem>
 
 #include "enum.h"
 #include "pqueue.h"
@@ -19,9 +20,9 @@ namespace core {
         std::vector<value_type> m_path;
     };
 
-    class default_map{
+    class map{
     private:
-        static default_map* s_instance;
+        static map* s_instance;
 
     public:
         using tile_t = tile;
@@ -29,17 +30,16 @@ namespace core {
         using reference = value_t&;
         using const_reference = const value_t&;
 
-    protected:
+    private:
         int m_xmax, m_ymax;
         std::vector<value_t> m_tiles;
         std::vector<std::weak_ptr<tile_t>> m_targets;
 
-        default_map();
-
+        
     public:
-        virtual ~default_map() = default;
+        map(const std::filesystem::path& path);
 
-        static const default_map* get() { return s_instance; }
+        static map* get() { return s_instance; }
 
         std::pair<int, int> get_dim() const {
             return { m_xmax, m_ymax };
@@ -82,7 +82,11 @@ namespace core {
             return {};
         }
 
-        virtual path get_path(tile_type from, tile_type to, path_algo algo = path_algo_default) const = 0;
+        std::weak_ptr<tile_t> get_random_neighbour(std::weak_ptr<tile_t> t) const;
+
+        path get_path(tile_type from, tile_type to, path_algo algo = path_algo_default) const;
+
+        void discover_around(std::weak_ptr<tile_t> t);
 
     protected:
         path _get_path(const_reference from, const_reference to) const {

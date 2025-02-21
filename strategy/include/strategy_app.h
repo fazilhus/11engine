@@ -4,7 +4,7 @@
 
 #include "game_config.h"
 #include "clock.h"
-#include "smap.h"
+#include "map.h"
 #include "scout.h"
 
 namespace core {

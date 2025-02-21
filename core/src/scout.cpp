@@ -2,7 +2,7 @@
 
 #include "game_config.h"
 #include "wander.h"
-#include "smap.h"
+#include "map.h"
 
 namespace core {
 

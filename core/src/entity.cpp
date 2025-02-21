@@ -14,7 +14,7 @@ namespace core {
     entity::entity(int id, const std::string& name)
         : m_id(id), m_name(name) {
             const auto cfg = game_config::get();
-            m_tile = default_map::get()->get_tile(cfg->map_cfg.start);
+            m_tile = map::get()->get_tile(cfg->map_cfg.start);
             m_pos = util::tile_to_pos(m_tile.lock()->pos);
             m_speed = cfg->unit_cfg[1].speed;
     }
