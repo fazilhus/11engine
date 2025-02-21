@@ -1,7 +1,7 @@
 project "nlohmann"
     kind "StaticLib"
     language "c++"
-    cppdialect "C++23"
+    cppdialect "C++20"
     location "./"
 
     files {
