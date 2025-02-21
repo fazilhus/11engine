@@ -15,7 +15,7 @@ namespace core {
 	app* app::s_instance = nullptr;
 
 	app::app() {
-		InitWindow(1600, 1000, "11Engine: Pathfinding");
+		InitWindow(1000, 1000, "11Engine: Pathfinding");
 		SetTargetFPS(60);
 
 		s_instance = this;
@@ -69,7 +69,7 @@ namespace core {
 
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
 		m_em = new entity_manager();
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 5; ++i) {
 			m_em->add_entity(std::make_unique<scout>(i, std::to_string(i)));
 		}
 	}
@@ -94,7 +94,7 @@ namespace core {
 	void app::update(int dt) {
 		m_timer += GetFrameTime();
 
-		if (m_timer > 0.25f) {
+		if (m_timer > 0.1f) {
 			m_timer = 0;
 
 			// update stuff
@@ -164,6 +164,15 @@ namespace core {
 		for (const auto& e : m_em->entities()) {
 			auto [x, y] = e->pos();
 			DrawCircle(x, y, 1, DARKGRAY);
+
+			auto s = static_cast<scout*>(e.get());
+			if (s != nullptr) {
+				for (int i = s->path().m_i; i < s->path().m_path.size(); ++i) {
+					auto l = s->path().m_path[i].lock();
+					auto [px, py] = l->pos;
+					DrawRectangle(4 + px * 10, 4 + py * 10, 6, 6, RED);
+				}
+			}
 		}
     }
 
