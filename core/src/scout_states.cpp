@@ -7,6 +7,7 @@
 namespace core {
 
     void wander::enter(scout *e) {
+        e->set_state(scout_state_wander);
     }
 
     void wander::execute(scout *e, int dt) {

@@ -7,8 +7,10 @@ namespace core {
         pos = p;
         size = cfg.size;
         walkable = cfg.walkable;
-        discovered = false;
-        contents = cfg.contents;
+        discovered = true;
+        to_be_gathered = 0;
+        contents = cfg.max_contents;
+        max_contents = cfg.max_contents;
         speed_mod = cfg.speed_mod;
 
         time = static_cast<int>(static_cast<float>(size) * speed_mod);

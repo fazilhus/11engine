@@ -1,6 +1,7 @@
 #pragma once
 
-#include <vector>
+#include <queue>
+#include <map>
 #include <functional>
 
 namespace core {
@@ -17,10 +18,11 @@ namespace core {
         bool m_done; ///< Flag indicating if the timer is done.
 
     public:
+        timer() = default;
         /// @brief Constructor for the timer class.
         /// @param max_cycles Maximum cycle count.
         /// @param listener_id ID of the listener associated with the timer.
-        timer(int max_cycles, int listener_id, std::function<void()> callback = nullptr);
+        timer(int max_cycles, int listener_id, std::function<void()> callback);
 
         /// @brief Default destructor for the timer class.
         ~timer() = default;
@@ -44,7 +46,8 @@ namespace core {
     private:
         static timer_manager* s_instance; ///< Singleton instance of the timer manager.
 
-        std::vector<timer> m_timers; ///< List of all currently running timers.
+        std::map<int, timer> m_timers; ///< List of all currently running timers.
+        std::queue<int> m_queue_free;
 
     public:
         /// @brief Constructor for the timer manager class.
@@ -63,7 +66,7 @@ namespace core {
         /// @brief Add a new timer to the manager.
         /// @param max_cycles Maximum cycle count for the timer.
         /// @param listener_id ID of the listener associated with the timer.
-        void add_timer(int max_cycles, int listener_id);
+        void add_timer(int max_cycles, int listener_id, std::function<void()> callback = nullptr);
     };
 
 } // namespace core

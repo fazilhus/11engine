@@ -20,7 +20,7 @@ namespace core {
             int size;
             tile_type name;
             bool walkable;
-            int contents;
+            int max_contents;
             float speed_mod;
         };
         

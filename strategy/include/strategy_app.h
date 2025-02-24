@@ -4,8 +4,9 @@
 
 #include "game_config.h"
 #include "clock.h"
+#include "timer.h"
 #include "map.h"
-#include "scout.h"
+#include "entity.h"
 
 namespace core {
 
@@ -20,6 +21,7 @@ namespace core {
         game_config* m_config;
         clock* m_clock;
         map* m_map;
+        timer_manager* m_tm;
         entity_manager* m_em;
 
         RenderTexture2D m_map_texture;

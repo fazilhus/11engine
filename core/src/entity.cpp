@@ -17,6 +17,7 @@ namespace core {
             m_tile = map::get()->get_tile(cfg->map_cfg.start);
             m_pos = util::tile_to_pos(m_tile.lock()->pos);
             m_speed = cfg->unit_cfg[1].speed;
+            m_carry = resource_type_none;
     }
 
     entity::~entity() {

@@ -9,6 +9,8 @@
 #include "nlohmann/json.hpp"
 
 #include "util.h"
+#include "scout.h"
+#include "worker.h"
 
 namespace core {
 
@@ -26,6 +28,7 @@ namespace core {
 		m_config = nullptr;
 		m_clock = nullptr;
 		m_map = nullptr;
+		m_tm = nullptr;
 		m_em = nullptr;
 
 		// Create a texture for the map
@@ -68,15 +71,22 @@ namespace core {
 		m_clock = new clock();
 
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
+		m_tm = new timer_manager();
 		m_em = new entity_manager();
-		for (int i = 0; i < 5; ++i) {
-			m_em->add_entity(std::make_unique<scout>(i, std::to_string(i)));
+		// for (int i = 0; i < 2; ++i) {
+			// m_em->add_entity(std::make_unique<scout>(i, std::to_string(i)));
+		// }
+		for (int i = 1; i < 4; ++i) {
+			m_em->add_entity(std::make_unique<worker>(i, std::to_string(i)));
 		}
 	}
 
 	void app::deinit() {
 		if (m_em)
-			delete m_em;	
+			delete m_em;
+			
+		if (m_tm)
+			delete m_tm;
 			
 		if (m_map)
 			delete m_map;
@@ -99,6 +109,7 @@ namespace core {
 
 			// update stuff
 			m_clock->update(dt);
+			m_tm->update(dt);
 			m_em->update(dt);
 		}
 	}
@@ -163,14 +174,23 @@ namespace core {
     void app::draw_entities() const {
 		for (const auto& e : m_em->entities()) {
 			auto [x, y] = e->pos();
-			DrawCircle(x, y, 1, DARKGRAY);
+			
+			{
+				auto s = static_cast<scout*>(e.get());
+				if (s != nullptr) {
+					DrawCircle(x, y, 1.5, YELLOW);
+					// for (int i = s->path().m_i; i < s->path().m_path.size(); ++i) {
+					// 	auto l = s->path().m_path[i].lock();
+					// 	auto [px, py] = l->pos;
+					// 	DrawRectangle(4 + px * 10, 4 + py * 10, 6, 6, RED);
+					// }
+				}
+			}
 
-			auto s = static_cast<scout*>(e.get());
-			if (s != nullptr) {
-				for (int i = s->path().m_i; i < s->path().m_path.size(); ++i) {
-					auto l = s->path().m_path[i].lock();
-					auto [px, py] = l->pos;
-					DrawRectangle(4 + px * 10, 4 + py * 10, 6, 6, RED);
+			{
+				auto s = static_cast<worker*>(e.get());
+				if (s != nullptr) {
+					DrawCircle(x, y, 1.5, ORANGE);
 				}
 			}
 		}

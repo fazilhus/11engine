@@ -21,6 +21,12 @@ namespace core {
         int m_i;
         value_type m_next;
         std::vector<value_type> m_path;
+
+        void reverse() {
+            std::reverse(m_path.begin(), m_path.end());
+            m_i = 0;
+            m_next = m_path.front();
+        }
     };
 
     class map{
@@ -88,7 +94,9 @@ namespace core {
         std::weak_ptr<tile_t> get_random_neighbour(std::weak_ptr<tile_t> t) const;
 
         path get_path(tile_type from, tile_type to, path_algo algo = path_algo_default) const;
+
         path get_path_to_undiscovered(const_reference from) const;
+        path get_path_to_tile_of(const_reference from, tile_type t) const;
 
         void discover_around(std::weak_ptr<tile_t> t);
 

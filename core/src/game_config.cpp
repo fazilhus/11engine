@@ -28,7 +28,7 @@ namespace core {
                     .size = size,
                     .name = type,
                     .walkable = data.at("walkable").get<bool>(),
-                    .contents = data.at("contents").get<int>(),
+                    .max_contents = data.at("contents").get<int>(),
                     .speed_mod = data.at("speed_mod").get<float>()
                 };
             }

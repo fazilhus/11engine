@@ -44,6 +44,22 @@ namespace core {
         unit_type_num
     };
 
+    enum scout_state_type : uint8_t {
+        scout_state_none,
+        scout_state_wander,
+        scout_state_num
+    };
+
+    enum worker_state_type : uint8_t {
+        worker_state_none,
+        worker_state_idle,
+        worker_state_move,
+        worker_state_gather_resource,
+        worker_state_num
+    };
+
+    enum message_type : uint8_t {};
+
     namespace util {
 
         tile_type char_to_tile(char c);

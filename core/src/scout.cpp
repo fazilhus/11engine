@@ -9,6 +9,7 @@ namespace core {
     scout::scout(int id, const std::string &name)
         : entity(id, name) {
         m_state = std::make_unique<wander>();
+        m_cur_state = scout_state_wander;
         m_path = map::get()->get_path_to_undiscovered(m_tile.lock());
         if (m_path.m_path.size() > 1) {
             m_path.m_i = 1;

@@ -54,6 +54,8 @@ namespace core {
         m_xmax = n;
         m_ymax = m;
 
+        file.close();
+
         std::array<std::pair<int, int>, 4> direct = {{{-1, 0}, {0, -1}, {1, 0}, {0, 1}}};
         std::array<std::pair<int, int>, 4> diag = {{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}};
 
@@ -98,21 +100,7 @@ namespace core {
         auto [i, j] = cfg->map_cfg.start;
         auto& tile = m_tiles[j * m_xmax + i];
         tile->discovered = true;
-        for (int k = 0; k < 4; k++) {
-            auto& dif = diag[k];
-            if (i + dif.first < 0 || i + dif.first >= m_xmax || j + dif.second < 0 || j + dif.second >= m_ymax) continue;
-            auto& dif_tile = get_tile(i + dif.first, j + dif.second);
-            dif_tile->discovered = true;
-        }
-
-        for (int k = 0; k < 4; k++) {
-            auto& dif = direct[k];
-            if (i + dif.first < 0 || i + dif.first >= m_xmax || j + dif.second < 0 || j + dif.second >= m_ymax) continue;
-            auto& dif_tile = get_tile(i + dif.first, j + dif.second);
-            dif_tile->discovered = true;
-        }
-
-        file.close();
+        discover_around(tile);
     }
 
     std::weak_ptr<map::tile_t> map::get_random_neighbour(std::weak_ptr<tile_t> t) const {
@@ -175,24 +163,25 @@ namespace core {
         return get_path_to_closest(from, filter);
     }
 
+    path map::get_path_to_tile_of(const_reference from, tile_type t) const {
+        auto filter = [&t](const_reference tile) -> bool {
+            return tile->type == t && tile->discovered;
+        };
+        return get_path_to_closest(from, filter);
+    }
+
     void map::discover_around(std::weak_ptr<tile_t> t) {
-        std::array<std::pair<int, int>, 4> direct = {{{-1, 0}, {0, -1}, {1, 0}, {0, 1}}};
-        std::array<std::pair<int, int>, 4> diag = {{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}};
+        std::array<std::pair<int, int>, 8> difs = {{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}, {-1, 0}, {0, -1}, {1, 0}, {0, 1}}};
 
         auto [i, j] = t.lock()->pos;
 
-        for (int k = 0; k < 4; k++) {
-            auto& dif = diag[k];
-            if (i + dif.first < 0 || i + dif.first >= m_xmax || j + dif.second < 0 || j + dif.second >= m_ymax) continue;
-            auto& dif_tile = get_tile(i + dif.first, j + dif.second);
+        for (auto [ii, jj] : difs) {
+            if (i + ii < 0 || i + ii >= m_xmax || j + jj < 0 || j + jj >= m_ymax) continue;
+            auto& dif_tile = get_tile(i + ii, j + jj);
             dif_tile->discovered = true;
-        }
-
-        for (int k = 0; k < 4; k++) {
-            auto& dif = direct[k];
-            if (i + dif.first < 0 || i + dif.first >= m_xmax || j + dif.second < 0 || j + dif.second >= m_ymax) continue;
-            auto& dif_tile = get_tile(i + dif.first, j + dif.second);
-            dif_tile->discovered = true;
+            if (dif_tile->type == tile_type_forest) {
+                m_targets.push_back(dif_tile);
+            }
         }
     }
 

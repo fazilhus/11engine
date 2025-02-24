@@ -21,7 +21,9 @@ namespace core {
         int size;
         bool walkable;
         bool discovered;
+        int to_be_gathered;
         int contents;
+        int max_contents;
         float speed_mod;
         
         int time;

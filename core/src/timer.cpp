@@ -22,7 +22,8 @@ namespace core {
     }
 
     void timer_manager::update(int dt) {
-        for (auto& t : m_timers) {
+        for (int i = 0; i < m_timers.size(); ++i) {
+            auto& t = m_timers[i];
             t.update(dt);
 
             if (t.is_done()) {
@@ -30,13 +31,19 @@ namespace core {
                 if (t.callback()) {
                     t.callback()();
                 }
-                std::cout << "Timer " << t.listener_id() << " done" << std::endl;
+                // std::cout << "Timer " << t.listener_id() << " done" << std::endl;
+                m_queue_free.push(i);
             }
+        }
+
+        while (!m_queue_free.empty()) {
+            m_timers.erase(m_queue_free.front());
+            m_queue_free.pop();
         }
     }
 
-    void timer_manager::add_timer(int max_cycles, int listener_id) {
-        m_timers.emplace_back(max_cycles, listener_id);
+    void timer_manager::add_timer(int max_cycles, int listener_id, std::function<void()> callback) {
+        m_timers[m_timers.size()] = timer(max_cycles, listener_id, callback);
     }
 
 } // namespace core

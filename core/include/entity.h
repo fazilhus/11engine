@@ -22,6 +22,7 @@ namespace core {
         std::array<int, 2> m_pos;
         std::weak_ptr<tile> m_tile;
         int m_speed;
+        resource_type m_carry;
 
     public:
         /// @brief Constructor for the entity class.
@@ -56,6 +57,9 @@ namespace core {
         void set_tile(std::weak_ptr<tile> t) { m_tile = t; }
 
         int speed() const { return m_speed; }
+
+        resource_type carry() const { return m_carry; }
+        void set_carry(resource_type r) { m_carry = r; }
 
         /// @brief Get the inbox of the entity.
         /// @return Inbox of the entity.
