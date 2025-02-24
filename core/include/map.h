@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <memory>
 #include <cassert>
 #include <queue>
@@ -42,7 +43,8 @@ namespace core {
     private:
         int m_xmax, m_ymax;
         std::vector<value_t> m_tiles;
-        std::vector<std::weak_ptr<tile_t>> m_targets;
+        std::map<int, std::weak_ptr<tile_t>> m_targets;
+        std::weak_ptr<tile_t> m_start;
 
         
     public:
@@ -80,10 +82,13 @@ namespace core {
             return m_tiles[j * m_xmax + i];
         }
 
-        const std::vector<std::weak_ptr<tile_t>>& get_targets() const { return m_targets; }
+        const std::map<int, std::weak_ptr<tile_t>>& get_targets() const { return m_targets; }
+        std::map<int, std::weak_ptr<tile_t>>& get_targets() { return m_targets; }
+
+        const std::weak_ptr<tile_t>& get_start() const { return m_start; }
 
         const std::weak_ptr<tile_t>& find_target(tile_type tile) const {
-            for (auto& target : m_targets) {
+            for (auto& [_, target] : m_targets) {
                 if (target.lock()->type == tile) {
                     return target;
                 }
@@ -93,14 +98,11 @@ namespace core {
 
         std::weak_ptr<tile_t> get_random_neighbour(std::weak_ptr<tile_t> t) const;
 
-        path get_path(tile_type from, tile_type to, path_algo algo = path_algo_default) const;
-
         path get_path_to_undiscovered(const_reference from) const;
         path get_path_to_tile_of(const_reference from, tile_type t) const;
 
         void discover_around(std::weak_ptr<tile_t> t);
 
-        path get_path(const_reference from, const_reference to) const;
         path get_path_to_closest(const_reference from, std::function<bool(const_reference)> filter) const;
         path get_path_dijkstra(const_reference from, const_reference to) const;
         path get_path_astar(const_reference from, const_reference to) const;

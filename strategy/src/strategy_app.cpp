@@ -73,10 +73,10 @@ namespace core {
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
 		m_tm = new timer_manager();
 		m_em = new entity_manager();
-		// for (int i = 0; i < 2; ++i) {
-			// m_em->add_entity(std::make_unique<scout>(i, std::to_string(i)));
-		// }
-		for (int i = 1; i < 4; ++i) {
+		for (int i = 0; i < 1; ++i) {
+			m_em->add_entity(std::make_unique<scout>(i, std::to_string(i)));
+		}
+		for (int i = 1; i < 10; ++i) {
 			m_em->add_entity(std::make_unique<worker>(i, std::to_string(i)));
 		}
 	}
@@ -178,7 +178,7 @@ namespace core {
 			{
 				auto s = static_cast<scout*>(e.get());
 				if (s != nullptr) {
-					DrawCircle(x, y, 1.5, YELLOW);
+					DrawCircle(x, y, 2, YELLOW);
 					// for (int i = s->path().m_i; i < s->path().m_path.size(); ++i) {
 					// 	auto l = s->path().m_path[i].lock();
 					// 	auto [px, py] = l->pos;
@@ -190,7 +190,7 @@ namespace core {
 			{
 				auto s = static_cast<worker*>(e.get());
 				if (s != nullptr) {
-					DrawCircle(x, y, 1.5, ORANGE);
+					DrawCircle(x, y, 2, ORANGE);
 				}
 			}
 		}

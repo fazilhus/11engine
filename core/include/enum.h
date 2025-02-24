@@ -53,7 +53,8 @@ namespace core {
     enum worker_state_type : uint8_t {
         worker_state_none,
         worker_state_idle,
-        worker_state_move,
+        worker_state_move_to_resource,
+        worker_state_move_to_base,
         worker_state_gather_resource,
         worker_state_num
     };

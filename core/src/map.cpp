@@ -98,9 +98,9 @@ namespace core {
         }
 
         auto [i, j] = cfg->map_cfg.start;
-        auto& tile = m_tiles[j * m_xmax + i];
-        tile->discovered = true;
-        discover_around(tile);
+        m_start = m_tiles[j * m_xmax + i];
+        m_start.lock()->discovered = true;
+        discover_around(m_start);
     }
 
     std::weak_ptr<map::tile_t> map::get_random_neighbour(std::weak_ptr<tile_t> t) const {
@@ -110,36 +110,6 @@ namespace core {
             idx = util::random_int(0, t1->neighbours.size() - 1);
         } while (!t1->neighbours[idx].lock()->walkable);
         return t1->neighbours[idx];
-    }
-
-    path map::get_path(tile_type from, tile_type to, path_algo algo) const {
-        auto start = find_target(from);
-        path null_path{};
-        if (start.expired()) {
-            std::cerr << "map::get_path: no target found\n";
-            return null_path;
-        }
-
-        auto finish = find_target(to);
-        if (finish.expired()) {
-            std::cerr << "map::get_path: no target found\n";
-            return null_path;
-        }
-
-        switch (algo) {
-        case path_algo_default:
-            return get_path(start.lock(), finish.lock());
-        case path_algo_dijkstra:
-            return get_path_dijkstra(start.lock(), finish.lock());
-        case path_algo_astar:
-            return get_path_astar(start.lock(), finish.lock());
-        default: {
-#ifdef DEBUG
-                assert(false && "invalid map path algorithm");
-#endif
-                return null_path;
-        }
-        }
     }
 
     path map::get_path_to_undiscovered(const_reference from) const {
@@ -165,7 +135,7 @@ namespace core {
 
     path map::get_path_to_tile_of(const_reference from, tile_type t) const {
         auto filter = [&t](const_reference tile) -> bool {
-            return tile->type == t && tile->discovered;
+            return tile->type == t && tile->discovered && tile->to_be_gathered < tile->contents;
         };
         return get_path_to_closest(from, filter);
     }
@@ -180,40 +150,9 @@ namespace core {
             auto& dif_tile = get_tile(i + ii, j + jj);
             dif_tile->discovered = true;
             if (dif_tile->type == tile_type_forest) {
-                m_targets.push_back(dif_tile);
+                m_targets[(j + jj) * m_xmax + (i + ii)] = dif_tile;
             }
         }
-    }
-
-    path map::get_path(const_reference from, const_reference to) const {
-        std::vector<int> costs(m_tiles.size(), -1);
-        costs[from->posy * m_xmax + from->posx] = 0;
-        std::queue<std::pair<int, int>> q;
-        q.emplace(from->posx, from->posy);
-
-        while (!q.empty()) {
-            auto coords = q.front();
-            const auto& tile = get_tile(coords);
-            q.pop();
-
-            for (auto i = 0; i < tile->neighbours.size(); i++) {
-                const auto& next_tile = tile->neighbours[i].lock();
-
-                if (!next_tile->walkable) continue;
-
-                int cost = next_tile->time;
-                if (abs(next_tile->posx - tile->posx) == 1 && abs(next_tile->posy - tile->posy) == 1 ) cost = next_tile->dtime;
-
-                int current_cost = costs[next_tile->posy * m_xmax + next_tile->posx];
-                int travel_cost = costs[tile->posy * m_xmax + tile->posx] + cost;
-                if (-1 != current_cost && current_cost < travel_cost) continue;
-                costs[next_tile->posy * m_xmax + next_tile->posx] = travel_cost;
-                q.emplace(next_tile->posx, next_tile->posy);
-            }
-        }
-
-        
-        return _make_path(costs, from, to, nullptr);
     }
 
     path map::get_path_to_closest(const_reference from, std::function<bool(const_reference)> filter) const {
@@ -235,7 +174,7 @@ namespace core {
 
         connection con = pq.top();
         auto tile = get_tile(con.posx, con.posy);
-        while (!filter(tile)) {
+        while (!filter(tile) && !pq.empty()) {
             while (!pq.empty()) {
                 con = pq.top();
                 if (visited[con.posy * m_xmax + con.posx]) {
@@ -268,8 +207,11 @@ namespace core {
 
             visited[con.posy * m_xmax + con.posx] = true;
         }
-        
-        return _make_path(costs, from, tile, filter);
+
+        if (filter(tile)) {
+            return _make_path(costs, from, tile, filter);
+        }
+        return {};
     }
 
     path map::get_path_dijkstra(const_reference from, const_reference to) const {

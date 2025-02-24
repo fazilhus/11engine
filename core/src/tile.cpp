@@ -7,7 +7,7 @@ namespace core {
         pos = p;
         size = cfg.size;
         walkable = cfg.walkable;
-        discovered = true;
+        discovered = false;
         to_be_gathered = 0;
         contents = cfg.max_contents;
         max_contents = cfg.max_contents;
