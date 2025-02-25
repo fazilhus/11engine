@@ -45,11 +45,11 @@ namespace core {
                     .name = type,
                     .builders = data.at("builders").get<int>(),
                     .resources = {
-                        0,
                         data.at("resources").at("wood").get<int>(),
                         data.at("resources").at("coal").get<int>()
                     },
-                    .time = data.at("time").get<int>()};
+                    .time = data.at("time").get<int>()
+                };
             }
         }
 
@@ -61,7 +61,6 @@ namespace core {
                 resource_cfg[type] = {
                     .name = type, 
                     .in = {
-                        0, 
                         data.at("in").at("wood").get<int>(), 
                         data.at("in").at("coal").get<int>()
                     }, 
