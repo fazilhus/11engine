@@ -62,9 +62,28 @@ namespace core {
     class state_machine<istate<worker>, worker_state_type> {
     private:
         std::array<std::shared_ptr<istate<worker>>, state_machine_traits<worker_state_type>::size> m_states;
+        
+        std::weak_ptr<istate<worker>> m_state_ref;
+        worker_state_type m_state;
+        worker_state_type m_prev_state;
+        worker_state_type m_next_state;
+
+        worker* m_ptr;
 
     public:
-        state_machine();
+        state_machine(worker* ptr);
+
+        void update(int dt = 1);
+
+        worker_state_type state() const { return m_state; }
+        void set_state(worker_state_type state) { m_state = state; }
+        worker_state_type prev_state() const { return m_prev_state; }
+        void set_prev_state(worker_state_type state) { m_prev_state = state; }
+        worker_state_type next_state() const { return m_next_state; }
+        void set_next_state(worker_state_type state) { m_next_state = state; }
+
+    private:
+        void change_state();
     };
 
 } // namespace core
