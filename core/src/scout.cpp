@@ -6,37 +6,55 @@
 
 namespace core {
 
-    scout::scout(int id, const std::string &name)
-        : entity(id, name) {
-        m_state = std::make_unique<wander>();
-        m_cur_state = scout_state_wander;
-        m_path = map::get()->get_path_to_undiscovered(m_tile.lock());
-        if (m_path.m_path.size() > 1) {
-            m_path.m_i = 1;
-            m_path.m_next = m_path.m_path[m_path.m_i];
+    scout_state_machine::scout_state_machine(scout *ptr)
+        : state_machine(ptr) {
+        for (int i = 0; i < m_states.size(); ++i) {
+            switch (static_cast<scout_state_type>(i)) {
+            case scout_state_idle: {
+                m_states[i] = std::make_shared<scout_idle>();
+                break;
+            }
+            case scout_state_wander: {
+                m_states[i] = std::make_shared<scout_wander>();
+                break;
+            }
+            }
+        }
+
+        m_state_ref = m_states[0];
+    }
+
+    void scout_state_machine::update(int dt) {
+        if (!m_state_ref.expired()) {
+            auto s = m_state_ref.lock();
+            s->execute(m_ptr, dt);
+            s->make_decision(m_ptr);
+            s->process_messages(m_ptr);
+            s->change_state(m_ptr);
+
+            if (m_next_state != scout_state_none) {
+                change_state();
+            }
         }
     }
 
-    scout::~scout() {
+    void scout_state_machine::change_state() {
+        m_state_ref.lock()->exit(m_ptr);
+
+        m_state_ref = m_states[static_cast<std::size_t>(m_next_state)];
+        m_prev_state = m_state;
+        m_state = m_next_state;
+        m_next_state = scout_state_none;
+
+        m_state_ref.lock()->enter(m_ptr);
+    }
+
+    scout::scout(int id, const std::string &name)
+        : entity(id, name), m_sm(this) {
     }
 
     void scout::update(int dt) {
-        if (m_state) {
-            m_state->execute(this);
-            m_state->make_decision(this);
-            m_state->process_messages(this);
-            m_state->change_state(this);
-        }
-    }
-
-    void scout::change_state() {
-        m_state->exit(this);
-        m_path = map::get()->get_path_to_undiscovered(m_tile.lock());
-        if (m_path.m_path.size() > 1) {
-            m_path.m_i = 1;
-            m_path.m_next = m_path.m_path[m_path.m_i];
-        }
-        m_state->enter(this);
+        m_sm.update(dt);
     }
 
 } // namespace core

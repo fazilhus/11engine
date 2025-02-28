@@ -14,6 +14,7 @@ namespace core::util {
     }
 
     building_type str_to_building(const std::string &s) {
+        if (s == "base") return building_type_base;
         if (s == "coal_mine") return building_type_coal_mine;
         return building_type_none;
     }

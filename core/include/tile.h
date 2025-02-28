@@ -21,10 +21,12 @@ namespace core {
         int size;
         bool walkable;
         bool discovered;
+        bool to_be_discovered;
         int to_be_gathered;
         int contents;
         int max_contents;
         float speed_mod;
+        building_type building;
         
         int time;
         int dtime;

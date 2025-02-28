@@ -3,37 +3,43 @@
 #include <memory>
 
 #include "entity.h"
+#include "state_machine.h"
 #include "map.h"
 
 namespace core {
 
-    template <typename entity_type>
-    class istate;
+    class worker;
+
+    template<>
+    struct state_machine_traits<worker_state_type> {
+        enum { size = worker_state_num };
+    };
+
+    class worker_state_machine : public state_machine<worker, worker_state_type> {
+    public:
+        worker_state_machine(worker* ptr);
+        ~worker_state_machine() override = default;
+
+        void update(int dt = 1) override;
+    
+    protected:
+        void change_state() override;
+    };
 
     class worker : public entity {
     public:
         using state_type = std::unique_ptr<istate<worker>>;
 
     private:
-        state_type m_state;
-        worker_state_type m_cur_state;
-        worker_state_type m_next_state;
-        path m_path;
+        worker_state_machine m_sm;
 
     public:
         worker(int id, const std::string& name);
-        ~worker() override;
+        ~worker() override = default;
 
         void update(int dt = 1) override;
 
-        void change_state() override;
-
-        worker_state_type state() const { return m_cur_state; }
-        void set_state(worker_state_type state) { m_cur_state = state; }
-        worker_state_type next_state() const { return m_next_state; }
-        void set_next_state(worker_state_type state) { m_next_state = state; }
-
-        path& path() { return m_path; }
+        worker_state_machine& sm() { return m_sm; }
     };
 
 } // namespace core

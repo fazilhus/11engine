@@ -2,12 +2,11 @@
 
 #include <memory>
 #include <array>
-#include <vector>
-#include <queue>
 #include <string>
 
 #include "message.h"
 #include "tile.h"
+#include "map.h"
 
 namespace core {
 
@@ -22,7 +21,8 @@ namespace core {
         std::array<int, 2> m_pos;
         std::weak_ptr<tile> m_tile;
         int m_speed;
-        resource_type m_carry;
+
+        path m_path;
 
     public:
         /// @brief Constructor for the entity class.
@@ -35,8 +35,6 @@ namespace core {
 
         /// @brief Update the entity in the first stage.
         virtual void update(int dt = 1) = 0;
-
-        virtual void change_state() = 0;
 
         /// @brief Get the unique identifier of the entity.
         /// @return Unique identifier of the entity.
@@ -52,14 +50,19 @@ namespace core {
 
         std::array<int, 2> pos() const { return m_pos; }
         void set_pos(std::array<int, 2> p) { m_pos = p; }
+        void update_pos(std::array<int, 2> dp) {
+            m_pos[0] += dp[0];
+            m_pos[1] += dp[1];
+        }
 
         std::weak_ptr<tile> get_tile() const { return m_tile; }
         void set_tile(std::weak_ptr<tile> t) { m_tile = t; }
 
         int speed() const { return m_speed; }
 
-        resource_type carry() const { return m_carry; }
-        void set_carry(resource_type r) { m_carry = r; }
+        const path& get_path() const { return m_path; }
+        path& get_path() { return m_path; }
+        void set_path(const path& p) { m_path = p; }
 
         /// @brief Get the inbox of the entity.
         /// @return Inbox of the entity.
@@ -81,42 +84,6 @@ namespace core {
         /// @param receiver_id ID of the receiver
         /// @param delay a time in the future
         void send_invite(uint8_t msg_type, int sender_id, int receiver_id, long long timestamp, int delay = 0);
-    };
-
-    /// @brief Manager class for handling all entities in the game.
-    class entity_manager {
-    private:
-        static entity_manager* s_instance; ///< Singleton instance of the entity manager.
-
-        std::vector<std::unique_ptr<entity>> m_entities; ///< List of all entities.
-
-        std::queue<int> m_entities_to_remove; ///< Queue of entities to be removed.
-
-    public:
-        /// @brief Constructor for the entity manager class.
-        entity_manager();
-
-        /// @brief Destructor for the entity manager class.
-        ~entity_manager() = default;
-
-        /// @brief Get the singleton instance of the entity manager.
-        /// @return Singleton instance of the entity manager.
-        static entity_manager* get() { return s_instance; }
-
-        /// @brief Get the list of all entities.
-        /// @return List of all entities.
-        const std::vector<std::unique_ptr<entity>>& entities() const { return m_entities; }
-
-        /// @brief Add a new entity to the manager.
-        /// @param entity Unique pointer to the new entity.
-        void add_entity(std::unique_ptr<entity> entity);
-
-        /// @brief Update all entities managed by the entity manager.
-        void update(int dt = 1);
-
-    private:
-        /// @brief Remove entities that are marked for removal.
-        void remove_entities();
     };
 
 } // namespace core

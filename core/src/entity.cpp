@@ -17,7 +17,6 @@ namespace core {
             m_tile = map::get()->get_tile(cfg->map_cfg.start);
             m_pos = util::tile_to_pos(m_tile.lock()->pos);
             m_speed = cfg->unit_cfg[1].speed;
-            m_carry = resource_type_none;
     }
 
     entity::~entity() {
@@ -35,40 +34,6 @@ namespace core {
     void entity::send_invite(uint8_t msg_type, int sender_id, int receiver_id, long long timestamp, int delay) {
         std::cout << m_name << " sent invite to " << msg_type << " in " << timestamp << " to " << receiver_id <<  std::endl;
         message_dispatcher::get()->send_to(msg_type, sender_id, receiver_id, timestamp, delay);
-    }
-
-    entity_manager* entity_manager::s_instance = nullptr;
-
-    entity_manager::entity_manager() {
-        s_instance = this;
-    }
-
-    void entity_manager::add_entity(std::unique_ptr<entity> entity) {
-        m_entities.push_back(std::move(entity));
-    }
-
-    void entity_manager::update(int dt) {
-        if (!m_entities_to_remove.empty()) {
-            remove_entities();
-        }
-
-        for (auto& e : m_entities) {
-            e->update(dt);
-        }
-    }
-
-    void entity_manager::remove_entities() {
-        while (!m_entities_to_remove.empty()) {
-            auto idx = m_entities_to_remove.front();
-            m_entities_to_remove.pop();
-
-            assert(idx >= 0 && idx < m_entities.size());
-            m_entities.erase(m_entities.begin() + idx);
-        }
-
-        for (int i = 0; i < m_entities.size(); ++i) {
-            m_entities[i]->set_id(i);
-        }
     }
 
 } // namespace core

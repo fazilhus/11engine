@@ -8,82 +8,51 @@
 namespace core {
 
     template<class state_type>
-    struct state_machine_traits;
-
-    template<>
-    struct state_machine_traits<scout_state_type> {
-        enum { size = scout_state_num };
+    struct state_machine_traits {
+        enum { size = 0 };
     };
 
-    template<>
-    struct state_machine_traits<worker_state_type> {
-        enum { size = worker_state_num };
-    };
+    // template<>
+    // struct state_machine_traits<scout_state_type> {
+    //     enum { size = scout_state_num };
+    // };
 
-    template <typename entity_type, typename state_type>
-    class state_machine {};
+    // template<>
+    // struct state_machine_traits<worker_state_type> {
+    //     enum { size = worker_state_num };
+    // };
 
     template <typename entity_type>
     class istate;
 
-    class scout;
+    template <typename entity_type, typename state_enum_type>
+    class state_machine {
+    protected:
+        std::array<std::shared_ptr<istate<entity_type>>, state_machine_traits<state_enum_type>::size> m_states;
 
-    template<>
-    class state_machine<istate<scout>, scout_state_type> {
-    private:
-        std::array<std::shared_ptr<istate<scout>>, state_machine_traits<scout_state_type>::size> m_states;
+        std::weak_ptr<istate<entity_type>> m_state_ref;
+        state_enum_type m_state;
+        state_enum_type m_prev_state;
+        state_enum_type m_next_state;
 
-        std::weak_ptr<istate<scout>> m_state_ref;
-        scout_state_type m_state;
-        scout_state_type m_prev_state;
-        scout_state_type m_next_state;
+        entity_type* m_ptr;
 
-        scout* m_ptr;
-
-    public:
-        state_machine(scout* ptr);
-
-        void update(int dt = 1);
-
-        scout_state_type state() const { return m_state; }
-        void set_state(scout_state_type state) { m_state = state; }
-        scout_state_type prev_state() const { return m_prev_state; }
-        void set_prev_state(scout_state_type state) { m_prev_state = state; }
-        scout_state_type next_state() const { return m_next_state; }
-        void set_next_state(scout_state_type state) { m_next_state = state; }
-
-    private:
-        void change_state();
-    };
-
-    class worker;
-
-    template<>
-    class state_machine<istate<worker>, worker_state_type> {
-    private:
-        std::array<std::shared_ptr<istate<worker>>, state_machine_traits<worker_state_type>::size> m_states;
-        
-        std::weak_ptr<istate<worker>> m_state_ref;
-        worker_state_type m_state;
-        worker_state_type m_prev_state;
-        worker_state_type m_next_state;
-
-        worker* m_ptr;
+        state_machine(entity_type* ptr) : m_ptr(ptr) {}
 
     public:
-        state_machine(worker* ptr);
+        virtual ~state_machine() = default;
 
-        void update(int dt = 1);
+        virtual void update(int dt = 1) = 0;
 
-        worker_state_type state() const { return m_state; }
-        void set_state(worker_state_type state) { m_state = state; }
-        worker_state_type prev_state() const { return m_prev_state; }
-        void set_prev_state(worker_state_type state) { m_prev_state = state; }
-        worker_state_type next_state() const { return m_next_state; }
-        void set_next_state(worker_state_type state) { m_next_state = state; }
+        state_enum_type state() const { return m_state; }
+        void set_state(state_enum_type state) { m_state = state; }
+        state_enum_type prev_state() const { return m_prev_state; }
+        void set_prev_state(state_enum_type state) { m_prev_state = state; }
+        state_enum_type next_state() const { return m_next_state; }
+        void set_next_state(state_enum_type state) { m_next_state = state; }
 
-    private:
-        void change_state();
+    protected:
+        virtual void change_state() = 0;
     };
 
 } // namespace core

@@ -6,61 +6,61 @@
 
 namespace core {
 
-    worker::worker(int id, const std::string &name)
-        : entity(id, name) {
-        m_state = std::make_unique<idle>();
-        m_cur_state = worker_state_idle;
+    worker_state_machine::worker_state_machine(worker *ptr)
+        : state_machine(ptr) {
+        for (int i = 0; i < m_states.size(); ++i) {
+            switch (static_cast<worker_state_type>(i)) {
+            case worker_state_idle: {
+                m_states[i] = std::make_shared<worker_idle>();
+                break;
+            }
+            case worker_state_move_to_resource: {
+                m_states[i] = std::make_shared<worker_move_to_resource>();
+                break;
+            }
+            case worker_state_move_to_base: {
+                m_states[i] = std::make_shared<worker_move_to_base>();
+                break;
+            }
+            case worker_state_gather_resource: {
+                m_states[i] = std::make_shared<worker_gather_resource>();
+                break;
+            }
+            }
+        }
     }
 
-    worker::~worker() {
+    void worker_state_machine::update(int dt) {
+        if (!m_state_ref.expired()) {
+            auto s = m_state_ref.lock();
+            s->execute(m_ptr, dt);
+            s->make_decision(m_ptr);
+            s->process_messages(m_ptr);
+
+            if (m_next_state != worker_state_none) {
+                s->change_state(m_ptr);
+            }
+        }
+    }
+
+    void worker_state_machine::change_state() {
+        m_state_ref.lock()->exit(m_ptr);
+
+        m_state_ref = m_states[static_cast<std::size_t>(m_next_state)];
+        m_prev_state = m_state;
+        m_state = m_next_state;
+        m_next_state = worker_state_none;
+
+        m_state_ref.lock()->enter(m_ptr);
+    }
+
+    worker::worker(int id, const std::string &name)
+        : entity(id, name), m_sm(this) {
     }
 
     void worker::update(int dt) {
-        if (m_state) {
-            m_state->execute(this);
-            m_state->make_decision(this);
-            m_state->process_messages(this);
-            m_state->change_state(this);
-        }
+        m_sm.update(dt);
     }
 
-    void worker::change_state() {
-
-        if (m_next_state == worker_state_none) return;
-
-        m_state->exit(this);
-
-        m_cur_state = m_next_state;
-        m_next_state = worker_state_none;
-
-        switch (m_cur_state) {
-        case worker_state_idle: {
-            m_state = std::make_unique<idle>();
-            if (m_carry != resource_type_none) {
-                m_carry = resource_type_none;
-            }
-            break;
-        }
-        case worker_state_move_to_resource: {
-            m_path = map::get()->get_path_to_tile_of(m_tile.lock(), tile_type_forest);
-            if (m_path.m_path.empty()) {
-                break;
-            }
-
-            m_state = std::make_unique<move_to_resource>();
-            break;
-        }
-        case worker_state_move_to_base: {
-            m_state = std::make_unique<move_to_base>();
-            m_path = map::get()->get_path_dijkstra(m_tile.lock(), map::get()->get_start().lock());
-        }
-        case worker_state_gather_resource: {
-            m_state = std::make_unique<gather_resource>();
-            break;
-        }
-        }
-        
-        m_state->enter(this);
-    }
 
 } // namespace core

@@ -1,6 +1,6 @@
 #include "message.h"
 
-#include "entity.h"
+#include "entity_manager.h"
 
 namespace core {
 

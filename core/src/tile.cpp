@@ -8,10 +8,12 @@ namespace core {
         size = cfg.size;
         walkable = cfg.walkable;
         discovered = false;
+        to_be_discovered = false;
         to_be_gathered = 0;
         contents = cfg.max_contents;
         max_contents = cfg.max_contents;
         speed_mod = cfg.speed_mod;
+        building = building_type_none;
 
         time = static_cast<int>(static_cast<float>(size) * speed_mod);
         dtime = static_cast<int>(static_cast<float>(time) * 1.4f);

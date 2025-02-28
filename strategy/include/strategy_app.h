@@ -6,7 +6,7 @@
 #include "clock.h"
 #include "timer.h"
 #include "map.h"
-#include "entity.h"
+#include "entity_manager.h"
 
 namespace core {
 

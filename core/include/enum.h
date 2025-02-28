@@ -23,6 +23,7 @@ namespace core {
     };
 
     enum building_type : uint8_t {
+        building_type_base,
         building_type_coal_mine,
         building_type_num,
         building_type_none
@@ -45,6 +46,7 @@ namespace core {
     };
 
     enum scout_state_type : uint8_t {
+        scout_state_idle,
         scout_state_wander,
         scout_state_num,
         scout_state_none
@@ -59,7 +61,15 @@ namespace core {
         worker_state_none
     };
 
-    enum message_type : uint8_t {};
+    enum job_type : uint8_t {
+        job_type_collect_wood,
+        job_type_create_scout,
+        job_type_create_builder,
+        job_type_create_miner,
+        job_type_build_coal_mine,
+        job_type_num,
+        job_type_none
+    };
 
     namespace util {
 

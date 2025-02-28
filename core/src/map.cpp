@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 #include <array>
+#include <algorithm>
+#include <random>
 
 #include "tile.h"
 
@@ -59,6 +61,9 @@ namespace core {
         std::array<std::pair<int, int>, 4> direct = {{{-1, 0}, {0, -1}, {1, 0}, {0, 1}}};
         std::array<std::pair<int, int>, 4> diag = {{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}};
 
+        std::random_device rd;
+        std::mt19937 g(rd());
+
         for (int i = 0; i < m_xmax; i++) {
             for (int j = 0; j < m_ymax; j++) {
                 auto& tile = get_tile(i, j);
@@ -94,12 +99,14 @@ namespace core {
 
                     tile->neighbours.push_back(dif_tile);
                 }
+                std::shuffle(tile->neighbours.begin(), tile->neighbours.end(), g);
             }
         }
 
         auto [i, j] = cfg->map_cfg.start;
         m_start = m_tiles[j * m_xmax + i];
         m_start.lock()->discovered = true;
+        m_start.lock()->building = building_type_base;
         discover_around(m_start);
     }
 
@@ -113,22 +120,8 @@ namespace core {
     }
 
     path map::get_path_to_undiscovered(const_reference from) const {
-        std::vector<int> undiscovered;
-        for (int i = 0; i < from->neighbours.size(); i++) {
-            if (!from->neighbours[i].lock()->discovered && from->neighbours[i].lock()->walkable) {
-                undiscovered.push_back(i);
-            }
-        }
-        if (!undiscovered.empty()) {
-            path p{};
-            p.m_path.push_back(from->neighbours[util::random_int(0, undiscovered.size() - 1)]);
-            p.m_next = p.m_path.front();
-            p.m_i = 0;
-            return p;
-        }
-
         auto filter = [](const_reference t) -> bool {
-            return !t->discovered;
+            return !t->discovered && !t->to_be_discovered;
         };
         return get_path_to_closest(from, filter);
     }
@@ -308,6 +301,12 @@ namespace core {
         }
         path.m_path.push_back(from);
         std::reverse(path.m_path.begin(), path.m_path.end());
+        if (path.m_path.size() > 1) {
+            path.m_i = 1;
+            path.m_next = path.m_path[path.m_i];
+            return path;
+        }
+        
         path.m_next = path.m_path.front();
         path.m_i = 0;
         return path;

@@ -73,12 +73,12 @@ namespace core {
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
 		m_tm = new timer_manager();
 		m_em = new entity_manager();
-		for (int i = 0; i < 1; ++i) {
+		for (int i = 0; i < 10; ++i) {
 			m_em->add_entity(std::make_unique<scout>(i, std::to_string(i)));
 		}
-		for (int i = 1; i < 10; ++i) {
-			m_em->add_entity(std::make_unique<worker>(i, std::to_string(i)));
-		}
+		// for (int i = 1; i < 10; ++i) {
+			// m_em->add_entity(std::make_unique<worker>(i, std::to_string(i)));
+		// }
 	}
 
 	void app::deinit() {
@@ -104,7 +104,7 @@ namespace core {
 	void app::update(int dt) {
 		m_timer += GetFrameTime();
 
-		if (m_timer > 0.1f) {
+		if (m_timer > 0.05f) {
 			m_timer = 0;
 
 			// update stuff
@@ -167,6 +167,15 @@ namespace core {
 				}
 
 				DrawRectangle(i * 10, j * 10, 10, 10, color); // Assuming each tile is 10x10 pixels
+
+				switch(tile->building) {
+				case building_type_base:
+					DrawText("B", i * 10 + 1, j * 10 + 1, 8, BLACK);
+					break;
+				case building_type_coal_mine:
+					DrawText("M", i * 10 + 1, j * 10 + 1, 8, BLACK);
+					break;
+				}
 			}
 		}
     }
