@@ -98,9 +98,12 @@ namespace core {
             e->get_path().reverse();
         }
         else {
-            e->set_path(map::get()->get_path_astar(
+            e->set_path(map::get()->get_path_from_to(
                 e->get_tile().lock(),
-                map::get()->get_start().lock()
+                map::get()->get_start().lock(),
+                [](const std::shared_ptr<tile>& t) -> bool {
+                    return t->walkable && t->discovered;
+                }
             ));
         }
     }

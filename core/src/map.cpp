@@ -120,17 +120,23 @@ namespace core {
     }
 
     path map::get_path_to_undiscovered(const_reference from) const {
-        auto filter = [](const_reference t) -> bool {
+        auto c = [](const_reference t) -> bool {
             return !t->discovered && !t->to_be_discovered;
         };
-        return get_path_to_closest(from, filter);
+        auto f = [](const_reference t) -> bool {
+            return t->walkable;
+        };
+        return get_path_to_closest(from, c, f);
     }
 
     path map::get_path_to_tile_of(const_reference from, tile_type t) const {
-        auto filter = [&t](const_reference tile) -> bool {
+        auto c = [&t](const_reference tile) -> bool {
             return tile->type == t && tile->discovered && tile->to_be_gathered < tile->contents;
         };
-        return get_path_to_closest(from, filter);
+        auto f = [&t](const_reference tile) -> bool {
+            return tile->walkable && tile->discovered;
+        };
+        return get_path_to_closest(from, c, f);
     }
 
     void map::discover_around(std::weak_ptr<tile_t> t) {
@@ -148,7 +154,7 @@ namespace core {
         }
     }
 
-    path map::get_path_to_closest(const_reference from, std::function<bool(const_reference)> filter) const {
+    path map::get_path_to_closest(const_reference from, std::function<bool(const_reference)> condition, std::function<bool(const_reference)> filter) const {
         std::vector<int> costs(m_tiles.size(), INT_MAX);
         costs[from->posy * m_xmax + from->posx] = 0;
 
@@ -167,7 +173,7 @@ namespace core {
 
         connection con = pq.top();
         auto tile = get_tile(con.posx, con.posy);
-        while (!filter(tile) && !pq.empty()) {
+        while (!condition(tile) && !pq.empty()) {
             while (!pq.empty()) {
                 con = pq.top();
                 if (visited[con.posy * m_xmax + con.posx]) {
@@ -183,7 +189,7 @@ namespace core {
             for (auto i = 0; i < tile->neighbours.size(); i++) {
                 const auto& next_tile = tile->neighbours[i].lock();
 
-                if (!next_tile->walkable) continue;
+                if (!filter(next_tile)) continue;
 
                 if (visited[next_tile->posy * m_xmax + next_tile->posx]) continue;
 
@@ -207,15 +213,7 @@ namespace core {
         return {};
     }
 
-    path map::get_path_dijkstra(const_reference from, const_reference to) const {
-        auto filter = [&to](const_reference t) -> bool {
-            const_reference endpoint = to;
-            return endpoint == t;
-        };
-        return get_path_to_closest(from, filter);
-    }
-
-    path map::get_path_astar(const_reference from, const_reference to) const {
+    path map::get_path_from_to(const_reference from, const_reference to, std::function<bool(const_reference)> filter) const {
         std::vector<int> costs(m_tiles.size(), INT_MAX);
         costs[from->posy * m_xmax + from->posx] = 0;
 
@@ -256,7 +254,7 @@ namespace core {
             for (auto i = 0; i < tile->neighbours.size(); i++) {
                 const auto& next_tile = tile->neighbours[i].lock();
 
-                if (!next_tile->walkable) continue;
+                if (!filter(next_tile)) continue;
 
                 if (visited[next_tile->posy * m_xmax + next_tile->posx]) continue;
 
@@ -274,7 +272,7 @@ namespace core {
             visited[con.posy * m_xmax + con.posx] = true;
         }
         
-        return _make_path(costs, from, to, nullptr);
+        return _make_path(costs, from, to, filter);
     }
 
     path map::_make_path(const std::vector<int> &costs, const_reference from, const_reference to, std::function<bool(const_reference)> filter) const {
@@ -288,7 +286,7 @@ namespace core {
             for (const auto& neighbour : current->neighbours) {
                 auto n_tile = neighbour.lock();
 
-                if (filter && filter(n_tile) || !n_tile->walkable) continue;
+                if (!filter(n_tile)) continue;
                 
                 int cost = costs[n_tile->posy * m_xmax + n_tile->posx];
                 if (cost >= 0 && cost < min_cost) {

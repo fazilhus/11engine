@@ -103,9 +103,8 @@ namespace core {
 
         void discover_around(std::weak_ptr<tile_t> t);
 
-        path get_path_to_closest(const_reference from, std::function<bool(const_reference)> filter) const;
-        path get_path_dijkstra(const_reference from, const_reference to) const;
-        path get_path_astar(const_reference from, const_reference to) const;
+        path get_path_to_closest(const_reference from, std::function<bool(const_reference)> condition, std::function<bool(const_reference)> filter) const;
+        path get_path_from_to(const_reference from, const_reference to, std::function<bool(const_reference)> filter) const;
         
     private:
         path _make_path(const std::vector<int>& costs, const_reference from, const_reference to, std::function<bool(const_reference)> filter) const;
