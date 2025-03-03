@@ -75,6 +75,7 @@ namespace core {
 		m_tm = new timer_manager();
 		m_jm = new job_manager();
 		m_jm->add_job(job_type_create_scout, 2);
+		m_jm->add_job(job_type_collect_wood, 10);
 		
 		m_em = new entity_manager();
 		// for (int i = 0; i < 4; ++i) {
