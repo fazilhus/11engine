@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <array>
 
 #include "enum.h"
 
@@ -10,8 +10,8 @@ namespace core {
     private:
         static job_manager* s_instance;
 
-        std::map<job_type, int> m_jobs;
-        std::map<job_type, int> m_active_jobs;
+        std::array<int, job_type_num> m_jobs;
+        std::array<int, job_type_num> m_active_jobs;
 
     public:
         job_manager();

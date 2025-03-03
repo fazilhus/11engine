@@ -54,6 +54,7 @@ namespace core {
 
     scout::scout(int id, std::array<int, 2> pos, std::weak_ptr<tile> tile, unit_type type)
         : entity(id, pos, tile, type), m_sm(this) {
+        m_type = unit_type_scout;
     }
 
     void scout::update(int dt) {

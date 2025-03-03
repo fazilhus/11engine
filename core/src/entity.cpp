@@ -17,6 +17,7 @@ namespace core {
             m_tile = map::get()->get_tile(cfg->map_cfg.start);
             m_pos = util::tile_to_pos(m_tile.lock()->pos);
             m_speed = cfg->unit_cfg[0].speed;
+            m_type = unit_type_none;
     }
 
     entity::entity(int id, std::array<int, 2> pos, std::weak_ptr<tile> tile, unit_type type)

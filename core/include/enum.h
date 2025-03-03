@@ -29,6 +29,14 @@ namespace core {
         building_type_none
     };
 
+    enum target_type : uint8_t {
+        target_type_forest,
+        target_type_base,
+        target_type_coal_mine,
+        target_type_num,
+        target_type_none
+    };
+
     enum resource_type : uint8_t {
         resource_type_wood,
         resource_type_coal,
@@ -80,6 +88,9 @@ namespace core {
         building_type str_to_building(const std::string& s);
         resource_type str_to_resource(const std::string& s);
         unit_type str_to_unit(const std::string& s);
+
+        target_type tile_to_target(tile_type t);
+        target_type building_to_target(building_type b);
 
     } // namespace util
 

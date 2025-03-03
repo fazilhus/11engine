@@ -76,6 +76,7 @@ namespace core {
 
     worker::worker(int id)
         : entity(id), m_sm(this), m_carry(resource_type_none) {
+        m_type = unit_type_worker;
     }
 
     void worker::update(int dt) {

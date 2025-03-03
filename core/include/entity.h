@@ -20,6 +20,7 @@ namespace core {
         std::array<int, 2> m_pos;
         std::weak_ptr<tile> m_tile;
         int m_speed;
+        unit_type m_type;
 
         path m_path;
 
@@ -59,6 +60,8 @@ namespace core {
         void set_tile(std::weak_ptr<tile> t) { m_tile = t; }
 
         int speed() const { return m_speed; }
+
+        unit_type type() const { return m_type; }
 
         const path& get_path() const { return m_path; }
         path& get_path() { return m_path; }

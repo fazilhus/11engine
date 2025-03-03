@@ -13,6 +13,9 @@ namespace core {
         void process_messages(scout* e) override;
         void change_state(scout* e) override;
         void exit(scout* e) override;
+
+        bool m_finished = false;
+        
     };
 
     class scout_wander : public istate<scout> {

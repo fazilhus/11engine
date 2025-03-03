@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <vector>
 #include <map>
 #include <memory>
@@ -43,7 +44,7 @@ namespace core {
     private:
         int m_xmax, m_ymax;
         std::vector<value_t> m_tiles;
-        std::map<int, std::weak_ptr<tile_t>> m_targets;
+        std::array<int, target_type_num> m_targets;
         std::weak_ptr<tile_t> m_start;
 
         
@@ -82,19 +83,10 @@ namespace core {
             return m_tiles[j * m_xmax + i];
         }
 
-        const std::map<int, std::weak_ptr<tile_t>>& get_targets() const { return m_targets; }
-        std::map<int, std::weak_ptr<tile_t>>& get_targets() { return m_targets; }
+        const std::array<int, target_type_num>& get_targets() const { return m_targets; }
+        std::array<int, target_type_num>& get_targets() { return m_targets; }
 
         const std::weak_ptr<tile_t>& get_start() const { return m_start; }
-
-        const std::weak_ptr<tile_t>& find_target(tile_type tile) const {
-            for (auto& [_, target] : m_targets) {
-                if (target.lock()->type == tile) {
-                    return target;
-                }
-            }
-            return {};
-        }
 
         std::weak_ptr<tile_t> get_random_neighbour(std::weak_ptr<tile_t> t) const;
 

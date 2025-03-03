@@ -107,6 +107,12 @@ namespace core {
         m_start = m_tiles[j * m_xmax + i];
         m_start.lock()->discovered = true;
         m_start.lock()->building = building_type_base;
+
+        for (int i = 0; i < target_type_num; ++i) {
+            m_targets[i] = 0;
+        }
+        m_targets[static_cast<int>(target_type_base)] = 1;
+
         discover_around(m_start);
     }
 
@@ -149,7 +155,7 @@ namespace core {
             auto& dif_tile = get_tile(i + ii, j + jj);
             dif_tile->discovered = true;
             if (dif_tile->type == tile_type_forest) {
-                m_targets[(j + jj) * m_xmax + (i + ii)] = dif_tile;
+                m_targets[static_cast<int>(dif_tile->type)]++;
             }
         }
     }

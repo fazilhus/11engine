@@ -18,7 +18,8 @@ namespace core {
             job_manager::get()->dispatch_job(job_type_create_scout);
             e->sm().set_next_state(worker_state_upgrade_to_scout);
         }
-        else if (job_manager::get()->has_job(job_type_collect_wood)) {
+        else if (job_manager::get()->has_job(job_type_collect_wood)
+            && map::get()->get_targets()[static_cast<int>(target_type_forest)] > 0) {
             job_manager::get()->dispatch_job(job_type_collect_wood);
             e->sm().set_next_state(worker_state_move_to_resource);
         }
@@ -174,9 +175,8 @@ namespace core {
             t->to_be_gathered -= 1;
             e->set_carry(resource_type_wood);
             if (t->contents == 0) {
+                map::get()->get_targets()[static_cast<int>(t->type)]--;
                 t->type = tile_type_grass;
-                auto [x, _] = map::get()->get_dim();
-                map::get()->get_targets().erase(t->posy * x + t->posx);
             }
         }
     }

@@ -33,4 +33,19 @@ namespace core::util {
         return unit_type_none;
     }
 
+    target_type tile_to_target(tile_type t) {
+        switch (t) {
+        case tile_type_forest: return target_type_forest;
+        default: return target_type_none;
+        }
+    }
+
+    target_type building_to_target(building_type b) {
+        switch (b) {
+        case building_type_base: return target_type_base;
+        case building_type_coal_mine: return target_type_coal_mine;
+        default: return target_type_none;
+        }
+    }
+
 } // namespace core::util
