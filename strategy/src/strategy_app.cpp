@@ -192,24 +192,12 @@ namespace core {
 		for (const auto& e : m_em->entities()) {
 			auto [x, y] = e->pos();
 			
-			{
-				auto s = static_cast<scout*>(e.get());
-				if (s != nullptr) {
-					DrawCircle(x, y, 2, YELLOW);
-					// for (int i = s->path().m_i; i < s->path().m_path.size(); ++i) {
-					// 	auto l = s->path().m_path[i].lock();
-					// 	auto [px, py] = l->pos;
-					// 	DrawRectangle(4 + px * 10, 4 + py * 10, 6, 6, RED);
-					// }
-				}
+			auto col = BLACK;
+			switch (e->type()) {
+			case unit_type_worker: col = ORANGE; break;
+			case unit_type_scout: col = WHITE; break;
 			}
-
-			{
-				auto s = static_cast<worker*>(e.get());
-				if (s != nullptr) {
-					DrawCircle(x, y, 2, ORANGE);
-				}
-			}
+			DrawCircle(x, y, 2, col);
 		}
     }
 
