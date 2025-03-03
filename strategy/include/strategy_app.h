@@ -7,6 +7,7 @@
 #include "timer.h"
 #include "map.h"
 #include "entity_manager.h"
+#include "job.h"
 
 namespace core {
 
@@ -22,6 +23,7 @@ namespace core {
         clock* m_clock;
         map* m_map;
         timer_manager* m_tm;
+        job_manager* m_jm;
         entity_manager* m_em;
 
         RenderTexture2D m_map_texture;

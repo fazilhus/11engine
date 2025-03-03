@@ -1,5 +1,8 @@
 #include "entity_manager.h"
 
+#include "scout.h"
+#include "worker.h"
+
 namespace core {
 
     entity_manager* entity_manager::s_instance = nullptr;
@@ -8,8 +11,8 @@ namespace core {
         s_instance = this;
     }
 
-    void entity_manager::add_entity(std::shared_ptr<entity> entity) {
-        m_entities.push_back(std::move(entity));
+    void entity_manager::query_remove_entity(int id) {
+        m_entities_to_remove.push(id);
     }
 
     void entity_manager::update(int dt) {
@@ -33,6 +36,12 @@ namespace core {
 
         for (int i = 0; i < m_entities.size(); ++i) {
             m_entities[i]->set_id(i);
+        }
+
+        while (!m_entities_to_add.empty()) {
+            m_entities.push_back(m_entities_to_add.front());
+            m_entities.back()->set_id(m_entities.size() - 1);
+            m_entities_to_add.pop();
         }
     }
 

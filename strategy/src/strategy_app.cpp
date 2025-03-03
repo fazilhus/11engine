@@ -29,6 +29,7 @@ namespace core {
 		m_clock = nullptr;
 		m_map = nullptr;
 		m_tm = nullptr;
+		m_jm = nullptr;
 		m_em = nullptr;
 
 		// Create a texture for the map
@@ -72,18 +73,25 @@ namespace core {
 
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
 		m_tm = new timer_manager();
+		m_jm = new job_manager();
+		m_jm->add_job(job_type_create_scout, 2);
+		
 		m_em = new entity_manager();
-		for (int i = 0; i < 10; ++i) {
-			m_em->add_entity(std::make_unique<scout>(i, std::to_string(i)));
-		}
-		// for (int i = 1; i < 10; ++i) {
-			// m_em->add_entity(std::make_unique<worker>(i, std::to_string(i)));
+		// for (int i = 0; i < 4; ++i) {
+		// 	m_em->add_entity<scout>();
 		// }
+		for (int i = 0; i < 10; ++i) {
+			m_em->add_entity<worker>();
+		}
+
 	}
 
 	void app::deinit() {
 		if (m_em)
 			delete m_em;
+
+		if (m_jm)
+			delete m_jm;
 			
 		if (m_tm)
 			delete m_tm;

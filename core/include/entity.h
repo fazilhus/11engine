@@ -16,7 +16,6 @@ namespace core {
     class entity {
     protected:
         int m_id; ///< Unique identifier for the entity.
-        std::string m_name; ///< Name of the entity.
         inbox m_inbox; ///< Inbox for receiving messages.
         std::array<int, 2> m_pos;
         std::weak_ptr<tile> m_tile;
@@ -28,7 +27,9 @@ namespace core {
         /// @brief Constructor for the entity class.
         /// @param id Unique identifier for the entity.
         /// @param name Name of the entity.
-        entity(int id, const std::string& name);
+        entity(int id);
+
+        entity(int id, std::array<int, 2> pos, std::weak_ptr<tile> tile, unit_type type);
 
         /// @brief Virtual destructor for the entity class.
         virtual ~entity();
@@ -46,7 +47,6 @@ namespace core {
 
         /// @brief Get the name of the entity.
         /// @return Name of the entity.
-        const std::string& name() const { return m_name; }
 
         std::array<int, 2> pos() const { return m_pos; }
         void set_pos(std::array<int, 2> p) { m_pos = p; }

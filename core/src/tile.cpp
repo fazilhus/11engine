@@ -23,7 +23,7 @@ namespace core {
 
         std::array<int, 2> tile_to_pos(std::array<int, 2> pos) {
             const auto cfg = game_config::get();
-            int size = cfg->tile_cfg[1].size;
+            int size = cfg->tile_cfg[0].size;
             pos[0] = pos[0] * size + (size / 2);
             pos[1] = pos[1] * size + (size / 2);
             return pos;

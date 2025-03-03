@@ -4,8 +4,7 @@
 #include <queue>
 #include <memory>
 
-#include "scout.h"
-#include "worker.h"
+#include "entity.h"
 
 namespace core {
 
@@ -15,10 +14,9 @@ namespace core {
         static entity_manager* s_instance; ///< Singleton instance of the entity manager.
 
         std::vector<std::shared_ptr<entity>> m_entities; ///< List of all entities.
-        std::vector<std::weak_ptr<scout>> m_scouts;
-        std::vector<std::weak_ptr<worker>> m_workers;
 
         std::queue<int> m_entities_to_remove; ///< Queue of entities to be removed.
+        std::queue<std::shared_ptr<entity>> m_entities_to_add; ///< Queue of entities to be removed.
 
     public:
         /// @brief Constructor for the entity manager class.
@@ -37,7 +35,13 @@ namespace core {
 
         /// @brief Add a new entity to the manager.
         /// @param entity Unique pointer to the new entity.
-        void add_entity(std::shared_ptr<entity> entity);
+        template <typename entity_type>
+        void add_entity();
+
+        template <typename entity_type>
+        void replace_entity(int id, unit_type type);
+        
+        void query_remove_entity(int id);
 
         /// @brief Update all entities managed by the entity manager.
         void update(int dt = 1);
@@ -46,5 +50,17 @@ namespace core {
         /// @brief Remove entities that are marked for removal.
         void remove_entities();
     };
+
+    template <typename entity_type>
+    inline void entity_manager::add_entity() {
+        m_entities.push_back(std::make_shared<entity_type>(m_entities.size()));
+    }
+
+    template <typename entity_type>
+    inline void entity_manager::replace_entity(int id, unit_type type) {
+        auto entity = m_entities[id];
+        query_remove_entity(id);
+        m_entities_to_add.push(std::make_shared<entity_type>(id, entity->pos(), entity->get_tile(), type));
+    }
 
 } // namespace core

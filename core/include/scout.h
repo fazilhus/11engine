@@ -33,7 +33,7 @@ namespace core {
         scout_state_machine m_sm;
 
     public:
-        scout(int id, const std::string& name);
+        scout(int id, std::array<int, 2> pos, std::weak_ptr<tile> tile, unit_type type);
         ~scout() override = default;
 
         void update(int dt = 1) override;

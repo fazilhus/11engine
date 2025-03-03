@@ -57,6 +57,9 @@ namespace core {
         worker_state_move_to_resource,
         worker_state_move_to_base,
         worker_state_gather_resource,
+        worker_state_upgrade_to_scout,
+        worker_state_upgrade_to_builder,
+        worker_state_upgrade_to_miner,
         worker_state_num,
         worker_state_none
     };

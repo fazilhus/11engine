@@ -34,7 +34,7 @@ namespace core {
         worker_state_machine m_sm;
 
     public:
-        worker(int id, const std::string& name);
+        worker(int id);
         ~worker() override = default;
 
         void update(int dt = 1) override;

@@ -22,6 +22,9 @@ namespace core {
         }
 
         m_state_ref = m_states[0];
+        m_state = scout_state_idle;
+        m_prev_state = scout_state_none;
+        m_next_state = scout_state_none;
     }
 
     void scout_state_machine::update(int dt) {
@@ -49,8 +52,8 @@ namespace core {
         m_state_ref.lock()->enter(m_ptr);
     }
 
-    scout::scout(int id, const std::string &name)
-        : entity(id, name), m_sm(this) {
+    scout::scout(int id, std::array<int, 2> pos, std::weak_ptr<tile> tile, unit_type type)
+        : entity(id, pos, tile, type), m_sm(this) {
     }
 
     void scout::update(int dt) {

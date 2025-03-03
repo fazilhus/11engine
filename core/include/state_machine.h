@@ -12,16 +12,6 @@ namespace core {
         enum { size = 0 };
     };
 
-    // template<>
-    // struct state_machine_traits<scout_state_type> {
-    //     enum { size = scout_state_num };
-    // };
-
-    // template<>
-    // struct state_machine_traits<worker_state_type> {
-    //     enum { size = worker_state_num };
-    // };
-
     template <typename entity_type>
     class istate;
 

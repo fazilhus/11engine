@@ -26,8 +26,25 @@ namespace core {
                 m_states[i] = std::make_shared<worker_gather_resource>();
                 break;
             }
+            case worker_state_upgrade_to_scout: {
+                m_states[i] = std::make_shared<worker_upgrade_to_scout>();
+                break;
+            }
+            case worker_state_upgrade_to_builder: {
+                m_states[i] = std::make_shared<worker_upgrade_to_builder>();
+                break;
+            }
+            case worker_state_upgrade_to_miner: {
+                m_states[i] = std::make_shared<worker_upgrade_to_miner>();
+                break;
+            }
             }
         }
+
+        m_state_ref = m_states[0];
+        m_state = worker_state_idle;
+        m_prev_state = worker_state_none;
+        m_next_state = worker_state_none;
     }
 
     void worker_state_machine::update(int dt) {
@@ -36,9 +53,10 @@ namespace core {
             s->execute(m_ptr, dt);
             s->make_decision(m_ptr);
             s->process_messages(m_ptr);
+            s->change_state(m_ptr);
 
             if (m_next_state != worker_state_none) {
-                s->change_state(m_ptr);
+                change_state();
             }
         }
     }
@@ -54,8 +72,8 @@ namespace core {
         m_state_ref.lock()->enter(m_ptr);
     }
 
-    worker::worker(int id, const std::string &name)
-        : entity(id, name), m_sm(this) {
+    worker::worker(int id)
+        : entity(id), m_sm(this) {
     }
 
     void worker::update(int dt) {
