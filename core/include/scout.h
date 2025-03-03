@@ -26,9 +26,6 @@ namespace core {
     };
 
     class scout : public entity {
-    public:
-        using state_type = std::unique_ptr<istate<scout>>;
-
     private:
         scout_state_machine m_sm;
 

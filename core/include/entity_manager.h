@@ -4,6 +4,7 @@
 #include <queue>
 #include <memory>
 
+#include "pqueue.h"
 #include "entity.h"
 
 namespace core {
@@ -15,7 +16,7 @@ namespace core {
 
         std::vector<std::shared_ptr<entity>> m_entities; ///< List of all entities.
 
-        std::queue<int> m_entities_to_remove; ///< Queue of entities to be removed.
+        container::pqueue<int, std::less<int>> m_entities_to_remove; ///< Queue of entities to be removed.
         std::queue<std::shared_ptr<entity>> m_entities_to_add; ///< Queue of entities to be removed.
 
     public:
@@ -47,6 +48,8 @@ namespace core {
         void update(int dt = 1);
 
     private:
+        void add_entities();
+        
         /// @brief Remove entities that are marked for removal.
         void remove_entities();
     };
@@ -58,7 +61,7 @@ namespace core {
 
     template <typename entity_type>
     inline void entity_manager::replace_entity(int id, unit_type type) {
-        auto entity = m_entities[id];
+        auto entity = m_entities[id].get();
         query_remove_entity(id);
         m_entities_to_add.push(std::make_shared<entity_type>(id, entity->pos(), entity->get_tile(), type));
     }

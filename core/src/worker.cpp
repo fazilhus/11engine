@@ -1,5 +1,7 @@
 #include "worker.h"
 
+#include <iostream>
+
 #include "game_config.h"
 #include "worker_states.h"
 #include "map.h"
@@ -73,7 +75,7 @@ namespace core {
     }
 
     worker::worker(int id)
-        : entity(id), m_sm(this) {
+        : entity(id), m_sm(this), m_carry(resource_type_none) {
     }
 
     void worker::update(int dt) {

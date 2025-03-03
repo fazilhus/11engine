@@ -1,6 +1,6 @@
 #pragma once
 
-#include <queue>
+#include <map>
 
 #include "enum.h"
 
@@ -10,7 +10,8 @@ namespace core {
     private:
         static job_manager* s_instance;
 
-        std::queue<job_type> m_jobs;
+        std::map<job_type, int> m_jobs;
+        std::map<job_type, int> m_active_jobs;
 
     public:
         job_manager();
@@ -18,9 +19,10 @@ namespace core {
 
         static job_manager* get() { return s_instance; }
 
-        bool has_jobs() const { return !m_jobs.empty(); }
-        job_type get_job();
+        bool has_job(job_type type) const;
+        void dispatch_job(job_type type);
         void add_job(job_type type, int num = 1);
+        void finish_job(job_type type, bool success = true);
     };
 
 } // namespace core

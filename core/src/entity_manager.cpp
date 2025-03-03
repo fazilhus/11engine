@@ -20,14 +20,27 @@ namespace core {
             remove_entities();
         }
 
+        if (!m_entities_to_add.empty()) {
+            add_entities();
+        }
+
         for (auto& e : m_entities) {
             e->update(dt);
         }
     }
 
+    void entity_manager::add_entities() {
+        while (!m_entities_to_add.empty()) {
+            auto i = m_entities.size();
+            m_entities.push_back(m_entities_to_add.front());
+            m_entities.back()->set_id(i);
+            m_entities_to_add.pop();
+        }
+    }
+
     void entity_manager::remove_entities() {
         while (!m_entities_to_remove.empty()) {
-            auto idx = m_entities_to_remove.front();
+            auto idx = m_entities_to_remove.top();
             m_entities_to_remove.pop();
 
             assert(idx >= 0 && idx < m_entities.size());
@@ -36,12 +49,6 @@ namespace core {
 
         for (int i = 0; i < m_entities.size(); ++i) {
             m_entities[i]->set_id(i);
-        }
-
-        while (!m_entities_to_add.empty()) {
-            m_entities.push_back(m_entities_to_add.front());
-            m_entities.back()->set_id(m_entities.size() - 1);
-            m_entities_to_add.pop();
         }
     }
 

@@ -27,11 +27,10 @@ namespace core {
     };
 
     class worker : public entity {
-    public:
-        using state_type = std::unique_ptr<istate<worker>>;
-
     private:
         worker_state_machine m_sm;
+
+        resource_type m_carry;
 
     public:
         worker(int id);
@@ -40,6 +39,8 @@ namespace core {
         void update(int dt = 1) override;
 
         worker_state_machine& sm() { return m_sm; }
+        resource_type carry() const { return m_carry; }
+        void set_carry(resource_type t) { m_carry = t; }
     };
 
 } // namespace core
