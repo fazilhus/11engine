@@ -20,7 +20,9 @@ namespace core {
     }
 
     void scout_idle::change_state(scout *e) {
-        e->sm().set_next_state(scout_state_wander);
+        if (!map::get()->discovered()) {
+            e->sm().set_next_state(scout_state_wander);
+        }
     }
 
     void scout_idle::exit(scout *e) {
@@ -29,10 +31,16 @@ namespace core {
 
     void scout_wander::enter(scout *e) {
         e->set_path(map::get()->get_path_to_undiscovered(e->get_tile().lock()));
+        if (e->get_path().m_path.empty()) {
+            map::get()->set_discovered(true);
+            return;
+        }
         e->get_path().m_path.back().lock()->to_be_discovered = true;
     }
 
     void scout_wander::execute(scout *e, int dt) {
+        if (e->get_path().m_path.empty()) return;
+
         auto l = e->get_path().m_next.lock();
         auto& path = e->get_path();
         std::array<int, 2> src = e->pos();
@@ -66,7 +74,7 @@ namespace core {
         auto& path = e->get_path();
         auto l = path.m_next.lock();
            
-        if (path.m_i >= path.m_path.size()) {
+        if (path.m_path.empty() || path.m_i >= path.m_path.size()) {
             e->sm().set_next_state(scout_state_idle);
         }
     }

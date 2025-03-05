@@ -14,6 +14,7 @@ namespace core {
 
     map::map(const std::filesystem::path& path) {
         s_instance = this;
+        m_discovered = false;
 
         if (!std::filesystem::is_regular_file(path)) {
             std::cerr << "[ERROR] map file path invalid " << path << '\n';
@@ -213,7 +214,7 @@ namespace core {
             visited[con.posy * m_xmax + con.posx] = true;
         }
 
-        if (filter(tile)) {
+        if (condition(tile)) {
             return _make_path(costs, from, tile, filter);
         }
         return {};

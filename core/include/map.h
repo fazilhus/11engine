@@ -46,6 +46,7 @@ namespace core {
         std::vector<value_t> m_tiles;
         std::array<int, target_type_num> m_targets;
         std::weak_ptr<tile_t> m_start;
+        bool m_discovered;
 
         
     public:
@@ -87,6 +88,8 @@ namespace core {
         std::array<int, target_type_num>& get_targets() { return m_targets; }
 
         const std::weak_ptr<tile_t>& get_start() const { return m_start; }
+        bool discovered() const { return m_discovered; }
+        void set_discovered(bool v) { m_discovered = true; }
 
         std::weak_ptr<tile_t> get_random_neighbour(std::weak_ptr<tile_t> t) const;
 
