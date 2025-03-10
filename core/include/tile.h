@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "enum.h"
+#include "building.h"
 #include "game_config.h"
 
 namespace core {
@@ -26,7 +27,7 @@ namespace core {
         int contents;
         int max_contents;
         float speed_mod;
-        building_type building;
+        building building;
         
         int time;
         int dtime;

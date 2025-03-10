@@ -72,6 +72,13 @@ namespace core {
         worker_state_none
     };
 
+    enum builder_state_type : uint8_t {
+        builder_state_idle,
+        builder_state_build,
+        builder_state_num,
+        builder_state_none
+    };
+
     enum job_type : uint8_t {
         job_type_collect_wood,
         job_type_create_scout,

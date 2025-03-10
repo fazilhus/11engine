@@ -177,7 +177,7 @@ namespace core {
 
 				DrawRectangle(i * 10, j * 10, 10, 10, color); // Assuming each tile is 10x10 pixels
 
-				switch(tile->building) {
+				switch(tile->building.type) {
 				case building_type_base:
 					DrawText("B", i * 10 + 1, j * 10 + 1, 8, BLACK);
 					break;
@@ -197,6 +197,7 @@ namespace core {
 			switch (e->type()) {
 			case unit_type_worker: col = ORANGE; break;
 			case unit_type_scout: col = WHITE; break;
+			case unit_type_builder: col = BLACK; break;
 			}
 			DrawCircle(x, y, 2, col);
 		}
