@@ -16,22 +16,8 @@ namespace core {
     }
 
     void worker_idle::execute(worker *e, int dt) {
-        if (job_manager::get()->has_job(job_type_create_scout)) {
-            job_manager::get()->dispatch_job(job_type_create_scout);
-            e->sm().set_next_state(worker_state_upgrade_to_scout);
-        }
-        else if (job_manager::get()->has_job(job_type_create_builder)) {
-            job_manager::get()->dispatch_job(job_type_create_builder);
-            e->sm().set_next_state(worker_state_upgrade_to_builder);
-        }
-        else if (job_manager::get()->has_job(job_type_create_miner)) {
-            job_manager::get()->dispatch_job(job_type_create_miner);
-            e->sm().set_next_state(worker_state_upgrade_to_miner);
-        }
-        else if (job_manager::get()->has_job(job_type_collect_wood)
-            && map::get()->get_targets()[static_cast<int>(target_type_forest)] > 0) {
-            job_manager::get()->dispatch_job(job_type_collect_wood);
-            e->sm().set_next_state(worker_state_move_to_resource);
+        if (job_manager::get()->has_job(unit_type_worker)) {
+            e->set_job(job_manager::get()->dispatch_job(unit_type_worker));
         }
     }
 
@@ -42,6 +28,25 @@ namespace core {
     }
 
     void worker_idle::change_state(worker *e) {
+        const auto& j = e->get_job();
+        switch (j.type) {
+        case job_type_collect_wood: {
+            e->sm().set_next_state(worker_state_gather_resource);
+            break;
+        }
+        case job_type_create_scout: {
+            e->sm().set_next_state(worker_state_upgrade_to_scout);
+            break;
+        }
+        case job_type_create_builder: {
+            e->sm().set_next_state(worker_state_upgrade_to_builder);
+            break;
+        }
+        case job_type_create_miner: {
+            e->sm().set_next_state(worker_state_upgrade_to_miner);
+            break;
+        }
+        }
     }
 
     void worker_idle::exit(worker *e) {
@@ -88,7 +93,8 @@ namespace core {
     void worker_move_to_resource::change_state(worker *e) {
         if (e->get_path().m_path.empty()) {
             e->sm().set_next_state(worker_state_idle);
-            job_manager::get()->finish_job(job_type_collect_wood, false);
+            job_manager::get()->add_job(e->get_job(), 1);
+            e->set_job({});
             return;
         }
 
@@ -155,7 +161,7 @@ namespace core {
         if (path.m_i >= path.m_path.size()) {
             e->sm().set_next_state(worker_state_idle);
             e->set_carry(resource_type_none);
-            job_manager::get()->finish_job(job_type_collect_wood, true);
+            e->set_job({});
         }
     }
 

@@ -7,6 +7,7 @@
 #include "message.h"
 #include "tile.h"
 #include "map.h"
+#include "job.h"
 
 namespace core {
 
@@ -21,6 +22,7 @@ namespace core {
         std::weak_ptr<tile> m_tile;
         int m_speed;
         unit_type m_type;
+        job m_job;
 
         path m_path;
 
@@ -62,6 +64,13 @@ namespace core {
         int speed() const { return m_speed; }
 
         unit_type type() const { return m_type; }
+
+        const job& get_job() const { return m_job; }
+        void set_job(job j) { m_job = j; }
+        void reset_job() {
+            m_job.type = job_type_none;
+            m_job.target = {};
+        }
 
         const path& get_path() const { return m_path; }
         path& get_path() { return m_path; }

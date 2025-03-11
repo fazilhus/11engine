@@ -107,7 +107,7 @@ namespace core {
         auto [i, j] = cfg->map_cfg.start;
         m_start = m_tiles[j * m_xmax + i];
         m_start.lock()->discovered = true;
-        m_start.lock()->building = building(building_type_base);
+        m_start.lock()->building = building_type_base;
 
         for (int i = 0; i < target_type_num; ++i) {
             m_targets[i] = 0;
@@ -129,6 +129,16 @@ namespace core {
     path map::get_path_to_undiscovered(const_reference from) const {
         auto c = [](const_reference t) -> bool {
             return !t->discovered && !t->to_be_discovered;
+        };
+        auto f = [](const_reference t) -> bool {
+            return t->walkable;
+        };
+        return get_path_to_closest(from, c, f);
+    }
+
+    path map::get_path_to_empty_tile(const_reference from) const {
+        auto c = [](const_reference t) -> bool {
+            return t->discovered && t->building == builder_state_none;
         };
         auto f = [](const_reference t) -> bool {
             return t->walkable;
