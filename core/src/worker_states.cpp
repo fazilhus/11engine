@@ -3,6 +3,7 @@
 #include "worker.h"
 #include "scout.h"
 #include "builder.h"
+#include "miner.h"
 #include "timer.h"
 #include "vec_math.h"
 #include "game_config.h"
@@ -22,6 +23,10 @@ namespace core {
         else if (job_manager::get()->has_job(job_type_create_builder)) {
             job_manager::get()->dispatch_job(job_type_create_builder);
             e->sm().set_next_state(worker_state_upgrade_to_builder);
+        }
+        else if (job_manager::get()->has_job(job_type_create_miner)) {
+            job_manager::get()->dispatch_job(job_type_create_miner);
+            e->sm().set_next_state(worker_state_upgrade_to_miner);
         }
         else if (job_manager::get()->has_job(job_type_collect_wood)
             && map::get()->get_targets()[static_cast<int>(target_type_forest)] > 0) {
@@ -260,9 +265,16 @@ namespace core {
 
     void worker_upgrade_to_miner::enter(worker *e) {
         m_finished = false;
+        timer_manager::get()->add_timer(
+            game_config::get()->unit_cfg[unit_type_miner].upgrade_time,
+            e->id(),
+            std::bind(&worker_upgrade_to_miner::finished, this));
     }
 
     void worker_upgrade_to_miner::execute(worker *e, int dt) {
+        if (m_finished) {
+            e->sm().set_next_state(worker_state_idle);
+        }
     }
 
     void worker_upgrade_to_miner::make_decision(worker *e) {
@@ -275,6 +287,7 @@ namespace core {
     }
 
     void worker_upgrade_to_miner::exit(worker *e) {
+        entity_manager::get()->replace_entity<miner>(e->id(), unit_type_miner);
     }
 
 } // namespace core

@@ -107,7 +107,7 @@ namespace core {
         auto [i, j] = cfg->map_cfg.start;
         m_start = m_tiles[j * m_xmax + i];
         m_start.lock()->discovered = true;
-        m_start.lock()->building = building{ .type = building_type_base, .capacity = 0 };
+        m_start.lock()->building = building(building_type_base);
 
         for (int i = 0; i < target_type_num; ++i) {
             m_targets[i] = 0;

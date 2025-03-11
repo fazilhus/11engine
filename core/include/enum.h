@@ -79,12 +79,20 @@ namespace core {
         builder_state_none
     };
 
+    enum miner_state_type : uint8_t {
+        miner_state_idle,
+        miner_state_produce_coal,
+        miner_state_num,
+        miner_state_none
+    };
+
     enum job_type : uint8_t {
         job_type_collect_wood,
         job_type_create_scout,
         job_type_create_builder,
         job_type_create_miner,
         job_type_build_coal_mine,
+        job_type_produce_coal,
         job_type_num,
         job_type_none
     };
