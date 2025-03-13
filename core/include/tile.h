@@ -41,6 +41,13 @@ namespace core {
         int put_resource(resource_type type) { return ++storage[type]; }
 
         int take_resource(resource_type type) { return --storage[type]; }
+
+        template <typename T>
+        bool has_resources_for(T type, std::array<int, resource_type_num>& res);
+        template <>
+        bool has_resources_for(resource_type type, std::array<int, resource_type_num>& res);
+        template <>
+        bool has_resources_for(building_type type, std::array<int, resource_type_num>& res);
     };
 
     namespace util {

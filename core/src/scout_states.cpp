@@ -39,29 +39,7 @@ namespace core {
     }
 
     void scout_wander::execute(scout *e, int dt) {
-        if (e->get_path().m_path.empty()) return;
-
-        auto l = e->get_path().m_next.lock();
-        auto& path = e->get_path();
-        std::array<int, 2> src = e->pos();
-        auto dest = util::tile_to_pos(l->pos);
-        auto dist = dest - src;
-        auto dir = math::norm(dist);
-        int tile_speed = static_cast<int>(static_cast<float>(e->speed()) / (e->get_tile().lock()->speed_mod));
-        e->update_pos(dir * tile_speed * dt);
-
-        auto p1 = l->pos * game_config::get()->tile_cfg[0].size;
-        auto p2 = p1 + game_config::get()->tile_cfg[0].size;
-        auto ep = e->pos();
-
-        if (ep == util::tile_to_pos(l->pos)) {
-            e->set_tile(l);
-            map::get()->discover_around(e->get_tile());
-            path.m_i++;
-            if (path.m_i >= path.m_path.size()) return;
-            
-            path.m_next = path.m_path[path.m_i];
-        }
+        e->move(dt, true);
     }
 
     void scout_wander::make_decision(scout *e) {

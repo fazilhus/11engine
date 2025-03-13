@@ -24,7 +24,7 @@ namespace core {
         void exit(worker* e) override;
     };
 
-    class worker_move_to_base : public istate<worker> {
+    class worker_move_to_target : public istate<worker> {
         void enter(worker* e) override;
         void execute(worker* e, int dt = 1) override;
         void make_decision(worker* e) override;

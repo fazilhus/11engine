@@ -63,7 +63,7 @@ namespace core {
     enum worker_state_type : uint8_t {
         worker_state_idle,
         worker_state_move_to_resource,
-        worker_state_move_to_base,
+        worker_state_move_to_target,
         worker_state_gather_resource,
         worker_state_upgrade_to_scout,
         worker_state_upgrade_to_builder,
@@ -74,6 +74,7 @@ namespace core {
 
     enum builder_state_type : uint8_t {
         builder_state_idle,
+        builder_state_move,
         builder_state_build,
         builder_state_num,
         builder_state_none

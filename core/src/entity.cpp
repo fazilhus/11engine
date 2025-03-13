@@ -8,6 +8,7 @@
 #include "game_config.h"
 #include "tile.h"
 #include "map.h"
+#include "vec_math.h"
 
 namespace core {
 
@@ -30,7 +31,36 @@ namespace core {
     entity::~entity() {
     }
 
-    void entity::accept_invite(uint8_t msg_type) {
+    void entity::move(int dt, bool discover) {
+        if (get_path().m_path.empty()) {
+            return;
+        }
+
+        auto t = get_path().m_next.lock();
+        auto& path = get_path();
+        std::array<int, 2> src = pos();
+        auto dest = util::tile_to_pos(t->pos);
+        auto dist = dest - src;
+        auto dir = math::norm(dist);
+        int tile_speed = static_cast<int>(static_cast<float>(speed()) / (get_tile().lock()->speed_mod));
+        update_pos(dir * tile_speed * dt);
+
+        auto p1 = t->pos * game_config::get()->tile_cfg[0].size;
+        auto p2 = p1 + game_config::get()->tile_cfg[0].size;
+        auto ep = pos();
+
+        if (ep == util::tile_to_pos(t->pos)) {
+            set_tile(t);
+            if (discover) map::get()->discover_around(t);
+            path.m_i++;
+            if (path.m_i >= path.m_path.size()) return;
+            
+            path.m_next = path.m_path[path.m_i];
+        }
+    }
+
+    void entity::accept_invite(uint8_t msg_type)
+    {
         std::cout << m_id << " accepted invite to " << msg_type << std::endl;
     }
 

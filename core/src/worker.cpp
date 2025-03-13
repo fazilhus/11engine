@@ -20,8 +20,8 @@ namespace core {
                 m_states[i] = std::make_shared<worker_move_to_resource>();
                 break;
             }
-            case worker_state_move_to_base: {
-                m_states[i] = std::make_shared<worker_move_to_base>();
+            case worker_state_move_to_target: {
+                m_states[i] = std::make_shared<worker_move_to_target>();
                 break;
             }
             case worker_state_gather_resource: {

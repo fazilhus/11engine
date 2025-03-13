@@ -14,6 +14,10 @@ namespace core {
                 m_states[i] = std::make_shared<builder_idle>();
                 break;
             }
+            case builder_state_move: {
+                m_states[i] = std::make_shared<builder_move>();
+                break;
+            }
             case builder_state_build: {
                 m_states[i] = std::make_shared<builder_build>();
                 break;

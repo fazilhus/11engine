@@ -5,7 +5,6 @@
 #include "builder.h"
 #include "miner.h"
 #include "timer.h"
-#include "vec_math.h"
 #include "game_config.h"
 #include "entity_manager.h"
 #include "job.h"
@@ -54,34 +53,14 @@ namespace core {
 
 
     void worker_move_to_resource::enter(worker *e) {
-        e->set_path(map::get()->get_path_to_tile_of(e->get_tile().lock(), tile_type_forest));
+        if (map::get()->get_start().lock()->storage[resource_type_wood] > 0)
+            e->set_path(map::get()->get_path_from_to(e->get_tile().lock(), map::get()->get_start().lock()));
+        else
+            e->set_path(map::get()->get_path_to_tile_of(e->get_tile().lock(), tile_type_forest));
     }
 
     void worker_move_to_resource::execute(worker *e, int dt) {
-        if (e->get_path().m_path.empty()) {
-            return;
-        }
-
-        auto l = e->get_path().m_next.lock();
-        auto& path = e->get_path();
-        std::array<int, 2> src = e->pos();
-        auto dest = util::tile_to_pos(l->pos);
-        auto dist = dest - src;
-        auto dir = math::norm(dist);
-        int tile_speed = static_cast<int>(static_cast<float>(e->speed()) / (e->get_tile().lock()->speed_mod));
-        e->update_pos(dir * tile_speed * dt);
-
-        auto p1 = l->pos * game_config::get()->tile_cfg[0].size;
-        auto p2 = p1 + game_config::get()->tile_cfg[0].size;
-        auto ep = e->pos();
-
-        if (ep == util::tile_to_pos(l->pos)) {
-            e->set_tile(l);
-            path.m_i++;
-            if (path.m_i >= path.m_path.size()) return;
-            
-            path.m_next = path.m_path[path.m_i];
-        }
+        e->move(dt);
     }
 
     void worker_move_to_resource::make_decision(worker *e) {
@@ -110,62 +89,44 @@ namespace core {
     }
 
 
-    void worker_move_to_base::enter(worker *e) {
-        if (!e->get_path().m_path.empty() && e->get_path().m_path.front().lock() == map::get()->get_start().lock()) {
-            e->get_path().reverse();
+    void worker_move_to_target::enter(worker *e) {
+        if (!e->get_job().target.expired()) {
+            e->set_path(map::get()->get_path_from_to(
+                e->get_tile().lock(),
+                e->get_job().target.lock()
+            ));
         }
         else {
             e->set_path(map::get()->get_path_from_to(
                 e->get_tile().lock(),
-                map::get()->get_start().lock(),
-                [](const std::shared_ptr<tile>& t) -> bool {
-                    return t->walkable && t->discovered;
-                }
+                map::get()->get_start().lock()
             ));
         }
     }
 
-    void worker_move_to_base::execute(worker *e, int dt) {
-        auto l = e->get_path().m_next.lock();
-        auto& path = e->get_path();
-        std::array<int, 2> src = e->pos();
-        auto dest = util::tile_to_pos(l->pos);
-        auto dist = dest - src;
-        auto dir = math::norm(dist);
-        int tile_speed = static_cast<int>(static_cast<float>(e->speed()) / (e->get_tile().lock()->speed_mod));
-        e->update_pos(dir * tile_speed * dt);
-
-        auto p1 = l->pos * game_config::get()->tile_cfg[0].size;
-        auto p2 = p1 + game_config::get()->tile_cfg[0].size;
-        auto ep = e->pos();
-
-        if (ep == util::tile_to_pos(l->pos)) {
-            e->set_tile(l);
-            path.m_i++;
-            if (path.m_i >= path.m_path.size()) return;
-            
-            path.m_next = path.m_path[path.m_i];
-        }
+    void worker_move_to_target::execute(worker *e, int dt) {
+        e->move(dt);
     }
 
-    void worker_move_to_base::make_decision(worker *e) {
+    void worker_move_to_target::make_decision(worker *e) {
     }
 
-    void worker_move_to_base::process_messages(worker *e) {
+    void worker_move_to_target::process_messages(worker *e) {
     }
 
-    void worker_move_to_base::change_state(worker *e) {
+    void worker_move_to_target::change_state(worker *e) {
         auto& path = e->get_path();
         auto l = path.m_next.lock();
            
         if (path.m_i >= path.m_path.size()) {
             e->sm().set_next_state(worker_state_idle);
+            e->get_tile().lock()->storage[e->carry()]++;
             e->set_carry(resource_type_none);
-            e->set_job({});
+            e->reset_job();
         }
     }
 
-    void worker_move_to_base::exit(worker *e) {
+    void worker_move_to_target::exit(worker *e) {
     }
 
 
@@ -205,7 +166,7 @@ namespace core {
 
     void worker_gather_resource::change_state(worker *e) {
         if (m_finished) {
-            e->sm().set_next_state(worker_state_move_to_base);
+            e->sm().set_next_state(worker_state_move_to_target);
         }
     }
 
@@ -222,9 +183,6 @@ namespace core {
     }
 
     void worker_upgrade_to_scout::execute(worker *e, int dt) {
-        if (m_finished) {
-            e->sm().set_next_state(worker_state_idle);
-        }
     }
 
     void worker_upgrade_to_scout::make_decision(worker *e) {
@@ -234,6 +192,9 @@ namespace core {
     }
 
     void worker_upgrade_to_scout::change_state(worker *e) {
+        if (m_finished) {
+            e->sm().set_next_state(worker_state_idle);
+        }
     }
 
     void worker_upgrade_to_scout::exit(worker *e) {

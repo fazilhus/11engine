@@ -138,7 +138,7 @@ namespace core {
 
     path map::get_path_to_empty_tile(const_reference from) const {
         auto c = [](const_reference t) -> bool {
-            return t->discovered && t->building == builder_state_none;
+            return t->discovered && t->building == building_type_none;
         };
         auto f = [](const_reference t) -> bool {
             return t->walkable;
@@ -230,7 +230,7 @@ namespace core {
         return {};
     }
 
-    path map::get_path_from_to(const_reference from, const_reference to, std::function<bool(const_reference)> filter) const {
+    path map::get_path_from_to(const_reference from, const_reference to) const {
         std::vector<int> costs(m_tiles.size(), INT_MAX);
         costs[from->posy * m_xmax + from->posx] = 0;
 
@@ -252,6 +252,10 @@ namespace core {
         pq.emplace(dist(from->posx, from->posy, to->posx, to->posy), from->posx, from->posy);
         
         std::vector<bool> visited(m_tiles.size(), false);
+
+        std::function<bool(const_reference)> filter = [](const std::shared_ptr<tile>& t) -> bool {
+            return t->walkable && t->discovered;
+        };
 
         connection con = pq.top();
         auto tile = get_tile(con.posx, con.posy);

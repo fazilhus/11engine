@@ -76,6 +76,8 @@ namespace core {
         path& get_path() { return m_path; }
         void set_path(const path& p) { m_path = p; }
 
+        void move(int dt, bool discover = false);
+
         /// @brief Get the inbox of the entity.
         /// @return Inbox of the entity.
         inbox& inbox() { return m_inbox; }
