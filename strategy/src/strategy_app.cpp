@@ -74,13 +74,13 @@ namespace core {
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
 		m_tm = new timer_manager();
 		m_jm = new job_manager();
-		m_jm->add_job(job_type_create_scout, 2);
-		m_jm->add_job(job_type_collect_wood, 10);
+		m_jm->add_job({job_type_create_scout, {}}, 4);
+		m_jm->add_job({job_type_create_builder, {}}, 1);
+		m_jm->add_job({job_type_build_coal_mine, {}}, 1);
+		// m_jm->add_job({job_type_create_miner, {}}, 1);
+		// m_jm->add_job({job_type_produce_coal, {}}, 200);
 		
 		m_em = new entity_manager();
-		// for (int i = 0; i < 4; ++i) {
-		// 	m_em->add_entity<scout>();
-		// }
 		for (int i = 0; i < 10; ++i) {
 			m_em->add_entity<worker>();
 		}
@@ -177,7 +177,7 @@ namespace core {
 
 				DrawRectangle(i * 10, j * 10, 10, 10, color); // Assuming each tile is 10x10 pixels
 
-				switch(tile->building.type) {
+				switch(tile->building) {
 				case building_type_base:
 					DrawText("B", i * 10 + 1, j * 10 + 1, 8, BLACK);
 					break;
@@ -197,7 +197,8 @@ namespace core {
 			switch (e->type()) {
 			case unit_type_worker: col = ORANGE; break;
 			case unit_type_scout: col = WHITE; break;
-			case unit_type_builder: col = BLACK; break;
+			case unit_type_builder: col = GRAY; break;
+			case unit_type_miner: col = BLACK; break;
 			}
 			DrawCircle(x, y, 2, col);
 		}

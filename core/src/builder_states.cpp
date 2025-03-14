@@ -71,14 +71,19 @@ namespace core {
             return;
         }
 
+        m_started = false;
         m_finished = false;
-        timer_manager::get()->add_timer(
-            game_config::get()->building_cfg[building_type_coal_mine].time,
-            e->id(),
-            std::bind(&builder_build::finished, this));
     }
 
     void builder_build::execute(builder *e, int dt) {
+        std::array<int, resource_type_num> missing{};
+        if (!m_started && e->get_tile().lock()->has_resources_for<building_type>(building_type_coal_mine, missing)) {
+            m_started = true;
+            timer_manager::get()->add_timer(
+                game_config::get()->building_cfg[building_type_coal_mine].time,
+                e->id(),
+                std::bind(&builder_build::finished, this));
+        }
     }
 
     void builder_build::make_decision(builder *e) {

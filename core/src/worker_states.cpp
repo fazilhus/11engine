@@ -30,7 +30,7 @@ namespace core {
         const auto& j = e->get_job();
         switch (j.type) {
         case job_type_collect_wood: {
-            e->sm().set_next_state(worker_state_gather_resource);
+            e->sm().set_next_state(worker_state_move_to_resource);
             break;
         }
         case job_type_create_scout: {
@@ -73,7 +73,7 @@ namespace core {
         if (e->get_path().m_path.empty()) {
             e->sm().set_next_state(worker_state_idle);
             job_manager::get()->add_job(e->get_job(), 1);
-            e->set_job({});
+            e->reset_job();
             return;
         }
 

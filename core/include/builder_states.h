@@ -32,6 +32,7 @@ namespace core {
         void change_state(builder* e) override;
         void exit(builder* e) override;
 
+        bool m_started = false;
         bool m_finished = false;
 
     public:
