@@ -136,7 +136,7 @@ namespace core {
 		
 		EndTextureMode();
 		
-		DrawTextureRec(m_map_texture.texture, {0, 0, (float)m_map_texture.texture.width, (float)m_map_texture.texture.height}, {0, 0}, WHITE);
+		DrawTextureRec(m_map_texture.texture, {0, 0, (float)m_map_texture.texture.width, -(float)m_map_texture.texture.height}, {0, 0}, WHITE);
 
 		EndDrawing();
 	}
