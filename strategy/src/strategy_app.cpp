@@ -74,14 +74,14 @@ namespace core {
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
 		m_tm = new timer_manager();
 		m_jm = new job_manager();
-		m_jm->add_job({job_type_create_scout, {}}, 4);
+		m_jm->add_job({job_type_create_scout, {}}, 5);
 		m_jm->add_job({job_type_create_builder, {}}, 1);
-		m_jm->add_job({job_type_build_coal_mine, {}}, 1);
-		// m_jm->add_job({job_type_create_miner, {}}, 1);
-		// m_jm->add_job({job_type_produce_coal, {}}, 200);
+		m_jm->add_job({job_type_build_coal_mine, {}}, 2);
+		m_jm->add_job({job_type_create_miner, {}}, 2);
+		m_jm->add_job({job_type_produce_coal, {}}, 200);
 		
 		m_em = new entity_manager();
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 20; ++i) {
 			m_em->add_entity<worker>();
 		}
 

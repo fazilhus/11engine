@@ -14,6 +14,10 @@ namespace core {
                 m_states[i] = std::make_shared<miner_idle>();
                 break;
             }
+            case miner_state_move: {
+                m_states[i] = std::make_shared<miner_move>();
+                break;
+            }
             case miner_state_produce_coal: {
                 m_states[i] = std::make_shared<miner_produce_coal>();
                 break;

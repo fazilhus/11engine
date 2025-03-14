@@ -14,6 +14,7 @@ namespace core {
         max_contents = cfg.max_contents;
         speed_mod = cfg.speed_mod;
         building = building_type_none;
+        building_used = false;
         storage = {};
 
         time = static_cast<int>(static_cast<float>(size) * speed_mod);
@@ -27,7 +28,15 @@ namespace core {
 
     template <>
     bool tile::has_resources_for(resource_type type, std::array<int, resource_type_num>& res) {
-        return false;
+        const auto& required = game_config::get()->resource_cfg[type].in;
+        bool flag = true;
+        for (std::size_t i = 0; i < storage.size() && i < required.size(); ++i) {
+            if (storage[i] < required[i]) {
+                flag = false;
+                res[i] = required[i] - storage[i];
+            }
+        }
+        return flag;
     }
 
     template <>

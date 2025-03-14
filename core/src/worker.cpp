@@ -56,6 +56,7 @@ namespace core {
             s->make_decision(m_ptr);
             s->process_messages(m_ptr);
             s->change_state(m_ptr);
+            std::cout << "worker " << m_ptr->id() << " is " << int(m_state) << '\n';
 
             if (m_next_state != worker_state_none) {
                 change_state();

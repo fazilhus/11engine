@@ -95,6 +95,7 @@ namespace core {
 
         path get_path_to_undiscovered(const_reference from) const;
         path get_path_to_empty_tile(const_reference from) const;
+        path get_path_to_unused_mine(const_reference from) const;
         path get_path_to_tile_of(const_reference from, tile_type t) const;
 
         void discover_around(std::weak_ptr<tile_t> t);

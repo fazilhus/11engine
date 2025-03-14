@@ -27,6 +27,7 @@ namespace core {
         int max_contents;
         float speed_mod;
         building_type building;
+        bool building_used;
         std::array<int, resource_type_num> storage;
         
         int time;

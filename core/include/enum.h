@@ -82,6 +82,7 @@ namespace core {
 
     enum miner_state_type : uint8_t {
         miner_state_idle,
+        miner_state_move,
         miner_state_produce_coal,
         miner_state_num,
         miner_state_none
