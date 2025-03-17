@@ -8,6 +8,8 @@
 #include "map.h"
 #include "entity_manager.h"
 #include "job.h"
+#include "button.h"
+#include "slider.h"
 
 namespace core {
 
@@ -28,6 +30,9 @@ namespace core {
         entity_manager* m_em;
 
         RenderTexture2D m_map_texture;
+
+        ui::button* m_button;
+        ui::slider* m_slider;
 
     public:
         /// @brief Constructor for the app class.
