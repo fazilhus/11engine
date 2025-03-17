@@ -17,12 +17,13 @@ namespace core {
 	app* app::s_instance = nullptr;
 
 	app::app() {
-		InitWindow(1000, 1000, "11Engine: Pathfinding");
+		InitWindow(1600, 1000, "11Engine: Pathfinding");
 		SetTargetFPS(60);
 
 		s_instance = this;
 
 		m_is_running = true;
+		m_is_paused = false;
 		m_timer = 0.0f;
 
 		m_config = nullptr;
@@ -49,7 +50,8 @@ namespace core {
 		while (!WindowShouldClose()) {
 			update_ui();
 
-			update();
+			if (!m_is_paused)
+				update();
 
 			render();
 		}

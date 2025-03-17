@@ -108,7 +108,7 @@ namespace core {
         m_start = m_tiles[j * m_xmax + i];
         m_start.lock()->discovered = true;
         m_start.lock()->building = building_type_base;
-        m_start.lock()->building_used = true;
+        //m_start.lock()->building_used_by = true;
 
         for (int i = 0; i < target_type_num; ++i) {
             m_targets[i] = 0;
@@ -142,17 +142,17 @@ namespace core {
             return t->discovered && t->building == building_type_none;
         };
         auto f = [](const_reference t) -> bool {
-            return t->walkable;
+            return t->walkable && t->discovered;
         };
         return get_path_to_closest(from, c, f);
     }
 
     path map::get_path_to_unused_mine(const_reference from) const {
         auto c = [](const_reference t) -> bool {
-            return t->discovered && t->building == building_type_coal_mine && t->building_used == false;
+            return t->discovered && t->building == building_type_coal_mine && t->building_used_by == -1;
         };
         auto f = [](const_reference t) -> bool {
-            return t->walkable;
+            return t->walkable && t->discovered;
         };
         return get_path_to_closest(from, c, f);
     }

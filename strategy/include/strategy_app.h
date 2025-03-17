@@ -16,6 +16,7 @@ namespace core {
     private:
         static app* s_instance; ///< Singleton instance of the app.
         bool m_is_running; ///< Flag indicating if the app is running.
+        bool m_is_paused;
         
         float m_timer;
 

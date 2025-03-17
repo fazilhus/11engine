@@ -27,7 +27,7 @@ namespace core {
         int max_contents;
         float speed_mod;
         building_type building;
-        bool building_used;
+        int building_used_by;
         std::array<int, resource_type_num> storage;
         
         int time;
@@ -39,9 +39,9 @@ namespace core {
 
         int get_resource(resource_type type) { return storage[type]; }
 
-        int put_resource(resource_type type) { return ++storage[type]; }
+        int put_resource(resource_type type, int num = 1) { return storage[type] += num; }
 
-        int take_resource(resource_type type) { return --storage[type]; }
+        int take_resource(resource_type type, int num = 1) { return storage[type] -= num; }
 
         template <typename T>
         bool has_resources_for(T type, std::array<int, resource_type_num>& res);

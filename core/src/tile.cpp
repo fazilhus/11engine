@@ -14,7 +14,7 @@ namespace core {
         max_contents = cfg.max_contents;
         speed_mod = cfg.speed_mod;
         building = building_type_none;
-        building_used = false;
+        building_used_by = -1;
         storage = {};
 
         time = static_cast<int>(static_cast<float>(size) * speed_mod);

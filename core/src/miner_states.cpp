@@ -27,7 +27,8 @@ namespace core {
         const auto& j = e->get_job();
         switch (j.type) {
         case job_type_produce_coal: {
-            if (e->get_tile().lock()->building == building_type_coal_mine) {
+            auto t = e->get_tile().lock();
+            if (t->building == building_type_coal_mine && t->building_used_by == e->id()) {
                 e->sm().set_next_state(miner_state_produce_coal);
             }
             else {
@@ -60,16 +61,21 @@ namespace core {
 
         if (path.m_path.empty()) {
             e->sm().set_next_state(miner_state_idle);
+            job_manager::get()->add_job({job_type_produce_coal, {}});
             return;
         }
            
         if (path.m_i >= path.m_path.size()) {
-            e->sm().set_next_state(miner_state_produce_coal);
+            if (e->get_tile().lock()->building_used_by == -1)
+                e->sm().set_next_state(miner_state_produce_coal);
+            else {
+                e->sm().set_next_state(miner_state_move);
+            }
         }
     }
 
     void miner_move::exit(miner *e) {
-        e->get_tile().lock()->building_used = true;
+        e->get_tile().lock()->building_used_by = e->id();
     }
     
 
@@ -85,12 +91,16 @@ namespace core {
 
     void miner_produce_coal::execute(miner *e, int dt) {
         std::array<int, resource_type_num> missing{};
-        if (!m_started && e->get_tile().lock()->has_resources_for<resource_type>(resource_type_coal, missing)) {
+        auto t = e->get_tile().lock();
+        if (!m_started && t->has_resources_for<resource_type>(resource_type_coal, missing)) {
             m_started = true;
             timer_manager::get()->add_timer(
                 game_config::get()->resource_cfg[resource_type_coal].time,
                 e->id(),
-                std::bind(&miner_produce_coal::finished, this));
+                std::bind(&miner_produce_coal::finished, this)
+            );
+            const auto& req = game_config::get()->resource_cfg[resource_type_coal].in;
+            for (int i = 0; i < req.size(); ++i) t->take_resource(static_cast<resource_type>(i), req[i]);
         }
     }
 
@@ -107,7 +117,7 @@ namespace core {
     }
 
     void miner_produce_coal::exit(miner *e) {
-        e->get_tile().lock()->storage[resource_type_coal]++;
+        e->get_tile().lock()->put_resource(resource_type_coal);
         e->reset_job();
     }
 

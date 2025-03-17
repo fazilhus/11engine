@@ -98,7 +98,10 @@ namespace core {
     }
 
     void builder_build::exit(builder *e) {
-        e->get_tile().lock()->building = building_type_coal_mine;
+        auto t = e->get_tile().lock();
+        t->building = building_type_coal_mine;
+        const auto& req = game_config::get()->building_cfg[building_type_coal_mine].resources;
+        for (int i = 0; i < req.size(); ++i) t->take_resource(static_cast<resource_type>(i), req[i]);
         map::get()->get_targets()[target_type_coal_mine]++;
         e->reset_job();
     }

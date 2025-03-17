@@ -120,7 +120,7 @@ namespace core {
            
         if (path.m_i >= path.m_path.size()) {
             e->sm().set_next_state(worker_state_idle);
-            e->get_tile().lock()->storage[e->carry()]++;
+            e->get_tile().lock()->put_resource(e->carry());
             e->set_carry(resource_type_none);
             e->reset_job();
         }
@@ -231,6 +231,7 @@ namespace core {
 
 
     void worker_upgrade_to_miner::enter(worker *e) {
+        std::cout << "Worker upgrading to Miner\n";
         m_finished = false;
         timer_manager::get()->add_timer(
             game_config::get()->unit_cfg[unit_type_miner].upgrade_time,
@@ -254,6 +255,7 @@ namespace core {
     }
 
     void worker_upgrade_to_miner::exit(worker *e) {
+        std::cout << "Worker finished upgrading to Miner\n";
         entity_manager::get()->replace_entity<miner>(e->id(), unit_type_miner);
     }
 
