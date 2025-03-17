@@ -43,7 +43,7 @@ namespace core {
     }
 
     void timer_manager::add_timer(int max_cycles, int listener_id, std::function<void()> callback) {
-        m_timers[m_timers.size()] = timer(max_cycles, listener_id, callback);
+        m_timers[listener_id] = timer(max_cycles, listener_id, callback);
     }
 
 } // namespace core

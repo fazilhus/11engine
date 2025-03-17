@@ -48,4 +48,17 @@ namespace core::util {
         }
     }
 
+    std::string worker_state_to_str(worker_state_type t) {
+        switch (t) {
+        case worker_state_idle: return "idle";
+        case worker_state_move_to_resource: return "move to res";
+        case worker_state_move_to_target: return "move to target";
+        case worker_state_gather_resource: return "gather";
+        case worker_state_upgrade_to_scout: return "upgrade to scout";
+        case worker_state_upgrade_to_builder: return "upgrade to builder";
+        case worker_state_upgrade_to_miner: return "upgrade to miner";
+        default: return "";
+        }
+    }
+
 } // namespace core::util

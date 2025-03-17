@@ -82,7 +82,7 @@ namespace core {
     void miner_produce_coal::enter(miner *e) {
         std::array<int, resource_type_num> missing{};
         if (!e->get_tile().lock()->has_resources_for<resource_type>(resource_type_coal, missing)) {
-            job_manager::get()->add_worker_job({job_type_collect_wood, 2, e->get_tile(), resource_type_wood}, missing[resource_type_wood]);
+            job_manager::get()->add_worker_job({job_type_collect_resource, 2, e->get_tile(), resource_type_wood}, 4 * missing[resource_type_wood]);
         }
 
         m_started = false;
@@ -119,6 +119,7 @@ namespace core {
     void miner_produce_coal::exit(miner *e) {
         auto t = e->get_tile().lock();
         t->put_resource(resource_type_coal);
+        job_manager::get()->add_worker_job({job_type_collect_resource, 8, t, resource_type_coal});
         e->reset_job();
     }
 

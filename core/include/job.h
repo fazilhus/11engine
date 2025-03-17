@@ -12,11 +12,25 @@ namespace core {
     struct job {
         job_type type;
         int prio;
+
+        job(job_type t, int p) : type(t), prio(p) {}
+        job() : job(job_type_none, -1) {}
+        job(const job& other) = default;
     };
 
     struct worker_job : public job {
         std::weak_ptr<tile> target;
         resource_type res_type;
+
+        worker_job(job_type t, int p, std::weak_ptr<tile> tg, resource_type rt) : job(t, p) {
+            target = tg;
+            res_type = rt;
+        }
+        worker_job() : job() {
+            target = {};
+            res_type = resource_type_none;
+        }
+        worker_job(const worker_job& other) = default;
     };
 
     struct job_comp {

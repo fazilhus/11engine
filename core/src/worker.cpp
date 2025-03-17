@@ -28,6 +28,10 @@ namespace core {
                 m_states[i] = std::make_shared<worker_gather_resource>();
                 break;
             }
+            case worker_state_store_resource: {
+                m_states[i] = std::make_shared<worker_store_resource>();
+                break;
+            }
             case worker_state_upgrade_to_scout: {
                 m_states[i] = std::make_shared<worker_upgrade_to_scout>();
                 break;

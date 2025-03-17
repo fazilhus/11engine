@@ -66,6 +66,7 @@ namespace core {
         worker_state_move_to_resource,
         worker_state_move_to_target,
         worker_state_gather_resource,
+        worker_state_store_resource,
         worker_state_upgrade_to_scout,
         worker_state_upgrade_to_builder,
         worker_state_upgrade_to_miner,
@@ -90,7 +91,7 @@ namespace core {
     };
 
     enum job_type : uint8_t {
-        job_type_collect_wood,
+        job_type_collect_resource,
         job_type_create_scout,
         job_type_create_builder,
         job_type_create_miner,
@@ -109,6 +110,8 @@ namespace core {
 
         target_type tile_to_target(tile_type t);
         target_type building_to_target(building_type b);
+
+        std::string worker_state_to_str(worker_state_type t);
 
     } // namespace util
 

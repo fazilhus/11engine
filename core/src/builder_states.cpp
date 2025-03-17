@@ -71,7 +71,7 @@ namespace core {
     void builder_build::enter(builder *e) {
         std::array<int, resource_type_num> missing{};
         if (!e->get_tile().lock()->has_resources_for<building_type>(building_type_coal_mine, missing)) {
-            job_manager::get()->add_worker_job({job_type_collect_wood, 5, e->get_tile(), resource_type_wood}, missing[resource_type_wood]);
+            job_manager::get()->add_worker_job({job_type_collect_resource, 5, e->get_tile(), resource_type_wood}, missing[resource_type_wood]);
         }
 
         auto t = e->get_tile().lock();

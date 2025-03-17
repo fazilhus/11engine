@@ -41,6 +41,12 @@ namespace core {
         int listener_id() const { return m_listener_id; }
     };
 
+    struct timer_comp {
+        bool operator()(const timer& a, const timer& b) {
+            return a.listener_id() < b.listener_id();
+        }
+    };
+
     /// @brief Manager class for handling all timers.
     class timer_manager {
     private:

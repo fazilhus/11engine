@@ -29,7 +29,7 @@ namespace core {
     void worker_idle::change_state(worker *e) {
         const auto& j = e->get_job();
         switch (j.type) {
-        case job_type_collect_wood: {
+        case job_type_collect_resource: {
             e->sm().set_next_state(worker_state_move_to_resource);
             break;
         }
@@ -53,10 +53,16 @@ namespace core {
 
 
     void worker_move_to_resource::enter(worker *e) {
-        if (map::get()->get_start().lock()->storage[resource_type_wood] > 0)
-            e->set_path(map::get()->get_path_from_to(e->get_tile().lock(), map::get()->get_start().lock()));
-        else
-            e->set_path(map::get()->get_path_to_tile_of(e->get_tile().lock(), tile_type_forest));
+        const auto j = e->get_job();
+        if (j.res_type == resource_type_wood) {
+            if (map::get()->get_start().lock()->storage[resource_type_wood] > 0)
+                e->set_path(map::get()->get_path_from_to(e->get_tile().lock(), map::get()->get_start().lock()));
+            else
+                e->set_path(map::get()->get_path_to_tile_of(e->get_tile().lock(), tile_type_forest));
+        }
+        else {
+            e->set_path(map::get()->get_path_from_to(e->get_tile().lock(), j.target.lock()));
+        }
     }
 
     void worker_move_to_resource::execute(worker *e, int dt) {
@@ -70,7 +76,13 @@ namespace core {
     }
 
     void worker_move_to_resource::change_state(worker *e) {
+        auto t = e->get_tile().lock();
+        
         if (e->get_path().m_path.empty()) {
+            if (t->type == tile_type_forest && t->to_be_gathered < t->contents) {
+                e->sm().set_next_state(worker_state_gather_resource);
+                return;
+            }
             e->sm().set_next_state(worker_state_idle);
             job_manager::get()->add_worker_job(e->get_job());
             e->reset_job();
@@ -90,11 +102,19 @@ namespace core {
 
 
     void worker_move_to_target::enter(worker *e) {
-        if (!e->get_job().target.expired()) {
-            e->set_path(map::get()->get_path_from_to(
-                e->get_tile().lock(),
-                e->get_job().target.lock()
-            ));
+        if (e->get_job().res_type == resource_type_wood) {
+            if (!e->get_job().target.expired()) {
+                e->set_path(map::get()->get_path_from_to(
+                    e->get_tile().lock(),
+                    e->get_job().target.lock()
+                ));
+            }
+            else {
+                e->set_path(map::get()->get_path_from_to(
+                    e->get_tile().lock(),
+                    map::get()->get_start().lock()
+                ));
+            }
         }
         else {
             e->set_path(map::get()->get_path_from_to(
@@ -119,10 +139,7 @@ namespace core {
         auto l = path.m_next.lock();
            
         if (path.m_i >= path.m_path.size()) {
-            e->sm().set_next_state(worker_state_idle);
-            e->get_tile().lock()->put_resource(e->carry());
-            e->set_carry(resource_type_none);
-            e->reset_job();
+            e->sm().set_next_state(worker_state_store_resource);
         }
     }
 
@@ -131,29 +148,37 @@ namespace core {
 
 
     void worker_gather_resource::enter(worker *e) {
-        auto t = e->get_tile().lock();
-        m_started = false;
-        m_finished = false;
-        if (t->to_be_gathered < t->contents) {
-            t->to_be_gathered += 1;
-            m_started = true;
-            timer_manager::get()->add_timer(
-                game_config::get()->resource_cfg[resource_type_wood].time,
-                e->id(),
-                std::bind(&worker_gather_resource::finished, this));
+        if (e->get_job().res_type == resource_type_wood) {
+            auto t = e->get_tile().lock();
+            m_started = false;
+            m_finished = false;
+            if (t->to_be_gathered < t->contents) {
+                t->to_be_gathered += 1;
+                m_started = true;
+                timer_manager::get()->add_timer(
+                    game_config::get()->resource_cfg[resource_type_wood].time,
+                    e->id(),
+                    std::bind(&worker_gather_resource::finished, this));
+            }
         }
     }
 
     void worker_gather_resource::execute(worker *e, int dt) {
-        if (m_finished) {
-            auto t = e->get_tile().lock();
-            t->contents -= 1;
-            t->to_be_gathered -= 1;
-            e->set_carry(resource_type_wood);
-            if (t->contents == 0) {
-                map::get()->get_targets()[static_cast<int>(target_type_forest)]--;
-                t->type = tile_type_grass;
+        auto t = e->get_tile().lock();
+        if (e->get_job().res_type == resource_type_wood) {
+            if (m_finished) {
+                t->contents -= 1;
+                t->to_be_gathered -= 1;
+                e->set_carry(resource_type_wood);
+                if (t->contents == 0) {
+                    map::get()->get_targets()[static_cast<int>(target_type_forest)]--;
+                    t->type = tile_type_grass;
+                }
             }
+        }
+        else {
+            e->set_carry(resource_type_coal);
+            t->take_resource(resource_type_coal);
         }
     }
 
@@ -165,16 +190,44 @@ namespace core {
 
     void worker_gather_resource::change_state(worker *e) {
         auto t = e->get_tile().lock();
-        if (!m_started && t->to_be_gathered >= t->contents) {
-            e->sm().set_next_state(worker_state_move_to_resource);
-            return;
+        if (e->get_job().res_type == resource_type_wood) {
+            if (!m_started) {
+                e->sm().set_next_state(worker_state_move_to_resource);
+                return;
+            }
+            if (m_finished) {
+                e->sm().set_next_state(worker_state_move_to_target);
+            }
         }
-        if (m_finished) {
+        else {
             e->sm().set_next_state(worker_state_move_to_target);
         }
     }
 
     void worker_gather_resource::exit(worker *e) {
+    }
+
+
+    void worker_store_resource::enter(worker *e) {
+    }
+
+    void worker_store_resource::execute(worker *e, int dt) {
+        e->get_tile().lock()->put_resource(e->carry());
+        e->set_carry(resource_type_none);
+    }
+
+    void worker_store_resource::make_decision(worker *e) {
+    }
+
+    void worker_store_resource::process_messages(worker *e) {
+    }
+
+    void worker_store_resource::change_state(worker *e) {
+        e->sm().set_next_state(worker_state_idle);
+    }
+
+    void worker_store_resource::exit(worker *e) {
+        e->reset_job();
     }
 
 
@@ -235,7 +288,6 @@ namespace core {
 
 
     void worker_upgrade_to_miner::enter(worker *e) {
-        std::cout << "Worker upgrading to Miner\n";
         m_finished = false;
         timer_manager::get()->add_timer(
             game_config::get()->unit_cfg[unit_type_miner].upgrade_time,
@@ -259,7 +311,6 @@ namespace core {
     }
 
     void worker_upgrade_to_miner::exit(worker *e) {
-        std::cout << "Worker finished upgrading to Miner\n";
         entity_manager::get()->replace_entity<miner>(e->id(), unit_type_miner);
     }
 
