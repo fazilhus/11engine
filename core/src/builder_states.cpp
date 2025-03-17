@@ -56,7 +56,11 @@ namespace core {
         auto& path = e->get_path();
            
         if (path.m_i >= path.m_path.size()) {
-            e->sm().set_next_state(builder_state_build);
+            auto t = e->get_tile().lock();
+            if (t->building == building_type_none && t->building_used_by == -1)
+                e->sm().set_next_state(builder_state_build);
+            else
+                e->sm().set_next_state(builder_state_move);
         }
     }
 
@@ -69,6 +73,14 @@ namespace core {
         if (!e->get_tile().lock()->has_resources_for<building_type>(building_type_coal_mine, missing)) {
             job_manager::get()->add_job({job_type_collect_wood, e->get_tile()}, missing[resource_type_wood]);
         }
+
+        auto t = e->get_tile().lock();
+        if (t->building == building_type_construction && t->building_used_by != e->id()) {
+            return;
+        }
+        t->building = building_type_construction;
+        t->building_used_by = e->id();
+
 
         m_started = false;
         m_finished = false;
@@ -92,6 +104,12 @@ namespace core {
     }
 
     void builder_build::change_state(builder *e) {
+        auto t = e->get_tile().lock();
+        if (t->building == building_type_construction && t->building_used_by != e->id()) {
+            e->sm().set_next_state(builder_state_move);
+            return;
+        }
+
         if (m_finished) {
             e->sm().set_next_state(builder_state_idle);
         }
@@ -100,6 +118,7 @@ namespace core {
     void builder_build::exit(builder *e) {
         auto t = e->get_tile().lock();
         t->building = building_type_coal_mine;
+        e->get_tile().lock()->building_used_by = -1;
         const auto& req = game_config::get()->building_cfg[building_type_coal_mine].resources;
         for (int i = 0; i < req.size(); ++i) t->take_resource(static_cast<resource_type>(i), req[i]);
         map::get()->get_targets()[target_type_coal_mine]++;

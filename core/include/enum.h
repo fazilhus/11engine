@@ -25,6 +25,7 @@ namespace core {
     enum building_type : uint8_t {
         building_type_base,
         building_type_coal_mine,
+        building_type_construction,
         building_type_num,
         building_type_none
     };
