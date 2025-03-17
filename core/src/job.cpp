@@ -26,49 +26,34 @@ namespace core {
         }
     }
 
-    job job_manager::dispatch_job(unit_type type) {
-        switch (type) {
-        case unit_type_worker: {
-            auto j = m_worker_jobs.top();
-            m_worker_jobs.pop();
-            return j;
-        }
-        case unit_type_builder: {
-            auto j = m_builder_jobs.top();
-            m_builder_jobs.pop();
-            return j;
-        }
-        case unit_type_miner: {
-            auto j = m_miner_jobs.top();
-            m_miner_jobs.pop();
-            return j;
-        }
-        default:
-            assert(false && "unreachable");
-            return {};
-        }
+    worker_job job_manager::dispatch_worker_job() {
+        auto j = m_worker_jobs.top();
+        m_worker_jobs.pop();
+        return j;
     }
 
-    void job_manager::add_job(job j, int num) {
-        switch (j.type) {
-        case job_type_collect_wood:
-        case job_type_create_scout:
-        case job_type_create_builder:
-        case job_type_create_miner: {
-            for (int i = 0; i < num; ++i) m_worker_jobs.push(j);
-            break;
-        }
-        case job_type_build_coal_mine: {
-            for (int i = 0; i < num; ++i) m_builder_jobs.push(j);
-            break;
-        }
-        case job_type_produce_coal: {
-            for (int i = 0; i < num; ++i) m_miner_jobs.push(j);
-            break;
-        }
-        default:
-            assert(false && "unreachable");
-        }
+    job job_manager::dispatch_builder_job() {
+        auto j = m_builder_jobs.top();
+        m_builder_jobs.pop();
+        return j;
+    }
+
+    job job_manager::dispatch_miner_job() {
+        auto j = m_miner_jobs.top();
+        m_miner_jobs.pop();
+        return j;
+    }
+
+    void job_manager::add_worker_job(worker_job j, int num) {
+        for (int i = 0; i < num; ++i) m_worker_jobs.push(j);
+    }
+
+    void job_manager::add_builder_job(job j, int num) {
+        for (int i = 0; i < num; ++i) m_builder_jobs.push(j);
+    }
+
+    void job_manager::add_miner_job(job j, int num) {
+        for (int i = 0; i < num; ++i) m_miner_jobs.push(j);
     }
 
 } // namespace core

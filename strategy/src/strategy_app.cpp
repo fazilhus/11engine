@@ -17,7 +17,7 @@ namespace core {
 	app* app::s_instance = nullptr;
 
 	app::app() {
-		InitWindow(1600, 1000, "11Engine: Pathfinding");
+		InitWindow(1000, 1000, "11Engine: Pathfinding");
 		SetTargetFPS(60);
 
 		s_instance = this;
@@ -76,14 +76,14 @@ namespace core {
 		m_map = new map(std::filesystem::absolute("./strategy/res/map.txt"));
 		m_tm = new timer_manager();
 		m_jm = new job_manager();
-		m_jm->add_job({job_type_create_scout, {}}, 5);
-		m_jm->add_job({job_type_create_builder, {}}, 2);
-		m_jm->add_job({job_type_build_coal_mine, {}}, 4);
-		m_jm->add_job({job_type_create_miner, {}}, 4);
-		m_jm->add_job({job_type_produce_coal, {}}, 200);
+		m_jm->add_worker_job({job_type_create_scout, 1, {}, resource_type_none}, 10);
+		m_jm->add_worker_job({job_type_create_builder, 1, {}, resource_type_none}, 2);
+		m_jm->add_worker_job({job_type_create_miner, 1, {}, resource_type_none}, 4);
+		m_jm->add_builder_job({job_type_build_coal_mine, 5}, 4);
+		m_jm->add_miner_job({job_type_produce_coal, 5}, 200);
 		
 		m_em = new entity_manager();
-		for (int i = 0; i < 50; ++i) {
+		for (int i = 0; i < 30; ++i) {
 			m_em->add_entity<worker>();
 		}
 

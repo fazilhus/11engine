@@ -41,6 +41,7 @@ namespace core {
         void change_state(worker* e) override;
         void exit(worker* e) override;
 
+        bool m_started = false;
         bool m_finished = false;
 
     public:

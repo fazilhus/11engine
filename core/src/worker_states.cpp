@@ -16,7 +16,7 @@ namespace core {
 
     void worker_idle::execute(worker *e, int dt) {
         if (job_manager::get()->has_job(unit_type_worker)) {
-            e->set_job(job_manager::get()->dispatch_job(unit_type_worker));
+            e->set_job(job_manager::get()->dispatch_worker_job());
         }
     }
 
@@ -72,7 +72,7 @@ namespace core {
     void worker_move_to_resource::change_state(worker *e) {
         if (e->get_path().m_path.empty()) {
             e->sm().set_next_state(worker_state_idle);
-            job_manager::get()->add_job(e->get_job(), 1);
+            job_manager::get()->add_worker_job(e->get_job());
             e->reset_job();
             return;
         }
@@ -132,16 +132,15 @@ namespace core {
 
     void worker_gather_resource::enter(worker *e) {
         auto t = e->get_tile().lock();
+        m_started = false;
+        m_finished = false;
         if (t->to_be_gathered < t->contents) {
             t->to_be_gathered += 1;
-            m_finished = false;
+            m_started = true;
             timer_manager::get()->add_timer(
                 game_config::get()->resource_cfg[resource_type_wood].time,
                 e->id(),
                 std::bind(&worker_gather_resource::finished, this));
-        }
-        else {
-            e->sm().set_next_state(worker_state_move_to_resource);
         }
     }
 
@@ -152,7 +151,7 @@ namespace core {
             t->to_be_gathered -= 1;
             e->set_carry(resource_type_wood);
             if (t->contents == 0) {
-                map::get()->get_targets()[static_cast<int>(t->type)]--;
+                map::get()->get_targets()[static_cast<int>(target_type_forest)]--;
                 t->type = tile_type_grass;
             }
         }
@@ -165,6 +164,11 @@ namespace core {
     }
 
     void worker_gather_resource::change_state(worker *e) {
+        auto t = e->get_tile().lock();
+        if (!m_started && t->to_be_gathered >= t->contents) {
+            e->sm().set_next_state(worker_state_move_to_resource);
+            return;
+        }
         if (m_finished) {
             e->sm().set_next_state(worker_state_move_to_target);
         }

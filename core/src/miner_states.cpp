@@ -13,7 +13,7 @@ namespace core {
 
     void miner_idle::execute(miner *e, int dt) {
         if (job_manager::get()->has_job(unit_type_miner) && map::get()->get_targets()[target_type_coal_mine] > 0) {
-            e->set_job(job_manager::get()->dispatch_job(unit_type_miner));
+            e->set_job(job_manager::get()->dispatch_miner_job());
         }
     }
 
@@ -61,7 +61,7 @@ namespace core {
 
         if (path.m_path.empty()) {
             e->sm().set_next_state(miner_state_idle);
-            job_manager::get()->add_job({job_type_produce_coal, {}});
+            job_manager::get()->add_miner_job({job_type_produce_coal, 5});
             return;
         }
            
@@ -82,7 +82,7 @@ namespace core {
     void miner_produce_coal::enter(miner *e) {
         std::array<int, resource_type_num> missing{};
         if (!e->get_tile().lock()->has_resources_for<resource_type>(resource_type_coal, missing)) {
-            job_manager::get()->add_job({job_type_collect_wood, e->get_tile()}, missing[resource_type_wood]);
+            job_manager::get()->add_worker_job({job_type_collect_wood, 2, e->get_tile(), resource_type_wood}, missing[resource_type_wood]);
         }
 
         m_started = false;
@@ -117,7 +117,8 @@ namespace core {
     }
 
     void miner_produce_coal::exit(miner *e) {
-        e->get_tile().lock()->put_resource(resource_type_coal);
+        auto t = e->get_tile().lock();
+        t->put_resource(resource_type_coal);
         e->reset_job();
     }
 
